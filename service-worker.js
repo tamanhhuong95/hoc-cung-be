@@ -1,13 +1,15 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v4";
+const CACHE_NAME = "hoc-cung-be-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./script.js",
   "./firebase-config.js",
+  "./feedback-config.js",
   "./parent-auth.js",
+  "./parent-tools.js",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",

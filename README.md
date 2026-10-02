@@ -28,18 +28,36 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Có mascot 🐻 Bạn Gấu tạo bằng emoji và CSS, với trạng thái chờ, vui mừng khi đúng, khuyến khích khi cần thử lại và ăn mừng khi hoàn thành bài.
 - Màn hình hoàn thành hiển thị số câu đúng, điểm trên thang 100, lời khen tích cực và sao xuất hiện tuần tự. Quy tắc sao dùng chung với hệ thống tiến độ: dưới 70 điểm là 0 sao, 70–89 là 1 sao, 90–99 là 2 sao và 100 là 3 sao.
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
-- Có khu vực **Dành cho phụ huynh** với phép tính xác nhận, dashboard tiến độ tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
+- Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v4`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v5`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Tài khoản là tùy chọn: bé vẫn học, dùng mascot/âm thanh/SpeechSynthesis, xem Parent Dashboard và lưu tiến độ localStorage khi chưa đăng nhập. Bản hiện tại chưa đồng bộ progress, history hoặc studyTime lên cloud.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
-- Firebase Authentication chỉ được nạp khi `firebase-config.js` chứa Firebase Web config thật. Nếu thiếu config hoặc offline, phần học/PWA không bị trắng màn hình; phần Auth hiển thị thông báo cần Internet hoặc cần cấu hình. Service worker cache app shell hiện là `hoc-cung-be-v4` và không xử lý/cache Firebase Auth hoặc reCAPTCHA request.
+- Firebase Authentication chỉ được nạp khi `firebase-config.js` chứa Firebase Web config thật. Nếu thiếu config hoặc offline, phần học/PWA không bị trắng màn hình; phần Auth hiển thị thông báo cần Internet hoặc cần cấu hình. Service worker cache app shell hiện là `hoc-cung-be-v5` và không xử lý/cache Firebase Auth hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
 Thêm một level bằng cách thêm một object vào `LEVELS` trong `script.js`, gồm tối thiểu `id`, `topic`, `title`, `type`, `min`, `max` và `order`. Có thể cấu hình thêm `questionCount`, `unlockScore`, `imageMode`, `visualSet` và `hint`. Không đổi ID của level đã phát hành để giữ tiến độ cũ. Nếu thêm loại `type` mới, bổ sung generator tương ứng trong `generateQuestion()`.
 
-Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N) và các test progress/dashboard/PWA hiện có.
+Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N), `window.__hocCungBeParentPinFeedbackTests` (A–P) và các test progress/dashboard/PWA hiện có.
+
+## Parent PIN và góp ý phụ huynh
+
+### Parent PIN cục bộ
+
+- Lần đầu mở **Dành cho phụ huynh**, phụ huynh tạo Parent PIN gồm đúng 4–6 chữ số và xác nhận lại. PIN là khóa cục bộ trên **thiết bị/trình duyệt này**, không phải Firebase password và không yêu cầu đăng nhập Firebase.
+- Ứng dụng không lưu PIN nguyên văn. Record `hoc-cung-be:parent-pin` trong `localStorage` chỉ gồm salt ngẫu nhiên và hash. Trình duyệt có Web Crypto API dùng `SHA-256`; trình duyệt rất cũ không có Web Crypto dùng fallback FNV-1a có salt để app không crash, nhưng fallback này không mạnh bằng SHA-256. Vì vậy nên dùng trình duyệt hiện đại.
+- Mỗi lần reload, mở lại PWA hoặc tạo phiên trang mới, khu phụ huynh yêu cầu PIN lại. Trạng thái mở chỉ nằm trong bộ nhớ của phiên hiện tại, không có key “đã mở khóa” trong `localStorage`.
+- Sau 5 lần nhập sai liên tiếp, khóa tạm 30 giây bằng key `hoc-cung-be:parent-pin-attempts`; sau thời gian này phụ huynh có thể thử lại. Nhập đúng sẽ xóa bộ đếm sai.
+- Trong Dashboard có mục **Đổi mã bảo mật**: nhập PIN hiện tại, PIN mới và xác nhận PIN mới. Hash/salt mới sẽ thay thế record cũ.
+- **Quên mã bảo mật:** hiện chưa có reset tự động và không có nút xóa/bỏ qua PIN, nhằm tránh tạo backdoor cho trẻ. Khi Firebase Authentication production đã cấu hình hoàn chỉnh, có thể bổ sung luồng reset yêu cầu phụ huynh xác thực tài khoản thật trước khi xóa/reset PIN cục bộ.
+
+### Góp ý cho Học Cùng Bé
+
+- Form **💬 Góp ý cho Học Cùng Bé** chỉ có trong Dashboard phụ huynh. Nó xác thực loại góp ý, tiêu đề, nội dung 10–2000 ký tự, email liên hệ tùy chọn và checkbox đồng ý phản hồi.
+- Không có backend feedback ở phiên bản này, và app không lưu góp ý vĩnh viễn vào `localStorage`. Nút gửi tạo liên kết `mailto:` có subject/body được encode an toàn; email client mở ra để phụ huynh tự gửi. Vì `mailto:` không xác nhận gửi thật, UI chỉ thông báo email client đã mở.
+- Địa chỉ nhận nằm tại `feedback-config.js`: `window.HOC_CUNG_BE_FEEDBACK_EMAIL = ""`. Repository để trống có chủ đích. Chủ dự án cần thay bằng inbox do mình quản lý (xem `feedback-config.example.js`) trước khi bật gửi email. Không tự bịa email nhận góp ý.
+- Checkbox kỹ thuật là tùy chọn. Nếu được chọn, email chỉ kèm user agent, URL hiện tại và phiên bản cache app; nó không kèm PIN, Firebase password, OTP, email đăng nhập, số điện thoại, toàn bộ `localStorage` hay chi tiết progress. Sau này có thể thay hàm `buildFeedbackMailto()` bằng Firebase/Firestore hoặc API backend có xác thực, validation và chính sách lưu trữ phù hợp.
 
 ## Thiết lập Firebase Authentication
 
@@ -75,7 +93,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v4` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v5` cập nhật app shell.
 
 ### 5. Quên/đổi mật khẩu
 
