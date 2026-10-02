@@ -30,13 +30,84 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** với phép tính xác nhận, dashboard tiến độ tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v3`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v4`.
+- Có khu vực gọn **👤 Tài khoản phụ huynh**. Tài khoản là tùy chọn: bé vẫn học, dùng mascot/âm thanh/SpeechSynthesis, xem Parent Dashboard và lưu tiến độ localStorage khi chưa đăng nhập. Bản hiện tại chưa đồng bộ progress, history hoặc studyTime lên cloud.
+- Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
+- Firebase Authentication chỉ được nạp khi `firebase-config.js` chứa Firebase Web config thật. Nếu thiếu config hoặc offline, phần học/PWA không bị trắng màn hình; phần Auth hiển thị thông báo cần Internet hoặc cần cấu hình. Service worker cache app shell hiện là `hoc-cung-be-v4` và không xử lý/cache Firebase Auth hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
 Thêm một level bằng cách thêm một object vào `LEVELS` trong `script.js`, gồm tối thiểu `id`, `topic`, `title`, `type`, `min`, `max` và `order`. Có thể cấu hình thêm `questionCount`, `unlockScore`, `imageMode`, `visualSet` và `hint`. Không đổi ID của level đã phát hành để giữ tiến độ cũ. Nếu thêm loại `type` mới, bổ sung generator tương ứng trong `generateQuestion()`.
 
-Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeDynamicLevelTests` (A–L), cùng các test progress/dashboard/PWA hiện có.
+Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N) và các test progress/dashboard/PWA hiện có.
+
+## Thiết lập Firebase Authentication
+
+> **Trạng thái repository ngày 2 tháng 10 năm 2026:** chưa có Firebase project/config thật, vì vậy Authentication production chưa được bật. `firebase-config.js` đang đặt `null` một cách có chủ đích; đây không phải config giả. Các bước dưới đây do chủ Firebase project thực hiện.
+
+### 1. Tạo Firebase project
+
+1. Mở Firebase Console và đăng nhập bằng tài khoản Google của phụ huynh/chủ dự án.
+2. Chọn **Add project** (Thêm dự án), đặt tên, rồi hoàn tất các bước tạo project.
+3. Trong trang Overview của project, chọn biểu tượng **Web** (`</>`) để thêm ứng dụng web.
+4. Đặt nickname, ví dụ `hoc-cung-be-web`. Không cần bật Firebase Hosting vì website đang deploy bằng GitHub Pages.
+5. Firebase sẽ hiện một object `firebaseConfig`. Đây là **Firebase Web config**, không phải service account và không phải private key.
+
+### 2. Đặt Web config vào đúng file
+
+1. Mở file `d:/anh hương/o 1/saoluu3012/Desktop/Học Cùng Bé/firebase-config.example.js` để xem cấu trúc.
+2. Mở `d:/anh hương/o 1/saoluu3012/Desktop/Học Cùng Bé/firebase-config.js`.
+3. Thay dòng `window.HOC_CUNG_BE_FIREBASE_CONFIG = null;` bằng object config Firebase Console đã cấp, có tối thiểu `apiKey`, `authDomain`, `projectId`, `appId`.
+4. Không đặt vào file này: password, OTP, refresh token, reset token, service account JSON, private key, Firebase Admin SDK credential hoặc secret backend.
+5. Commit/push `firebase-config.js` chỉ sau khi kiểm tra nó đúng là **Web config**. Firebase Web config được dùng ở client theo kiến trúc Firebase Web; quyền truy cập dữ liệu cloud trong tương lai vẫn phải được bảo vệ bằng Security Rules. Project hiện chưa dùng Firestore/Realtime Database.
+
+### 3. Bật Email/Password
+
+1. Trong Firebase Console, vào **Build → Authentication** rồi chọn **Get started** nếu đây là lần đầu.
+2. Mở tab **Sign-in method**.
+3. Chọn **Email/Password**, bật tùy chọn **Email/Password**, sau đó nhấn **Save**.
+4. Trong **Authentication → Settings**, rà soát phần email/action URLs và tính năng bảo vệ email enumeration nếu Firebase Console hiển thị chúng.
+5. Sau khi deploy config thật, đăng ký bằng form **Đăng ký tài khoản phụ huynh**. Ứng dụng gọi Firebase `createUserWithEmailAndPassword`, cập nhật họ tên, sau đó gọi `sendEmailVerification`.
+6. Phụ huynh chưa xác minh email vẫn có thể cho bé học. Nút **Gửi lại email xác minh** nằm trong **Tài khoản của tôi**.
+
+### 4. Authorized domains cho GitHub Pages và local
+
+1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
+2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
+3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v4` cập nhật app shell.
+
+### 5. Quên/đổi mật khẩu
+
+- Form **Quên mật khẩu** gọi Firebase `sendPasswordResetEmail()`. Dù Firebase trả kết quả gì, UI trả lời theo hướng không tiết lộ tài khoản: “Nếu email này đã được đăng ký, hướng dẫn đặt lại mật khẩu sẽ được gửi tới hộp thư.”
+- Form **Đổi mật khẩu** yêu cầu phụ huynh nhập mật khẩu hiện tại, gọi Firebase `reauthenticateWithCredential()` rồi `updatePassword()`. Điều này xử lý yêu cầu recent login của Firebase mà không lưu mật khẩu vào localStorage.
+
+### 6. Bật Phone provider và kiểm thử bằng test phone number (không gửi SMS thật)
+
+1. Trong **Build → Authentication → Sign-in method**, chọn **Phone** và bật provider nếu Firebase Console cho phép.
+2. Trước khi dùng số thật, mở khu vực **Phone numbers for testing** / **Test phone numbers** trong phần Phone provider.
+3. Nhấn **Add phone number**, nhập số test ở định dạng quốc tế, ví dụ `+84912345678`, và tự chọn mã test 6 chữ số, ví dụ `123456`.
+4. Nhấn **Save**. Không dùng số này cho một tài khoản Firebase khác.
+5. Trên website: đăng nhập tài khoản email của phụ huynh → **Tài khoản của tôi** → **Liên kết số điện thoại** → nhập `0912345678` → **Gửi mã OTP** → nhập `123456` (mã test đã tự đặt) → **Xác minh và liên kết**.
+6. Code chuẩn hóa `0912345678` thành `+84912345678`, tạo `RecaptchaVerifier` invisible theo yêu cầu Firebase Web, lấy credential từ OTP và gọi `linkWithCredential()` cho user đang đăng nhập. Kết quả là một Firebase user có cả email/password và phone number, không phải hai tài khoản riêng.
+7. OTP chỉ tồn tại trong Firebase/browser flow trong lúc xác minh; ứng dụng không ghi OTP vào localStorage.
+
+### 7. SMS production và billing
+
+- Không tự bật gửi SMS production và không tự thay đổi billing. Phone Auth/SMS có thể yêu cầu kích hoạt billing hoặc chịu hạn mức/quota tùy Firebase project, quốc gia và chính sách Firebase tại thời điểm cấu hình.
+- Chỉ dùng **test phone numbers** ở bước hiện tại để không phát sinh SMS thật. Trước khi bật production, chủ dự án cần tự rà soát pricing, quota, reCAPTCHA và yêu cầu billing ngay trong Firebase Console.
+
+### 8. Kiểm tra sau khi cấu hình
+
+1. Mở trang production khi có Internet và hard reload một lần sau deploy.
+2. Mở DevTools Console và chạy `window.__hocCungBeParentAuthTests`; xác nhận A–N đều `passed: true`. Bộ test không tạo account, không gửi email, không gửi SMS.
+3. Thử đăng ký test, đăng nhập, quên mật khẩu, gửi xác minh email và liên kết **test phone number**.
+4. Reload/PWA mở lại để kiểm tra `onAuthStateChanged()` tự cập nhật UI.
+5. Tắt Internet sau lần tải online: bài học, localStorage progress, history, studyTime, dashboard và app shell vẫn hoạt động; Auth phải hiển thị thông báo cần Internet thay vì làm ứng dụng lỗi.
+
+### Chính sách quyền riêng tư placeholder
+
+Màn hình **Chính sách quyền riêng tư** trong app là placeholder cần chủ sở hữu rà soát trước khi public chính thức. Nó mô tả đúng phạm vi hiện tại: tài khoản là của phụ huynh; Firebase có thể xử lý email/tên phục vụ login/xác thực; số điện thoại chỉ được xử lý khi phụ huynh tự liên kết qua Firebase/Google; progress/history/studyTime vẫn chỉ lưu cục bộ. Cần bổ sung đơn vị vận hành, thông tin liên hệ, thời hạn lưu trữ, quyền của người dùng và Điều khoản sử dụng phù hợp trước khi công bố.
 
 ## Cài ứng dụng
 

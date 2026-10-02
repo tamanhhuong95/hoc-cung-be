@@ -6,6 +6,10 @@
 *.key
 *.pfx
 *.p12
+serviceAccount.json
+service-account*.json
+firebase-adminsdk-*.json
+firebase-config.local.js
 
 # Editor and operating-system files
 .vscode/
