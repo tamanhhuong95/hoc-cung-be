@@ -1,0 +1,26 @@
+{
+  "name": "Học Cùng Bé",
+  "short_name": "Học Cùng Bé",
+  "description": "Ứng dụng học tập vui nhộn dành cho học sinh tiểu học.",
+  "lang": "vi",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#7164df",
+  "background_color": "#fbfcff",
+  "start_url": "./",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

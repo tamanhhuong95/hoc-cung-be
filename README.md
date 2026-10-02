@@ -2,6 +2,8 @@
 
 Website giáo dục tĩnh bằng HTML, CSS và JavaScript thuần cho học sinh tiểu học.
 
+**Website production:** `https://tamanhhuong95.github.io/hoc-cung-be/`
+
 ## Cách chạy
 
 Mở tệp `index.html` bằng trình duyệt web hiện đại (Chrome, Edge, Firefox hoặc Safari). Không cần cài Node.js, npm hay máy chủ backend.
@@ -25,3 +27,11 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** với phép tính xác nhận, dashboard tiến độ 6 chuyên đề, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline.
+
+## Cài ứng dụng
+
+- **Android / Chrome / Edge trên máy tính:** Khi trình duyệt hỗ trợ, nút **📲 Cài Học Cùng Bé** sẽ xuất hiện ở trang chủ. Chọn nút này rồi xác nhận lời nhắc cài đặt của trình duyệt.
+- **iPhone / iPad:** Mở website bằng Safari, nhấn **Chia sẻ** rồi chọn **Thêm vào Màn hình chính**. Website hiển thị hướng dẫn nhỏ một lần và có thể đóng hướng dẫn này.
+- Khi đã mở ở chế độ ứng dụng độc lập (standalone), nút cài và hướng dẫn iOS sẽ tự ẩn.
+- PWA không gửi dữ liệu học tập lên máy chủ. Tiến độ, âm thanh, lịch sử và thời gian học vẫn dùng `localStorage` của trình duyệt trên thiết bị đó.

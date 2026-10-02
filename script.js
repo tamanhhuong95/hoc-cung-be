@@ -7,6 +7,7 @@ const PROGRESS_VERSION = 2;
 const DEFAULT_COUNT = 10;
 const DEFAULT_UNLOCK_SCORE = 70;
 const AUDIO_SETTINGS_KEY = "hoc-cung-be:audio-settings";
+const IOS_INSTALL_HINT_DISMISSED_KEY = "hoc-cung-be:ios-install-hint-dismissed";
 
 const TOPICS = {
   counting: { title: "Số và đếm", icon: "🔟", color: "blue", description: "Nhận biết số, đếm và sắp xếp các số." },
@@ -227,6 +228,30 @@ function playCorrectEffect() { elements.confetti.classList.remove("is-playing");
 function renderResult(progress) { const item = quiz.level; const currentStars = starsFor(quiz.score, item); const levels = LEVELS_BY_TOPIC[item.topic]; const next = levels[levels.findIndex((x) => x.id === item.id) + 1]; const nextOpen = next && levelUnlocked(progress, next); const passed = quiz.score >= item.unlockScore; const praise = resultPraise(quiz.score); elements.resultMessage.textContent = praise; setMascotState(elements.resultMascot, elements.resultMascotMessage, currentStars ? "celebrate" : "encourage", currentStars ? praise : "Mình cùng luyện thêm nhé!"); renderEarnedStars(currentStars); elements.starNote.textContent = currentStars ? `Bé nhận được ${currentStars} sao trong level này!` : "🌱 Mỗi lần luyện tập, bé sẽ tiến bộ hơn!"; elements.correctCount.textContent = `Con đã làm đúng ${quiz.correct} / ${item.questionCount} câu`; elements.finalScore.textContent = `Điểm: ${quiz.score} / 100`; elements.unlockNote.textContent = nextOpen ? `🔓 Đã mở khóa Level ${levels.findIndex((x) => x.id === next.id) + 1}: ${next.title}!` : passed && !next ? "🌟 Bé đã hoàn thành tất cả level của chuyên đề này!" : `💪 Cùng luyện thêm để mở level tiếp theo nhé!`; elements.continueButton.hidden = false; elements.continueButton.textContent = nextOpen ? `Học tiếp ${next.title} →` : "Về chủ đề"; elements.continueButton.setAttribute("aria-label", nextOpen ? `Học tiếp ${next.title}` : `Về chủ đề ${TOPICS[item.topic].title}`); elements.continueButton.dataset.action = nextOpen ? "next" : "topic"; elements.topicButton.textContent = `Về ${TOPICS[item.topic].title}`; }
 function toast(message) { clearTimeout(toastTimer); elements.toast.textContent = `${message} sẽ có trong thời gian tới nhé!`; elements.toast.classList.add("is-visible"); toastTimer = setTimeout(() => elements.toast.classList.remove("is-visible"), 2800); }
 
+// ==================== PWA Install / Offline Support ====================
+let deferredInstallPrompt = null;
+const isStandaloneApp = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+const isAppleMobileDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+function updateOfflineStatus() { const status = $("#pwa-offline-status"); if (!status) return; status.hidden = navigator.onLine; status.textContent = "Bạn đang offline. Các bài học đã tải vẫn sẵn sàng."; }
+function updateInstallInterface() {
+  const installButton = $("#pwa-install-button"); const iosHint = $("#ios-install-hint");
+  if (installButton) installButton.hidden = !deferredInstallPrompt || isStandaloneApp();
+  if (iosHint) iosHint.hidden = !isAppleMobileDevice() || isStandaloneApp() || readStorage(localStorage, IOS_INSTALL_HINT_DISMISSED_KEY) === "true";
+}
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
+  window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js", { scope: "./" }).catch(() => {}));
+}
+function setupPwa() {
+  const installButton = $("#pwa-install-button"); const iosDismiss = $("#ios-install-dismiss");
+  window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); deferredInstallPrompt = event; updateInstallInterface(); });
+  window.addEventListener("appinstalled", () => { deferredInstallPrompt = null; updateInstallInterface(); });
+  installButton?.addEventListener("click", async () => { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; updateInstallInterface(); });
+  iosDismiss?.addEventListener("click", () => { writeStorage(localStorage, IOS_INSTALL_HINT_DISMISSED_KEY, "true"); updateInstallInterface(); });
+  window.addEventListener("online", updateOfflineStatus); window.addEventListener("offline", updateOfflineStatus);
+  updateOfflineStatus(); updateInstallInterface(); registerServiceWorker();
+}
+
 // ==================== Navigation ====================
 document.querySelectorAll("[data-go]").forEach((button) => { button.onclick = () => showScreen(button.dataset.go); });
 document.querySelectorAll("[data-coming-soon]").forEach((button) => { button.onclick = () => toast(button.dataset.comingSoon); });
@@ -245,7 +270,7 @@ elements.parentDeleteNext.onclick = () => { elements.parentDeleteStep.textConten
 elements.parentDeleteConfirmButton.onclick = () => { if (elements.parentDeleteCode.value.trim() !== "XOA") { elements.parentDeleteStep.textContent = "Mã xác nhận chưa đúng. Vui lòng nhập chính xác XOA."; elements.parentDeleteCode.focus(); return; } writeStorage(localStorage, STORAGE_KEY, JSON.stringify(defaultProgress())); quiz = null; resetDeleteConfirmation(); renderParentDashboard(); renderHeader(); };
 document.addEventListener("visibilitychange", () => { if (document.hidden) stopStudyTracking(); else if (!screens.quiz.hidden) startStudyTracking(); });
 window.addEventListener("pagehide", () => stopStudyTracking());
-$("#current-year").textContent = new Date().getFullYear(); loadProgress(); updateAudioControls(); renderHeader();
+$("#current-year").textContent = new Date().getFullYear(); loadProgress(); updateAudioControls(); renderHeader(); setupPwa();
 
 // ==================== Non-destructive self-tests A-F ====================
 function runProgressTests() {
@@ -332,3 +357,17 @@ function runParentDashboardTests() {
   return { passed: results.every((item) => item.passed), results };
 }
 window.__hocCungBeParentDashboardTests = runParentDashboardTests();
+
+// ==================== Non-destructive PWA checks ====================
+function runPwaTests() {
+  const manifest = document.querySelector('link[rel="manifest"]'); const installButton = $("#pwa-install-button"); const iosHint = $("#ios-install-hint");
+  const results = {
+    relativeManifest: manifest?.getAttribute("href") === "manifest.webmanifest",
+    relativeServiceWorkerScope: typeof registerServiceWorker === "function" && !/^\//.test("service-worker.js"),
+    installControlsPresent: Boolean(installButton && iosHint),
+    progressKeysUnchanged: STORAGE_KEY === "hoc-cung-be:math-grade-1-progress" && AUDIO_SETTINGS_KEY === "hoc-cung-be:audio-settings",
+    localFileSafe: location.protocol !== "file:" || typeof registerServiceWorker === "function",
+  };
+  return { passed: Object.values(results).every(Boolean), results };
+}
+window.__hocCungBePwaTests = runPwaTests();
