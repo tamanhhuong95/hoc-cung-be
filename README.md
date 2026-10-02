@@ -33,7 +33,7 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v12`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v13`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Firebase `onAuthStateChanged()` là nguồn sự thật cho Guest Trial Mode/Full Learning Mode; ứng dụng không tự đánh dấu login trong localStorage. Parent Dashboard vẫn chỉ cần Parent PIN đúng và không phụ thuộc Firebase login.
 - Tiến độ dùng kiến trúc **local-first**: quiz luôn ghi `localStorage` trước, sau đó mới đồng bộ nền/thủ công với Cloud Firestore khi phụ huynh đã đăng nhập và có mạng. Firestore lỗi không chặn bài học, không xóa local và không reset progress.
 - Firestore dùng `users/{uid}` cho profile tối thiểu và `users/{uid}/progress/math-grade-1` cho Toán lớp 1. Cấu trúc này có thể mở rộng bằng các document như `math-grade-2`, `vietnamese-grade-1` hoặc `english-grade-1`.
@@ -43,13 +43,13 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Study time có thêm `studyTimeByDate`; mỗi ngày merge bằng MAX để tránh double count khi cùng dữ liệu đã xuất hiện ở hai phía. Tổng cũ được giữ trong `legacySeconds`, vì vậy migration không làm mất `studyTime.totalSeconds` cũ và vẫn giữ `progressVersion: 2`.
 - Auto sync chạy khi đăng nhập, hoàn thành quiz, app chuyển background, mở/cập nhật Parent Dashboard và khi mạng trở lại nếu còn dữ liệu pending. Thay đổi thường được debounce 5 giây; không ghi từng câu hoặc từng giây.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
-- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v12` và không xử lý/cache Firebase Auth, Firestore API, Google API, Firebase CDN hoặc reCAPTCHA request.
+- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v13` và không xử lý/cache Firebase Auth, Firestore API, Google API, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
 Thêm một level bằng cách thêm một object vào `LEVELS` trong `script.js`, gồm tối thiểu `id`, `topic`, `title`, `type`, `min`, `max` và `order`. Có thể cấu hình thêm `questionCount`, `unlockScore`, `imageMode`, `visualSet` và `hint`. Không đổi ID của level đã phát hành để giữ tiến độ cũ. Nếu thêm loại `type` mới, bổ sung generator tương ứng trong `generateQuestion()`.
 
-Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeFiveQuestionTests` (A–O), `window.__hocCungBeClockTests` (A–J và các mốc bổ sung), `window.__hocCungBeGuestTrialTests` (K–S), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
+Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeFiveQuestionTests` (A–O), `window.__hocCungBeClockTests` (A–J và các mốc bổ sung), `window.__hocCungBeGuestTrialTests` (K–S), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–O), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
 
 ## Parent PIN và góp ý phụ huynh
 
@@ -97,22 +97,36 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 2. Mở tab **Sign-in method**.
 3. Chọn **Email/Password**, bật tùy chọn **Email/Password**, sau đó nhấn **Save**.
 4. Trong **Authentication → Settings**, rà soát phần email/action URLs và tính năng bảo vệ email enumeration nếu Firebase Console hiển thị chúng.
-5. Sau khi deploy config thật, đăng ký bằng form **Đăng ký tài khoản phụ huynh**. Ứng dụng gọi Firebase `createUserWithEmailAndPassword`, cập nhật họ tên, sau đó gọi `sendEmailVerification`.
-6. Phụ huynh chưa xác minh email vẫn có thể cho bé học. Nút **Gửi lại email xác minh** nằm trong **Tài khoản của tôi**.
+5. Sau khi deploy config thật, đăng ký bằng form **Đăng ký tài khoản phụ huynh**. Ứng dụng gọi Firebase `createUserWithEmailAndPassword`, cập nhật họ tên, gọi `sendEmailVerification`, rồi cập nhật cùng document profile `users/{uid}`. Nếu Firestore tạm lỗi, email xác minh và tài khoản Auth vẫn hoạt động; profile sẽ được thử cập nhật lại khi auth state chạy lần sau.
+6. Kiểm tra hộp thư của email vừa đăng ký và mở link **Email address verification**. Phụ huynh chưa xác minh vẫn có thể cho bé học và đồng bộ tiến độ.
+7. Quay lại **Tài khoản của tôi** rồi bấm **Kiểm tra lại trạng thái xác minh**. Ứng dụng gọi `reload(user)`, đọc lại `auth.currentUser.emailVerified`, cập nhật UI và trường `emailVerified`/`updatedAt` trong Firestore profile.
+8. Nếu chưa nhận được thư, bấm **Gửi lại email xác minh**. Nút có cooldown 45 giây; Firebase `auth/too-many-requests` được hiển thị bằng thông báo tiếng Việt thân thiện. Token xác minh không được ứng dụng lưu.
 
 ### 4. Authorized domains cho GitHub Pages và local
 
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v12` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v13` cập nhật app shell.
+5. Luồng hiện tại dùng action URL mặc định của Firebase nên không thêm `actionCodeSettings` không cần thiết. Nếu sau này cấu hình action URL tùy chỉnh, URL production phải là `https://tamanhhuong95.github.io/hoc-cung-be/`, không dùng localhost trong production.
 
-### 5. Quên/đổi mật khẩu
+### 5. Quên mật khẩu, đổi mật khẩu và re-authentication
 
-- Form **Quên mật khẩu** gọi Firebase `sendPasswordResetEmail()`. Dù Firebase trả kết quả gì, UI trả lời theo hướng không tiết lộ tài khoản: “Nếu email này đã được đăng ký, hướng dẫn đặt lại mật khẩu sẽ được gửi tới hộp thư.”
-- Form **Đổi mật khẩu** yêu cầu phụ huynh nhập mật khẩu hiện tại, gọi Firebase `reauthenticateWithCredential()` rồi `updatePassword()`. Điều này xử lý yêu cầu recent login của Firebase mà không lưu mật khẩu vào localStorage.
+- **Test quên mật khẩu:** mở màn hình **Quên mật khẩu**, nhập email hợp lệ và bấm gửi. Form gọi `sendPasswordResetEmail()`. Dù email có tồn tại hay Firebase trả lỗi enumeration, UI dùng cùng thông báo: “Nếu email này đã được đăng ký, hướng dẫn đặt lại mật khẩu sẽ được gửi tới hộp thư.”
+- **Test đổi mật khẩu:** đăng nhập → **Tài khoản của tôi** → **Đổi mật khẩu** → nhập mật khẩu hiện tại, mật khẩu mới tối thiểu 6 ký tự và nhập lại mật khẩu mới.
+- Trước `updatePassword()`, ứng dụng luôn tạo `EmailAuthProvider.credential(user.email, currentPassword)` và gọi `reauthenticateWithCredential()`. Mật khẩu hiện tại sai được hiển thị là “Mật khẩu hiện tại chưa đúng.”; lỗi recent-login được xử lý bằng chính flow re-auth này.
+- Sau khi đổi thành công, cả ba input mật khẩu được xóa. Mật khẩu hiện tại/mới, reset code và verification code không được ghi vào localStorage, Firestore hoặc log.
 
-### 6. Bật Phone provider và kiểm thử bằng test phone number (không gửi SMS thật)
+### 6. Tùy chỉnh email template
+
+Trong Firebase Console, vào **Authentication → Templates** và rà soát:
+
+- **Email address verification**
+- **Password reset**
+
+Có thể chỉnh sender name, subject và message theo thương hiệu Học Cùng Bé. Không cần bật billing chỉ để dùng các email template này. Firebase có quota/chống lạm dụng email theo project và có thể trả `auth/too-many-requests`; không nên gửi lặp liên tục khi test.
+
+### 7. Bật Phone provider và kiểm thử bằng test phone number (không gửi SMS thật)
 
 1. Trong **Build → Authentication → Sign-in method**, chọn **Phone** và bật provider nếu Firebase Console cho phép.
 2. Trước khi dùng số thật, mở khu vực **Phone numbers for testing** / **Test phone numbers** trong phần Phone provider.
@@ -122,18 +136,20 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 6. Code chuẩn hóa `0912345678` thành `+84912345678`, tạo `RecaptchaVerifier` invisible theo yêu cầu Firebase Web, lấy credential từ OTP và gọi `linkWithCredential()` cho user đang đăng nhập. Kết quả là một Firebase user có cả email/password và phone number, không phải hai tài khoản riêng.
 7. OTP chỉ tồn tại trong Firebase/browser flow trong lúc xác minh; ứng dụng không ghi OTP vào localStorage.
 
-### 7. SMS production và billing
+### 8. SMS production và billing
 
 - Không tự bật gửi SMS production và không tự thay đổi billing. Phone Auth/SMS có thể yêu cầu kích hoạt billing hoặc chịu hạn mức/quota tùy Firebase project, quốc gia và chính sách Firebase tại thời điểm cấu hình.
 - Chỉ dùng **test phone numbers** ở bước hiện tại để không phát sinh SMS thật. Trước khi bật production, chủ dự án cần tự rà soát pricing, quota, reCAPTCHA và yêu cầu billing ngay trong Firebase Console.
 
-### 8. Kiểm tra sau khi cấu hình
+### 9. Kiểm tra sau khi cấu hình
 
 1. Mở trang production khi có Internet và hard reload một lần sau deploy.
-2. Mở DevTools Console và chạy `window.__hocCungBeParentAuthTests`; xác nhận A–N đều `passed: true`. Bộ test không tạo account, không gửi email, không gửi SMS.
-3. Thử đăng ký test, đăng nhập, quên mật khẩu, gửi xác minh email và liên kết **test phone number**.
-4. Reload/PWA mở lại để kiểm tra `onAuthStateChanged()` tự cập nhật UI.
-5. Tắt Internet sau lần tải online: bài học, localStorage progress, history, studyTime, dashboard và app shell vẫn hoạt động; Auth phải hiển thị thông báo cần Internet thay vì làm ứng dụng lỗi.
+2. Mở DevTools Console và chạy `window.__hocCungBeParentAuthTests`; xác nhận A–O đều `passed: true`. Bộ test dùng mock helper, không tạo account, không gửi email và không gửi SMS.
+3. Test đăng ký và xác nhận UI báo email đích; mở email verification, quay lại app và bấm **Kiểm tra lại trạng thái xác minh**.
+4. Test resend, quên mật khẩu và đổi mật khẩu/re-authentication theo các bước trên.
+5. Kiểm tra Firestore `users/{uid}` chỉ có một profile và `emailVerified` đổi từ `false` sang `true` với `updatedAt` mới.
+6. Reload/PWA mở lại để kiểm tra `onAuthStateChanged()` tự cập nhật UI và Cloud Sync vẫn chạy dù email chưa verified.
+7. Tắt Internet sau lần tải online: bài học, localStorage progress, history, studyTime, dashboard và app shell vẫn hoạt động; thao tác tài khoản phải báo “Cần kết nối Internet để thực hiện thao tác này.” thay vì làm ứng dụng lỗi.
 
 ## Bật Cloud Firestore và đồng bộ tiến độ
 
@@ -209,7 +225,7 @@ Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID
 - **`failed-precondition` / database chưa tồn tại**: vào **Build → Firestore Database → Create database**.
 - **Sync báo lỗi nhưng quiz vẫn chạy**: đây là hành vi local-first dự kiến; không xóa localStorage, sửa cấu hình/mạng/rules rồi bấm sync lại.
 - **Thiết bị mới chưa thấy dữ liệu**: xác nhận dùng cùng Firebase account, có mạng, document đúng UID tồn tại và nhấn manual sync.
-- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v12`.
+- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v13`.
 - **History trùng từ dữ liệu rất cũ**: record không ID chỉ được dedupe khi năm field fingerprint giống hoàn toàn; timestamp khác được coi là lượt học khác.
 
 ### 8. Self-test Cloud Sync A–Q

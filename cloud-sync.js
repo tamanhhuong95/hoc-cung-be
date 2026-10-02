@@ -113,10 +113,7 @@
   async function configure(options) {
     authGeneration += 1; firestore = options?.firestore || null; db = options?.db || null; user = options?.user || null; installUi();
     if (!user) { clearTimeout(debounceTimer); renderStatus("guest"); return; }
-    if (firestore && db) {
-      try { const profileRef = firestore.doc(db, "users", user.uid); await firestore.setDoc(profileRef, { uid: user.uid, displayName: user.displayName || null, email: user.email || null, emailVerified: Boolean(user.emailVerified), createdAt: user.metadata?.creationTime || null, updatedAt: firestore.serverTimestamp() }, { merge: true }); } catch (error) { console.warn("Không thể cập nhật profile Firestore.", error); }
-      await syncNow("login");
-    }
+    if (firestore && db) await syncNow("login");
   }
 
   function disconnect() { authGeneration += 1; user = null; clearTimeout(debounceTimer); renderStatus("guest"); }

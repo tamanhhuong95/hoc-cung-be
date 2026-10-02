@@ -4,6 +4,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 
@@ -11,6 +12,8 @@ ROOT = pathlib.Path(__file__).resolve().parent
 RUNNER = ROOT / "__browser-test-runner.html"
 PROFILE = ROOT / "__browser-test-profile"
 CHROME = pathlib.Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 probe = r'''
 <script>
@@ -26,7 +29,7 @@ setTimeout(async () => {
   }
   const all = Object.values(suites).flatMap((suite) => Array.isArray(suite) ? suite : (suite?.results || []));
   const failed = all.filter((item) => item && item.passed === false);
-  document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ suiteCount: names.length, total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, cloud: suites.__hocCungBeCloudSyncTests })}</pre>`;
+  document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ suiteCount: names.length, total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, auth: suites.__hocCungBeParentAuthTests, cloud: suites.__hocCungBeCloudSyncTests })}</pre>`;
 }, 4000);
 </script>
 '''
