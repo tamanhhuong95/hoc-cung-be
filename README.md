@@ -14,36 +14,36 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 
 - Trang chủ chọn lớp 1 đến lớp 5; lớp 2–5 thông báo sắp ra mắt.
 - Lớp 1 gồm Toán, Tiếng Việt, Tiếng Anh và Trò chơi tư duy; chỉ Toán hoạt động.
-- Toán lớp 1 hiện có 12 chuyên đề và 67 level: Số và đếm, So sánh số, Phép cộng, Phép trừ, Điền số, Hình học, Số đến 20, Số đến 100, Bài toán có lời văn, Xem đồng hồ, Đo độ dài và Tiền Việt Nam.
+- Toán lớp 1 hiện có 12 chuyên đề và 109 level: Số và đếm, So sánh số, Phép cộng, Phép trừ, Điền số, Hình học, Số đến 20, Số đến 100, Bài toán có lời văn, Xem đồng hồ, Đo độ dài và Tiền Việt Nam.
 - Hệ thống `TOPICS` và `LEVELS` là dữ liệu cấu hình động: mỗi chuyên đề có thể có số level bất kỳ (0, 4, 6, 8, 20 hoặc nhiều hơn) mà không cần sửa dashboard hay giao diện.
 - Các helper `getLevelsByTopic`, `getLevelCountByTopic`, `getLevelIndexInTopic`, `getNextLevelInTopic` và `getTopicProgress` dùng chung cho chọn level, mở khóa, Học tiếp và dashboard.
 - Có object library emoji offline `OBJECT_LIBRARY`/`VISUAL_SETS`: con mèo, con chó, con cá, con bướm, quả táo, quả cam, chiếc bóng, cây bút, viên kẹo, bông hoa và ngôi sao. Text câu hỏi, mẹo nhỏ và giọng đọc dùng cùng object nên luôn khớp hình minh họa.
 - Câu đếm, cộng bằng hình ảnh và trừ bằng hình ảnh có object lớn, tự xuống hàng; phép cộng hiển thị hai nhóm, phép trừ đánh dấu rõ nhóm bị bớt.
-- Mỗi level có 10 câu hỏi và 4 đáp án. Chuyên đề Xem đồng hồ có 10 level tăng dần: nhận biết kim, giờ đúng, giờ rưỡi, 15 phút, 5 phút, từng phút, chọn mặt đồng hồ, kim giây, đọc giờ-phút-giây và thử thách tổng hợp. Bài lời văn dùng emoji theo đúng đồ vật trong câu; đồng hồ, thanh độ dài và thẻ tiền học tập đều được vẽ offline bằng HTML/CSS.
-- Level đầu tiên mở sẵn. Level kế tiếp mở khi **điểm tốt nhất** của level trước đạt từ 70/100; sau khi đã mở, level luôn giữ trạng thái mở.
+- Mỗi level mặc định có 5 câu hỏi và 4 đáp án, dùng chung hằng số `DEFAULT_QUESTION_COUNT = 5`. Mỗi câu đúng ngay lần đầu tương ứng 20 điểm; 1/5–5/5 lần lượt là 20–100 điểm. Chuyên đề Xem đồng hồ giữ 10 level tăng dần: nhận biết kim, giờ đúng, giờ rưỡi, 15 phút, 5 phút, từng phút, chọn mặt đồng hồ, kim giây, đọc giờ-phút-giây và thử thách tổng hợp. Bài lời văn dùng emoji theo đúng đồ vật trong câu; đồng hồ, thanh độ dài và thẻ tiền học tập đều được vẽ offline bằng HTML/CSS.
+- Level đầu tiên mở sẵn. Level kế tiếp mở khi **điểm tốt nhất** của level trước đạt từ 80/100, tương đương đúng ít nhất 4/5 câu; sau khi đã mở, level luôn giữ trạng thái mở.
 - **Guest Trial Mode:** người chưa đăng nhập được xem toàn bộ topic/level và hoàn thành tối đa 2 level khác nhau trên toàn ứng dụng, miễn level hợp lệ theo tiến độ. Danh sách được lưu riêng tại `hoc-cung-be:guest-trial`; làm lại cùng level không tăng lượt và không lưu email, mật khẩu hay token.
-- Auth gate và khóa tiến độ là hai trạng thái riêng: sau khi guest đã dùng 2/2, level thứ ba nhận khóa tài khoản `🔐`; user Firebase đã đăng nhập không bị giới hạn trial nhưng vẫn nhận khóa tiến độ `🔒` nếu chưa đạt điều kiện 70%. `startQuiz()` kiểm tra cùng helper nên không thể bỏ qua gate bằng gọi trực tiếp.
+- Auth gate và khóa tiến độ là hai trạng thái riêng: sau khi guest đã dùng 2/2, level thứ ba nhận khóa tài khoản `🔐`; user Firebase đã đăng nhập không bị giới hạn trial nhưng vẫn nhận khóa tiến độ `🔒` nếu chưa đạt điều kiện 80%. `startQuiz()` kiểm tra cùng helper nên không thể bỏ qua gate bằng gọi trực tiếp.
 - Sau level thử thứ hai, kết quả, điểm, sao, mascot và lời khen vẫn hiển thị; nút tiếp theo đổi thành **🔐 Đăng nhập để học tiếp** cùng nút đăng nhập/đăng ký. Login/logout không xóa trial, progress, history, studyTime hoặc Parent PIN.
-- Phép cộng vẫn có các nội dung: cộng trong phạm vi 5, cộng trong phạm vi 10, tìm số còn thiếu và cộng bằng hình ảnh.
+- Thư viện level được mở rộng có mục tiêu: Số và đếm 12 level, So sánh 8, Phép cộng 14, Phép trừ 14, Điền số 8, Hình học 7, Số đến 20 có 8, Số đến 100 có 8, Bài toán lời văn 8, Xem đồng hồ 10, Đo độ dài 6 và Tiền Việt Nam 6. Phép cộng/trừ được tách thành các bài ngắn như cộng/trừ 0–5, hình ảnh, số còn thiếu, phạm vi 20, qua 10, lời văn và ôn tập.
 - Có sao, điểm, số bài hoàn thành, hiệu ứng trả lời đúng, phản hồi trả lời sai, kết quả tốt nhất từng level và nút Học tiếp/Học lại/Về chủ đề/Về trang chủ.
-- Toàn bộ tiến độ được lưu trong `localStorage` của trình duyệt, vẫn dùng `progressVersion: 2`, tự migrate dữ liệu cũ và tự phục hồi nếu dữ liệu bị lỗi. ID của các level cũ được giữ nguyên; khi thêm level, level mới chỉ nhận tiến độ mặc định còn `bestScore`, `bestCorrect`, `bestStars`, `attempts`, `completed`, `unlocked`, `lastPlayedAt`, history và studyTime cũ vẫn được giữ.
+- Toàn bộ tiến độ được lưu trong `localStorage` của trình duyệt, vẫn dùng `progressVersion: 2`, tự migrate dữ liệu cũ và tự phục hồi nếu dữ liệu bị lỗi. ID của các level cũ được giữ nguyên; khi thêm level, level mới chỉ nhận tiến độ mặc định còn `bestScore`, `bestCorrect`, `bestStars`, `attempts`, `completed`, `unlocked`, `lastPlayedAt`, history và studyTime cũ vẫn được giữ. History mới lưu thêm `questionCount: 5`; best result mới lưu `bestQuestionCount: 5`. Record cũ thiếu hai field này được hiểu là bài 10 câu, nên dashboard vẫn hiển thị đúng `8/10` thay vì `8/5` và không thay đổi `bestScore` cũ.
 - Có nút đọc câu hỏi tiếng Việt và cài đặt bật/tắt âm thanh. SpeechSynthesis đọc số đến 100, tiền theo dạng “một nghìn đồng” và thời gian tự nhiên đến giây, ví dụ “tám giờ hai mươi bốn phút ba mươi lăm giây”; âm thanh đúng/sai/hoàn thành được tạo offline bằng Web Audio API.
 - Có mascot 🐻 Bạn Gấu tạo bằng emoji và CSS, với trạng thái chờ, vui mừng khi đúng, khuyến khích khi cần thử lại và ăn mừng khi hoàn thành bài.
-- Màn hình hoàn thành hiển thị số câu đúng, điểm trên thang 100, lời khen tích cực và sao xuất hiện tuần tự. Quy tắc sao dùng chung với hệ thống tiến độ: dưới 70 điểm là 0 sao, 70–89 là 1 sao, 90–99 là 2 sao và 100 là 3 sao.
+- Màn hình hoàn thành hiển thị số câu đúng trên mẫu số thực tế, điểm trên thang 100, lời khen tích cực và sao xuất hiện tuần tự. Quy tắc sao: dưới 60 điểm là 0 sao, 60 điểm là 1 sao, 80 điểm là 2 sao và 100 điểm là 3 sao; chỉ từ 80 điểm mới mở level tiếp theo.
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v9`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v10`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Firebase `onAuthStateChanged()` là nguồn sự thật cho Guest Trial Mode/Full Learning Mode; ứng dụng không tự đánh dấu login trong localStorage. Parent Dashboard vẫn chỉ cần Parent PIN đúng và không phụ thuộc Firebase login.
 - Bản hiện tại **chưa đồng bộ cloud**. Sau đăng nhập, progress, `bestScore`, sao, attempts, history và studyTime vẫn tiếp tục dùng cùng dữ liệu localStorage trên thiết bị; đăng nhập hoặc đăng xuất không xóa tiến độ học thử hay Parent PIN. Thông điệp sản phẩm chỉ nói đăng nhập để mở toàn bộ bài học và chuẩn bị đồng bộ giữa các thiết bị.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
-- Firebase Authentication dùng Firebase Web config trong `firebase-config.js`. SDK browser được phép khởi tạo để Firebase Auth phục hồi persistence nếu tài nguyên SDK sẵn có; nếu không có mạng/tài nguyên SDK, app vẫn ở Guest Trial Mode. Service worker cache app shell hiện là `hoc-cung-be-v9` và không xử lý/cache Firebase Auth, Google API, Firebase CDN hoặc reCAPTCHA request.
+- Firebase Authentication dùng Firebase Web config trong `firebase-config.js`. SDK browser được phép khởi tạo để Firebase Auth phục hồi persistence nếu tài nguyên SDK sẵn có; nếu không có mạng/tài nguyên SDK, app vẫn ở Guest Trial Mode. Service worker cache app shell hiện là `hoc-cung-be-v10` và không xử lý/cache Firebase Auth, Google API, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
 Thêm một level bằng cách thêm một object vào `LEVELS` trong `script.js`, gồm tối thiểu `id`, `topic`, `title`, `type`, `min`, `max` và `order`. Có thể cấu hình thêm `questionCount`, `unlockScore`, `imageMode`, `visualSet` và `hint`. Không đổi ID của level đã phát hành để giữ tiến độ cũ. Nếu thêm loại `type` mới, bổ sung generator tương ứng trong `generateQuestion()`.
 
-Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeClockTests` (A–J và các mốc bổ sung), `window.__hocCungBeGuestTrialTests` (K–S), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
+Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeFiveQuestionTests` (A–O), `window.__hocCungBeClockTests` (A–J và các mốc bổ sung), `window.__hocCungBeGuestTrialTests` (K–S), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
 
 ## Parent PIN và góp ý phụ huynh
 
@@ -99,7 +99,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v9` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v10` cập nhật app shell.
 
 ### 5. Quên/đổi mật khẩu
 
