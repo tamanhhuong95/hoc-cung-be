@@ -1,11 +1,12 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v10";
+const CACHE_NAME = "hoc-cung-be-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./script.js",
+  "./cloud-sync.js",
   "./firebase-config.js",
   "./feedback-config.js",
   "./parent-auth.js",
@@ -37,7 +38,7 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  // Firebase Authentication and reCAPTCHA must remain network-only.
+  // Firebase Authentication, Cloud Firestore, SDK CDN and reCAPTCHA must remain network-only.
   if (url.hostname.endsWith("firebaseapp.com") || url.hostname.endsWith("googleapis.com") || url.hostname.endsWith("gstatic.com")) return;
   if (url.origin !== self.location.origin) return;
 

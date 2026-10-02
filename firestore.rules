@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function ownsUserData(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validProfile(userId) {
+      return request.resource.data.keys().hasOnly([
+        'uid', 'displayName', 'email', 'emailVerified', 'createdAt', 'updatedAt'
+      ])
+      && request.resource.data.uid == userId
+      && request.resource.data.emailVerified is bool;
+    }
+
+    function validProgress() {
+      return request.resource.data.keys().hasOnly([
+        'progressVersion', 'levels', 'history', 'studyTime', 'totalCompleted',
+        'updatedAt', 'syncReason'
+      ])
+      && request.resource.data.progressVersion == 2
+      && request.resource.data.levels is map
+      && request.resource.data.history is list
+      && request.resource.data.history.size() <= 50
+      && request.resource.data.studyTime is map
+      && request.resource.data.totalCompleted is int
+      && request.resource.data.totalCompleted >= 0
+      && request.resource.data.syncReason is string;
+    }
+
+    match /users/{userId} {
+      allow read, delete: if ownsUserData(userId);
+      allow create, update: if ownsUserData(userId) && validProfile(userId);
+
+      match /progress/{courseId} {
+        allow read, delete: if ownsUserData(userId) && courseId == 'math-grade-1';
+        allow create, update: if ownsUserData(userId)
+          && courseId == 'math-grade-1'
+          && validProgress();
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -33,11 +33,17 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v10`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v12`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Firebase `onAuthStateChanged()` là nguồn sự thật cho Guest Trial Mode/Full Learning Mode; ứng dụng không tự đánh dấu login trong localStorage. Parent Dashboard vẫn chỉ cần Parent PIN đúng và không phụ thuộc Firebase login.
-- Bản hiện tại **chưa đồng bộ cloud**. Sau đăng nhập, progress, `bestScore`, sao, attempts, history và studyTime vẫn tiếp tục dùng cùng dữ liệu localStorage trên thiết bị; đăng nhập hoặc đăng xuất không xóa tiến độ học thử hay Parent PIN. Thông điệp sản phẩm chỉ nói đăng nhập để mở toàn bộ bài học và chuẩn bị đồng bộ giữa các thiết bị.
+- Tiến độ dùng kiến trúc **local-first**: quiz luôn ghi `localStorage` trước, sau đó mới đồng bộ nền/thủ công với Cloud Firestore khi phụ huynh đã đăng nhập và có mạng. Firestore lỗi không chặn bài học, không xóa local và không reset progress.
+- Firestore dùng `users/{uid}` cho profile tối thiểu và `users/{uid}/progress/math-grade-1` cho Toán lớp 1. Cấu trúc này có thể mở rộng bằng các document như `math-grade-2`, `vietnamese-grade-1` hoặc `english-grade-1`.
+- Cloud sync chỉ gửi progress level, kết quả tốt nhất, attempts, trạng thái hoàn thành/mở khóa, lịch sử, thời gian học, `totalCompleted` và `progressVersion`. Không gửi Parent PIN/PIN attempts, password, OTP, auth token, guest trial, audio settings hoặc feedback draft.
+- Khi local và cloud cùng có dữ liệu, ứng dụng merge từng field thay vì chọn một bên: điểm/sao dùng giá trị tốt hơn, kết quả đúng và mẫu số đi cùng record điểm tốt nhất, boolean dùng OR, thời gian gần nhất dùng timestamp mới hơn, attempts dùng MAX kết hợp số history đã dedupe để tránh cộng mù quáng.
+- History mới có `historyId`; history cũ được gắn fingerprint ổn định từ `levelId + score + correct + questionCount + completedAt`, dedupe và giữ tối đa 50 lượt mới nhất. Record `/10` cũ và `/5` mới giữ đúng `questionCount`.
+- Study time có thêm `studyTimeByDate`; mỗi ngày merge bằng MAX để tránh double count khi cùng dữ liệu đã xuất hiện ở hai phía. Tổng cũ được giữ trong `legacySeconds`, vì vậy migration không làm mất `studyTime.totalSeconds` cũ và vẫn giữ `progressVersion: 2`.
+- Auto sync chạy khi đăng nhập, hoàn thành quiz, app chuyển background, mở/cập nhật Parent Dashboard và khi mạng trở lại nếu còn dữ liệu pending. Thay đổi thường được debounce 5 giây; không ghi từng câu hoặc từng giây.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
-- Firebase Authentication dùng Firebase Web config trong `firebase-config.js`. SDK browser được phép khởi tạo để Firebase Auth phục hồi persistence nếu tài nguyên SDK sẵn có; nếu không có mạng/tài nguyên SDK, app vẫn ở Guest Trial Mode. Service worker cache app shell hiện là `hoc-cung-be-v10` và không xử lý/cache Firebase Auth, Google API, Firebase CDN hoặc reCAPTCHA request.
+- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v12` và không xử lý/cache Firebase Auth, Firestore API, Google API, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
@@ -83,7 +89,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 2. Mở `d:/anh hương/o 1/saoluu3012/Desktop/Học Cùng Bé/firebase-config.js`.
 3. `firebase-config.js` hiện đã chứa Firebase Web config của project `hoc-cung-be-71920`; khi Firebase Console cấp config mới, chỉ cập nhật các giá trị trong object `window.HOC_CUNG_BE_FIREBASE_CONFIG`.
 4. Không đặt vào file này: password, OTP, refresh token, reset token, service account JSON, private key, Firebase Admin SDK credential hoặc secret backend.
-5. Commit/push `firebase-config.js` chỉ sau khi kiểm tra nó đúng là **Web config**. Firebase Web config được dùng ở client theo kiến trúc Firebase Web; quyền truy cập dữ liệu cloud trong tương lai vẫn phải được bảo vệ bằng Security Rules. Project hiện chưa dùng Firestore/Realtime Database.
+5. Commit/push `firebase-config.js` chỉ sau khi kiểm tra nó đúng là **Web config**. Firebase Web config được dùng ở client theo kiến trúc Firebase Web; quyền truy cập Cloud Firestore phải được bảo vệ bằng Security Rules. Ứng dụng không dùng Realtime Database.
 
 ### 3. Bật Email/Password
 
@@ -99,7 +105,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v10` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v12` cập nhật app shell.
 
 ### 5. Quên/đổi mật khẩu
 
@@ -129,13 +135,100 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 4. Reload/PWA mở lại để kiểm tra `onAuthStateChanged()` tự cập nhật UI.
 5. Tắt Internet sau lần tải online: bài học, localStorage progress, history, studyTime, dashboard và app shell vẫn hoạt động; Auth phải hiển thị thông báo cần Internet thay vì làm ứng dụng lỗi.
 
+## Bật Cloud Firestore và đồng bộ tiến độ
+
+Code Firestore đã được scaffold an toàn nhưng **không thể tự bật database trong Firebase project**. Kiểm tra endpoint ngày **2 tháng 10 năm 2026** trả `SERVICE_DISABLED` cho `firestore.googleapis.com`, nên Cloud Firestore/API của project `hoc-cung-be-71920` hiện chưa được bật. Chủ dự án cần thực hiện các bước sau trong Firebase Console trước khi test production thật.
+
+### 1. Tạo Cloud Firestore database
+
+1. Mở Firebase Console và chọn project `hoc-cung-be-71920`.
+2. Vào **Build → Firestore Database**.
+3. Chọn **Create database**.
+4. Chọn vị trí database phù hợp với người dùng chính. Vị trí đã chọn thường không thể đổi trực tiếp về sau.
+5. Có thể chọn **Production mode** rồi publish rules trong bước kế tiếp. Không để test mode/public write hoạt động lâu dài.
+
+Nếu Firestore chưa được bật, Auth và bài học local vẫn hoạt động; trạng thái sync sẽ báo lỗi/chưa đồng bộ và dữ liệu local không bị xóa.
+
+### 2. Publish Security Rules
+
+Repository có file `firestore.rules`. Rules yêu cầu có Firebase Authentication và chỉ cho user đọc/ghi đúng cây dữ liệu mang UID của chính họ:
+
+```text
+users/{uid}
+users/{uid}/progress/{courseId}
+```
+
+Trong Firebase Console:
+
+1. Vào **Build → Firestore Database → Rules**.
+2. Sao chép toàn bộ nội dung `firestore.rules` vào editor.
+3. Nhấn **Publish**.
+4. Không dùng `allow read, write: if true` và không mở public write.
+
+Rules chỉ cho chủ tài khoản quản lý profile và progress `math-grade-1` của chính mình, đồng thời whitelist field/schema mà ứng dụng đang ghi; mọi document hoặc field ngoài cấu trúc đó bị từ chối mặc định.
+
+### 3. Cấu trúc collection/document
+
+- `users/{uid}`: `uid`, `displayName`, `email`, `emailVerified`, `createdAt`, `updatedAt`. Không có password.
+- `users/{uid}/progress/math-grade-1`: progress Toán lớp 1, history tối đa 50 record, study time và metadata đồng bộ.
+- Document ID môn học/lớp học độc lập để sau này thêm `math-grade-2`, `vietnamese-grade-1`, `english-grade-1` mà không đổi cây user.
+
+Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID tại `users/{uid}` và document `users/{uid}/progress/math-grade-1`. Không được thấy Parent PIN, PIN attempts, password, OTP, token, guest trial, audio settings hoặc feedback draft.
+
+### 4. Merge và local-first
+
+- Cloud trống + local có dữ liệu: upload local sau lần login đầu tiên.
+- Local trống + cloud có dữ liệu: tải cloud, normalize rồi ghi xuống local.
+- Hai bên đều có dữ liệu: merge theo từng field, ghi kết quả vào cả local và cloud bằng Firestore transaction.
+- `bestScore`/`bestStars`: MAX. Nếu bằng điểm, `bestCorrect` cao hơn thắng; `bestQuestionCount` đi cùng record thắng.
+- `attempts`: không cộng hai phía; dùng MAX và đối chiếu số history đã dedupe để giảm double count.
+- `completed`/`unlocked`: OR. `lastPlayedAt`: timestamp mới hơn.
+- History mới có ID phiên; history cũ dùng fingerprint ổn định và giới hạn 50.
+- Study time dùng MAX theo từng ngày; tổng legacy cũ được giữ riêng để không mất dữ liệu.
+- Logout chỉ dừng sync, không xóa local progress. Guest không ghi Firestore; sau login, progress học thử local được merge lên account. Nếu logout hoặc đổi account khi một transaction cũ còn chạy, kết quả của phiên cũ không được áp ngược xuống local của phiên mới.
+
+### 5. Test đồng bộ hai thiết bị
+
+1. Bật Firestore và publish rules trước.
+2. Trên thiết bị A, đăng nhập, hoàn thành một level rồi chờ trạng thái **Đã đồng bộ**.
+3. Trên thiết bị B, đăng nhập cùng account và nhấn **☁️ Đồng bộ tiến độ**.
+4. Kiểm tra điểm, số câu đúng/mẫu số, sao, mở khóa, history và study time xuất hiện đúng.
+5. Tạo kết quả tốt hơn ở A và kết quả thấp hơn ở B; đồng bộ hai bên và xác nhận kết quả tốt hơn không bị ghi đè.
+6. Tắt mạng, học thêm một level, xác nhận quiz vẫn hoàn thành local và trạng thái là **Không có mạng/Chưa đồng bộ**. Bật mạng lại để app sync pending.
+
+### 6. Quota và chi phí
+
+- Thiết kế không dùng realtime listener, không write từng câu và không write từng giây. Mỗi chu kỳ thường đọc một progress document và ghi tối đa profile + progress document.
+- Sync thay đổi thường được debounce 5 giây; trigger quan trọng gồm login, hoàn thành quiz, background, dashboard, manual sync và online trở lại.
+- Cloud Firestore có quota và có thể phát sinh chi phí theo số lần đọc/ghi, dung lượng và băng thông tùy plan/chính sách hiện hành. Hãy theo dõi trang Usage trong Firebase Console.
+- Repository **không bật billing tự động, không nâng plan và không tạo budget**. Chủ dự án phải tự quyết định mọi thay đổi billing. Nếu dùng billing, nên cấu hình budget/alert; budget alert không phải hard spending cap.
+
+### 7. Troubleshooting
+
+- **`permission-denied`**: kiểm tra user đã đăng nhập, UID trong path, và rules đã Publish đúng từ `firestore.rules`.
+- **`failed-precondition` / database chưa tồn tại**: vào **Build → Firestore Database → Create database**.
+- **Sync báo lỗi nhưng quiz vẫn chạy**: đây là hành vi local-first dự kiến; không xóa localStorage, sửa cấu hình/mạng/rules rồi bấm sync lại.
+- **Thiết bị mới chưa thấy dữ liệu**: xác nhận dùng cùng Firebase account, có mạng, document đúng UID tồn tại và nhấn manual sync.
+- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v12`.
+- **History trùng từ dữ liệu rất cũ**: record không ID chỉ được dedupe khi năm field fingerprint giống hoàn toàn; timestamp khác được coi là lượt học khác.
+
+### 8. Self-test Cloud Sync A–Q
+
+Mở DevTools Console và chạy:
+
+```js
+window.__hocCungBeCloudSyncTests
+```
+
+Kết quả gồm A–Q: upload local khi cloud trống, download cloud khi local trống, giữ best score theo cả hai chiều, OR unlocked/completed, history dedupe/giới hạn 50, offline/local safety, sync failure không xóa local, guest không ghi cloud, giữ trial progress sau login, logout không xóa local, payload không có Parent PIN, tương thích record `/10` và record `/5`, và token phiên auth thay đổi khi account lifecycle thay đổi. Runner `py __run_browser_tests.py` còn fail nếu có `window.error` hoặc `unhandledrejection`.
+
 ### Chính sách quyền riêng tư placeholder
 
-Màn hình **Chính sách quyền riêng tư** trong app là placeholder cần chủ sở hữu rà soát trước khi public chính thức. Nó mô tả đúng phạm vi hiện tại: tài khoản là của phụ huynh; Firebase có thể xử lý email/tên phục vụ login/xác thực; số điện thoại chỉ được xử lý khi phụ huynh tự liên kết qua Firebase/Google; progress/history/studyTime vẫn chỉ lưu cục bộ. Cần bổ sung đơn vị vận hành, thông tin liên hệ, thời hạn lưu trữ, quyền của người dùng và Điều khoản sử dụng phù hợp trước khi công bố.
+Màn hình **Chính sách quyền riêng tư** trong app là placeholder cần chủ sở hữu rà soát trước khi public chính thức. Tài khoản là của phụ huynh; Firebase có thể xử lý email/tên phục vụ login/xác thực; số điện thoại chỉ được xử lý khi phụ huynh tự liên kết qua Firebase/Google; progress/history/studyTime được lưu local-first và có thể đồng bộ Cloud Firestore khi đăng nhập. Parent PIN, password, OTP, token, guest trial và audio settings không nằm trong payload cloud. Cần bổ sung đơn vị vận hành, thông tin liên hệ, thời hạn lưu trữ, quyền của người dùng và Điều khoản sử dụng phù hợp trước khi công bố.
 
 ## Cài ứng dụng
 
 - **Android / Chrome / Edge trên máy tính:** Khi trình duyệt hỗ trợ, nút **📲 Cài Học Cùng Bé** sẽ xuất hiện ở trang chủ. Chọn nút này rồi xác nhận lời nhắc cài đặt của trình duyệt.
 - **iPhone / iPad:** Mở website bằng Safari, nhấn **Chia sẻ** rồi chọn **Thêm vào Màn hình chính**. Website hiển thị hướng dẫn nhỏ một lần và có thể đóng hướng dẫn này.
 - Khi đã mở ở chế độ ứng dụng độc lập (standalone), nút cài và hướng dẫn iOS sẽ tự ẩn.
-- PWA không gửi dữ liệu học tập lên máy chủ. Tiến độ, âm thanh, lịch sử và thời gian học vẫn dùng `localStorage` của trình duyệt trên thiết bị đó.
+- PWA luôn dùng `localStorage` làm nguồn làm việc trực tiếp. Khi phụ huynh đăng nhập và Firestore đã bật, progress/history/study time được hợp nhất lên cloud; âm thanh, Parent PIN và guest trial vẫn chỉ nằm local.
