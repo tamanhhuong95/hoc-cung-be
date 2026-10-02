@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v7";
+const CACHE_NAME = "hoc-cung-be-v8";
 const APP_SHELL = [
   "./",
   "./index.html",

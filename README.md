@@ -21,6 +21,9 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Câu đếm, cộng bằng hình ảnh và trừ bằng hình ảnh có object lớn, tự xuống hàng; phép cộng hiển thị hai nhóm, phép trừ đánh dấu rõ nhóm bị bớt.
 - Mỗi level có 10 câu hỏi và 4 đáp án. Nội dung mới có 6 level Số đến 20; 7 level Số đến 100; 4 level bài toán lời văn; 3 level xem đồng hồ; 3 level đo độ dài; và 3 level tiền Việt Nam. Bài lời văn dùng emoji theo đúng đồ vật trong câu; đồng hồ, thanh độ dài và thẻ tiền học tập đều được vẽ offline bằng HTML/CSS.
 - Level đầu tiên mở sẵn. Level kế tiếp mở khi **điểm tốt nhất** của level trước đạt từ 70/100; sau khi đã mở, level luôn giữ trạng thái mở.
+- **Guest Trial Mode:** người chưa đăng nhập vẫn xem được trang chủ, Lớp 1, Toán, toàn bộ chuyên đề và danh sách level. Hai level thử là `counting-1` và `counting-2`; mọi level khác hiển thị khóa tài khoản `🔐 Đăng nhập để học tiếp` và mở hộp đăng nhập/đăng ký khi được chọn.
+- Auth gate và khóa tiến độ là hai trạng thái riêng: guest ở level ngoài trial nhận khóa tài khoản; user Firebase đã đăng nhập nhưng chưa đạt điều kiện 70% vẫn nhận khóa tiến độ `🔒 Hoàn thành level trước ≥ 70%`. `startQuiz()` cũng kiểm tra helper `canAccessLevel()` nên không thể bỏ qua gate chỉ bằng cách gọi trực tiếp.
+- Sau khi guest hoàn thành `counting-1`, nút **Học tiếp** mở `counting-2`. Sau khi hoàn thành `counting-2`, kết quả, điểm, sao, mascot và lời khen vẫn hiển thị, nhưng luồng tiếp theo yêu cầu đăng nhập hoặc đăng ký tài khoản phụ huynh.
 - Phép cộng vẫn có các nội dung: cộng trong phạm vi 5, cộng trong phạm vi 10, tìm số còn thiếu và cộng bằng hình ảnh.
 - Có sao, điểm, số bài hoàn thành, hiệu ứng trả lời đúng, phản hồi trả lời sai, kết quả tốt nhất từng level và nút Học tiếp/Học lại/Về chủ đề/Về trang chủ.
 - Toàn bộ tiến độ được lưu trong `localStorage` của trình duyệt, vẫn dùng `progressVersion: 2`, tự migrate dữ liệu cũ và tự phục hồi nếu dữ liệu bị lỗi. ID của các level cũ được giữ nguyên; khi thêm level, level mới chỉ nhận tiến độ mặc định còn `bestScore`, `bestCorrect`, `bestStars`, `attempts`, `completed`, `unlocked`, `lastPlayedAt`, history và studyTime cũ vẫn được giữ.
@@ -30,16 +33,17 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v7`.
-- Có khu vực gọn **👤 Tài khoản phụ huynh**. Tài khoản là tùy chọn: bé vẫn học, dùng mascot/âm thanh/SpeechSynthesis, xem Parent Dashboard và lưu tiến độ localStorage khi chưa đăng nhập. Bản hiện tại chưa đồng bộ progress, history hoặc studyTime lên cloud.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v8`.
+- Có khu vực gọn **👤 Tài khoản phụ huynh**. Firebase `onAuthStateChanged()` là nguồn sự thật cho Guest Trial Mode/Full Learning Mode; ứng dụng không tự đánh dấu login trong localStorage. Parent Dashboard vẫn chỉ cần Parent PIN đúng và không phụ thuộc Firebase login.
+- Bản hiện tại **chưa đồng bộ cloud**. Sau đăng nhập, progress, `bestScore`, sao, attempts, history và studyTime vẫn tiếp tục dùng cùng dữ liệu localStorage trên thiết bị; đăng nhập hoặc đăng xuất không xóa tiến độ học thử hay Parent PIN. Thông điệp sản phẩm chỉ nói đăng nhập để mở toàn bộ bài học và chuẩn bị đồng bộ giữa các thiết bị.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
-- Firebase Authentication dùng Firebase Web config trong `firebase-config.js`; scaffold chỉ nạp SDK browser khi online. Nếu offline, phần học/PWA không bị trắng màn hình; phần Auth hiển thị thông báo cần Internet. Service worker cache app shell hiện là `hoc-cung-be-v7` và không xử lý/cache Firebase Auth hoặc reCAPTCHA request.
+- Firebase Authentication dùng Firebase Web config trong `firebase-config.js`. SDK browser được phép khởi tạo để Firebase Auth phục hồi persistence nếu tài nguyên SDK sẵn có; nếu không có mạng/tài nguyên SDK, app vẫn ở Guest Trial Mode và hai level thử vẫn dùng được từ app shell. Service worker cache app shell hiện là `hoc-cung-be-v8` và không xử lý/cache Firebase Auth, Google API, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
 Thêm một level bằng cách thêm một object vào `LEVELS` trong `script.js`, gồm tối thiểu `id`, `topic`, `title`, `type`, `min`, `max` và `order`. Có thể cấu hình thêm `questionCount`, `unlockScore`, `imageMode`, `visualSet` và `hint`. Không đổi ID của level đã phát hành để giữ tiến độ cũ. Nếu thêm loại `type` mới, bổ sung generator tương ứng trong `generateQuestion()`.
 
-Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
+Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeGuestTrialTests` (A–N), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (A–N), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
 
 ## Parent PIN và góp ý phụ huynh
 
@@ -95,7 +99,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v7` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v8` cập nhật app shell.
 
 ### 5. Quên/đổi mật khẩu
 
