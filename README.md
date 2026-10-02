@@ -30,10 +30,10 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v6`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v7`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Tài khoản là tùy chọn: bé vẫn học, dùng mascot/âm thanh/SpeechSynthesis, xem Parent Dashboard và lưu tiến độ localStorage khi chưa đăng nhập. Bản hiện tại chưa đồng bộ progress, history hoặc studyTime lên cloud.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + invisible reCAPTCHA. Mật khẩu, OTP và reset token không được ứng dụng lưu trong localStorage.
-- Firebase Authentication chỉ được nạp khi `firebase-config.js` chứa Firebase Web config thật. Nếu thiếu config hoặc offline, phần học/PWA không bị trắng màn hình; phần Auth hiển thị thông báo cần Internet hoặc cần cấu hình. Service worker cache app shell hiện là `hoc-cung-be-v6` và không xử lý/cache Firebase Auth hoặc reCAPTCHA request.
+- Firebase Authentication dùng Firebase Web config trong `firebase-config.js`; scaffold chỉ nạp SDK browser khi online. Nếu offline, phần học/PWA không bị trắng màn hình; phần Auth hiển thị thông báo cần Internet. Service worker cache app shell hiện là `hoc-cung-be-v7` và không xử lý/cache Firebase Auth hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
@@ -63,7 +63,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 
 ## Thiết lập Firebase Authentication
 
-> **Trạng thái repository ngày 2 tháng 10 năm 2026:** chưa có Firebase project/config thật, vì vậy Authentication production chưa được bật. `firebase-config.js` đang đặt `null` một cách có chủ đích; đây không phải config giả. Các bước dưới đây do chủ Firebase project thực hiện.
+> **Trạng thái repository ngày 2 tháng 10 năm 2026:** Firebase Web config cho project `hoc-cung-be-71920` đã được đặt trong `firebase-config.js`, nên website có thể khởi tạo Firebase Authentication khi online. Email/Password và Phone Auth chỉ hoạt động sau khi chủ project bật từng provider trong Firebase Console.
 
 ### 1. Tạo Firebase project
 
@@ -77,7 +77,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 
 1. Mở file `d:/anh hương/o 1/saoluu3012/Desktop/Học Cùng Bé/firebase-config.example.js` để xem cấu trúc.
 2. Mở `d:/anh hương/o 1/saoluu3012/Desktop/Học Cùng Bé/firebase-config.js`.
-3. Thay dòng `window.HOC_CUNG_BE_FIREBASE_CONFIG = null;` bằng object config Firebase Console đã cấp, có tối thiểu `apiKey`, `authDomain`, `projectId`, `appId`.
+3. `firebase-config.js` hiện đã chứa Firebase Web config của project `hoc-cung-be-71920`; khi Firebase Console cấp config mới, chỉ cập nhật các giá trị trong object `window.HOC_CUNG_BE_FIREBASE_CONFIG`.
 4. Không đặt vào file này: password, OTP, refresh token, reset token, service account JSON, private key, Firebase Admin SDK credential hoặc secret backend.
 5. Commit/push `firebase-config.js` chỉ sau khi kiểm tra nó đúng là **Web config**. Firebase Web config được dùng ở client theo kiến trúc Firebase Web; quyền truy cập dữ liệu cloud trong tương lai vẫn phải được bảo vệ bằng Security Rules. Project hiện chưa dùng Firestore/Realtime Database.
 
@@ -95,7 +95,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v6` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v7` cập nhật app shell.
 
 ### 5. Quên/đổi mật khẩu
 
