@@ -6,12 +6,13 @@
   const LOCAL_PREFIX = "hoc-cung-be:child-settings:";
   const PENDING_PREFIX = "hoc-cung-be:child-settings-pending:";
   const LEGACY_AUDIO_KEY = "hoc-cung-be:audio-settings";
-  let firestore = null, db = null, user = null, settings = defaults(), generation = 0;
+  let firestore = null, db = null, user = null, settings = null, generation = 0;
   let breakTimer = null, breakEndsAt = 0, learningStartedAt = 0;
   const $ = (selector, root = document) => root.querySelector(selector);
   const safeGet = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
   const safeSet = (key, value) => { try { localStorage.setItem(key, value); return true; } catch { return false; } };
   const parse = (value) => { try { return value ? JSON.parse(value) : null; } catch { return null; } };
+  settings = defaults();
   const activeChild = () => window.HocCungBeChildren?.getActiveChild?.() || null;
   const activeChildId = () => activeChild()?.id || null;
   const localKey = (childId = activeChildId()) => childId ? `${LOCAL_PREFIX}${childId}` : null;
@@ -179,7 +180,7 @@
     try { [rules, sw, script, authSource, css] = await Promise.all([fetch("firestore.rules", { cache: "no-store" }).then((r) => r.text()), fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()), fetch("script.js", { cache: "no-store" }).then((r) => r.text()), fetch("parent-auth.js", { cache: "no-store" }).then((r) => r.text()), fetch("styles.css", { cache: "no-store" }).then((r) => r.text())]); } catch {}
     test("A", $("#parent-account-entry")?.hidden !== false && $("#home-parent-section")?.hidden !== false && $("#header-parent-entry")?.hidden !== false);
     test("B", Boolean(document.querySelector('[data-auth-open="login"]'))); test("C", Boolean(document.querySelector('[data-auth-open="register"]'))); test("D", document.body.textContent.includes("Học thử"));
-    test("E", script.includes('data-auth-only') && script.includes('parentEntry.hidden = !currentLearningUser') && Boolean($("#parent-section-nav")));
+    test("E", Boolean(document.querySelector("[data-auth-only]")) && script.includes('document.querySelectorAll("[data-auth-only]")') && script.includes("element.hidden = !currentLearningUser") && Boolean($("#parent-section-nav")));
     test("F", Boolean($("#child-settings-section")) && Boolean($("#child-settings-form")) && document.body.textContent.includes("Đang cài đặt cho:"));
     test("G", localKey("child-A") === `${LOCAL_PREFIX}child-A` && localKey("child-A") !== localKey("child-B")); test("H", JSON.stringify(a) !== JSON.stringify(b) && a.dailyTimeLimitMinutes === 15 && b.dailyLessonLimit === 3);
     test("I", !evaluateStart(progress, a).allowed); test("J", !evaluateStart(progress, b).allowed); test("K", typeof showBreak === "function" && typeof stopLearningSession === "function");
@@ -189,7 +190,11 @@
     test("R", rules.includes("ownsUserData(userId)") && rules.includes("validChildSettings") && rules.includes("match /settings/{settingsId}") && !rules.includes("allow delete"));
     test("S", script.includes('hoc-cung-be:child-will-change') && script.includes('hoc-cung-be:child-changed') && typeof loadActive === "function" && typeof dismissBreak === "function"); test("T", typeof window.completeGuestTrialLevel === "function" || document.body.textContent.includes("2 level học thử"));
     test("U", typeof window.HocCungBeCloudSync?.syncNow === "function"); test("V", document.body.textContent.includes("Liên kết số điện thoại") || document.body.textContent.includes("Số điện thoại"));
-    test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width") && css.includes("@media (max-width: 760px)") && css.includes(".setting-card { grid-template-columns: 1fr")); test("X", sw.includes("hoc-cung-be-v19") && sw.includes('"./child-settings.js"') && sw.includes('"./data/vietnamese-grade-1.js"') && document.querySelector('link[rel="manifest"]'));
+    test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width") && css.includes("@media (max-width: 760px)") && css.includes(".setting-card { grid-template-columns: 1fr")); test("X", sw.includes("hoc-cung-be-v20") && sw.includes('"./child-settings.js"') && sw.includes('"./data/vietnamese-grade-1.js"') && document.querySelector('link[rel="manifest"]'));
+    const learning = window.HocCungBeLearning, originalLoadProgressByCourse = learning?.loadProgressByCourse;
+    if (learning) learning.loadProgressByCourse = (courseId) => courseId === "math-grade-1" ? { studyTime: { studyTimeByDate: { [dateKey()]: 5 * 60 } }, history: [{ completedAt: new Date().toISOString() }] } : { studyTime: { studyTimeByDate: { [dateKey()]: 7 * 60 } }, history: [{ completedAt: new Date().toISOString() }, { completedAt: new Date().toISOString() }] };
+    const combinedUsage = todayUsage(); const timeBlocked = !evaluateStart(null, { ...defaults(), dailyTimeLimitMinutes: 12 }).allowed; const lessonsBlocked = !evaluateStart(null, { ...defaults(), dailyLessonLimit: 3 }).allowed; if (learning) learning.loadProgressByCourse = originalLoadProgressByCourse;
+    test("Y", combinedUsage.seconds === 12 * 60 && combinedUsage.lessons === 3 && timeBlocked && lessonsBlocked);
     return { passed: results.every((item) => item.passed), results };
   }
   window.__hocCungBeChildSettingsTests = selfTests();

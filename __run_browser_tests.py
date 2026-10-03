@@ -18,19 +18,47 @@ if hasattr(sys.stdout, "reconfigure"):
 probe = r'''
 <script>
 const runtimeErrors = [];
-window.addEventListener("error", (event) => runtimeErrors.push({ type: "error", message: event.message || String(event.error || "Unknown error") }));
+window.addEventListener("error", (event) => runtimeErrors.push({ type: "error", message: event.message || String(event.error || "Unknown error"), source: event.filename || "", line: event.lineno || 0 }));
 window.addEventListener("unhandledrejection", (event) => runtimeErrors.push({ type: "unhandledrejection", message: String(event.reason || "Unknown rejection") }));
-setTimeout(async () => {
-  const names = Object.keys(window).filter((name) => name.startsWith("__hocCungBe") && name.endsWith("Tests"));
-  const suites = {};
-  for (const name of names) {
-    try { suites[name] = await Promise.resolve(window[name]); }
-    catch (error) { suites[name] = { passed: false, error: String(error) }; }
+window.addEventListener("load", async () => {
+  const registry = [
+    ["Math clock", "__hocCungBeClockTests"],
+    ["Math five-question lessons", "__hocCungBeFiveQuestionTests"],
+    ["Math progress compatibility", "__hocCungBeProgressTests"],
+    ["Math counting", "__hocCungBeCountingQuestionTests"],
+    ["Math geometry and sequences", "__hocCungBeGeometryAndSequenceTests"],
+    ["Audio and speech", "__hocCungBeAudioAndSpeechTests"],
+    ["Mascot and results", "__hocCungBeMascotAndResultTests"],
+    ["Parent dashboard", "__hocCungBeParentDashboardTests"],
+    ["Dynamic curriculum", "__hocCungBeDynamicLevelTests"],
+    ["Guest Trial", "__hocCungBeGuestTrialTests"],
+    ["Multi-course and Vietnamese", "__hocCungBeMultiCourseTests"],
+    ["PWA and offline", "__hocCungBePwaTests"],
+    ["Branding and icons", "__hocCungBeBrandingTests"],
+    ["Parent Auth, verification, recovery, password and phone", "__hocCungBeParentAuthTests"],
+    ["Child Profiles", "__hocCungBeChildProfilesTests"],
+    ["Cloud Sync", "__hocCungBeCloudSyncTests"],
+    ["Parent PIN and feedback", "__hocCungBeParentPinFeedbackTests"],
+    ["Child Settings and cross-course limits", "__hocCungBeChildSettingsTests"],
+  ];
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  const suites = {}, missingSuites = [];
+  const asChecks = (suite) => {
+    if (Array.isArray(suite)) return suite;
+    if (Array.isArray(suite?.results)) return suite.results;
+    if (suite && typeof suite === "object") return Object.entries(suite.results || suite).filter(([key]) => key !== "passed" && key !== "samples" && key !== "error").map(([id, passed]) => ({ id, passed: Boolean(passed) }));
+    return [];
+  };
+  for (const [suiteName, hook] of registry) {
+    if (!(hook in window)) { missingSuites.push({ suite: suiteName, hook }); continue; }
+    try { suites[suiteName] = await Promise.resolve(window[hook]); }
+    catch (error) { suites[suiteName] = { passed: false, error: String(error), results: [{ id: "suite", passed: false }] }; }
   }
-  const all = Object.values(suites).flatMap((suite) => Array.isArray(suite) ? suite : (suite?.results || []));
+  const all = Object.entries(suites).flatMap(([suite, value]) => asChecks(value).map((check) => ({ suite, ...check })));
   const failed = all.filter((item) => item && item.passed === false);
-  document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ suiteCount: names.length, total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, auth: suites.__hocCungBeParentAuthTests, children: suites.__hocCungBeChildProfilesTests, cloud: suites.__hocCungBeCloudSyncTests })}</pre>`;
-}, 4000);
+  missingSuites.forEach((item) => runtimeErrors.push({ type: "missing-suite", message: `${item.suite}: ${item.hook}` }));
+  document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ suiteCount: Object.keys(suites).length, suiteNames: Object.keys(suites), total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, missingSuites })}</pre>`;
+});
 </script>
 '''
 
@@ -39,7 +67,8 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 try:
-    RUNNER.write_text((ROOT / "index.html").read_text(encoding="utf-8").replace("</body>", probe + "</body>"), encoding="utf-8")
+    app_html = (ROOT / "index.html").read_text(encoding="utf-8")
+    RUNNER.write_text(re.sub(r"(<body\b[^>]*>)", r"\1" + probe, app_html, count=1, flags=re.I), encoding="utf-8")
     shutil.rmtree(PROFILE, ignore_errors=True)
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 8767), lambda *args, **kwargs: QuietHandler(*args, directory=str(ROOT), **kwargs))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -47,7 +76,7 @@ try:
     time.sleep(0.5)
     result = subprocess.run([
         str(CHROME), "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
-        f"--user-data-dir={PROFILE}", "--virtual-time-budget=10000", "--dump-dom",
+        f"--user-data-dir={PROFILE}", "--virtual-time-budget=15000", "--dump-dom",
         "http://127.0.0.1:8767/__browser-test-runner.html",
     ], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=40)
     match = re.search(r'<pre id="test-output">([\s\S]*?)</pre>', result.stdout)

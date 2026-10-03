@@ -73,7 +73,7 @@ let activeCourseId = "math-grade-1";
 function activeCourse() { return COURSES[activeCourseId] || COURSES["math-grade-1"]; }
 function setActiveCourse(courseId) {
   const course = COURSES[courseId]; if (!course) return false;
-  activeCourseId = courseId; document.body.dataset.course = courseId; TOPICS = course.topics; LEVELS = course.levels; LEVEL_BY_ID = Object.fromEntries(LEVELS.map((item) => [item.id, item]);
+  activeCourseId = courseId; document.body.dataset.course = courseId; TOPICS = course.topics; LEVELS = course.levels; LEVEL_BY_ID = Object.fromEntries(LEVELS.map((item) => [item.id, item]));
   selectedTopic = LEVELS[0]?.topic || ""; selectedLevelId = LEVELS[0]?.id || "";
   window.dispatchEvent(new CustomEvent("hoc-cung-be:course-changed", { detail: { courseId } }));
   return true;
@@ -652,20 +652,25 @@ window.__hocCungBeDynamicLevelTests = runDynamicLevelTests();
 // ==================== Multi-course Vietnamese Grade 1 self-tests A-X ====================
 function runMultiCourseTests() {
   const results = []; const test = (id, passed) => results.push({ id, passed: Boolean(passed) }); const previous = activeCourseId;
-  const vietnamese = COURSES["vietnamese-grade-1"]; const toneChars = "á à ả ã ạ ấ ầ ẩ ẫ ậ ế ề ể ễ ệ ố ồ ổ ỗ ộ ớ ờ ở ỡ ợ ứ ừ ử ữ ự";
+  const vietnamese = COURSES["vietnamese-grade-1"]; const toneChars = "á à ả ã ạ é è ẻ ẽ ẹ í ì ỉ ĩ ị ó ò ỏ õ ọ ú ù ủ ũ ụ ý ỳ ỷ ỹ ỵ"; const legacyIds = Array.from({ length: 20 }, (_, index) => `TV-${String(index + 1).padStart(2, "0")}`);
   test("A", Boolean(document.querySelector('[data-course="math-grade-1"]'))); test("B", Boolean(document.querySelector('[data-course="vietnamese-grade-1"]')));
-  test("C", COURSES["math-grade-1"]?.levels.length === 109); test("D", vietnamese?.name === "Tiếng Việt lớp 1"); test("E", vietnamese?.levels.length === 20);
+  test("C", COURSES["math-grade-1"]?.levels.length === 109); test("D", vietnamese?.name === "Tiếng Việt lớp 1"); test("E", vietnamese?.levels.length === 40);
   test("F", vietnamese?.levels.every((item) => item.questions?.length === 5 && item.questions.every((question) => question.options?.length === 4 && question.options.includes(question.answer))));
   const vietnameseText = JSON.stringify(vietnamese); test("G", ["ă", "â", "ê", "ô", "ơ", "ư", "đ"].every((value) => vietnameseText.includes(value)));
   test("H", ["ă", "â", "ê", "ô", "ơ", "ư", "đ"].every((value) => document.createElement("span").appendChild(document.createTextNode(value)).textContent === value)); test("I", toneChars.split(" ").every((value) => value.normalize("NFC") === value));
   test("J", typeof readCurrentQuestion === "function" && !readCurrentQuestion());
   test("K", courseProgressKey("childA", "math-grade-1") !== courseProgressKey("childA", "vietnamese-grade-1")); test("L", courseProgressKey("childA", "math-grade-1") !== courseProgressKey("childB", "math-grade-1"));
   test("M", window.HocCungBeLearning.loadProgressByCourse("math-grade-1").progressVersion === 2 && window.HocCungBeLearning.loadProgressByCourse("vietnamese-grade-1").progressVersion === 2);
-  test("N", COURSE_IDS.includes("vietnamese-grade-1")); test("O", true);
-  test("P", true); test("Q", true);
+  test("N", COURSE_IDS.includes("vietnamese-grade-1")); test("O", legacyIds.every((id, index) => vietnamese.levels[index]?.id === id));
+  const expanded = vietnamese.levels.slice(20); test("P", expanded[0]?.id === "TV-21" && expanded.at(-1)?.id === "TV-40" && expanded.length === 20); test("Q", expanded.every((item) => item.questions.length === 5));
   test("R", GUEST_TRIAL_LIMIT === 2); test("S", document.body.textContent.includes("Toán lớp 1") && document.body.textContent.includes("Tiếng Việt lớp 1"));
   test("T", COURSE_IDS.length === 2 && COURSE_IDS.every((id) => COURSES[id])); test("U", vietnamese.levels.every((item) => item.questions.every((question) => typeof question.speechText === "string" && typeof question.displayText === "string")));
-  test("V", document.querySelector('script[src="data/vietnamese-grade-1.js"]') !== null); test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width")); test("X", setActiveCourse(previous));
+  test("V", ["initial-ch-tr", "initial-s-x", "initial-r-d-gi", "digraph-ng-ngh", "digraph-g-gh", "spelling-c-k-q"].every((topic) => vietnamese.levels.some((item) => item.topic === topic)));
+  test("W", vietnamese.levels.filter((item) => item.id >= "TV-36").some((item) => item.questions.some((question) => /[🐟🐶👨👩👵✏️🪑🎒🚶🍚😴📚]/u.test(question.displayText))));
+  setActiveCourse("vietnamese-grade-1"); const oldProgress = normalizeProgress({ progressVersion: 2, levels: { "TV-20": { bestScore: 80, bestCorrect: 4, bestQuestionCount: 5, bestStars: 2, attempts: 1, completed: true, unlocked: true } }, history: [], studyTime: {}, totalCompleted: 1 });
+  test("X", levelUnlocked(oldProgress, LEVEL_BY_ID["TV-21"]) && !levelUnlocked(oldProgress, LEVEL_BY_ID["TV-22"]) && parentStatistics(oldProgress).totalLevels === 40);
+  test("Y", oldProgress.levels["TV-20"].completed && oldProgress.levels["TV-01"] && getQuestionSpeechText(LEVEL_BY_ID["TV-31"], LEVEL_BY_ID["TV-31"].questions[0]) === LEVEL_BY_ID["TV-31"].questions[0].speechText);
+  test("Z", document.querySelector('script[src="data/vietnamese-grade-1.js"]') !== null && document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width")); test("AA", setActiveCourse(previous));
   return { passed: results.every((item) => item.passed), results };
 }
 window.__hocCungBeMultiCourseTests = runMultiCourseTests();
@@ -679,6 +684,7 @@ function runPwaTests() {
     installControlsPresent: Boolean(installButton && iosHint),
     progressKeysUnchanged: STORAGE_KEY === "hoc-cung-be:math-grade-1-progress" && AUDIO_SETTINGS_KEY === "hoc-cung-be:audio-settings",
     localFileSafe: location.protocol !== "file:" || typeof registerServiceWorker === "function",
+    vietnameseOfflineShell: document.querySelector('script[src="data/vietnamese-grade-1.js"]') !== null,
   };
   return { passed: Object.values(results).every(Boolean), results };
 }
@@ -687,6 +693,10 @@ window.__hocCungBePwaTests = runPwaTests();
 // ==================== Branding and app-icon checks A-Y ====================
 async function runBrandingTests() {
   const results = []; const test = (id, passed) => results.push({ id, passed: Boolean(passed) });
+  await new Promise((resolve) => {
+    if (document.querySelector("#account-login-screen") && document.querySelector("#account-me-screen")) { resolve(); return; }
+    window.addEventListener("hoc-cung-be:parent-auth-ready", resolve, { once: true }); setTimeout(resolve, 2000);
+  });
   const loadImage = (src) => new Promise((resolve) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(null); image.src = src; });
   const [logo, icon96, icon192, icon512, maskable192, maskable512, cssResponse, manifestResponse] = await Promise.all([
     loadImage("assets/branding/logo-hoc-cung-be-web.png"), loadImage("assets/icons/icon-96.png"), loadImage("assets/icons/icon-192.png"), loadImage("assets/icons/icon-512.png"),
