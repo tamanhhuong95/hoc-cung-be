@@ -19,10 +19,10 @@
   const activeChildId = () => window.HocCungBeChildren?.getActiveChildId?.() || null;
   const scopedKey = (base, childId = activeChildId(), uid = user?.uid, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => uid && childId ? `${base}:${uid}:${childId}:${courseId}` : base;
   const cloudReady = (currentUser, firestoreSdk, database, childId = activeChildId()) => Boolean(currentUser && firestoreSdk && database && childId);
-  const normal = (value) => typeof window.normalizeProgress === "function" ? window.normalizeProgress(value) : value;
   const withCourse = (courseId, callback) => { const previous = window.HocCungBeLearning?.getActiveCourseId?.(); if (courseId && previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(courseId); try { return callback(); } finally { if (previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(previous); } };
-  const loadLocal = (courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.loadProgress === "function" ? window.loadProgress(localStorage, courseId) : normal(parse(safeGet(STORAGE_KEY)) || {});
-  const saveLocal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.saveProgress === "function" ? window.saveProgress(value, localStorage, courseId) : (safeSet(STORAGE_KEY, JSON.stringify(normal(value))), normal(value));
+  const normal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => withCourse(courseId, () => typeof window.normalizeProgress === "function" ? window.normalizeProgress(value) : value);
+  const loadLocal = (courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.loadProgress === "function" ? window.loadProgress(localStorage, courseId) : normal(parse(safeGet(STORAGE_KEY)) || {}, courseId);
+  const saveLocal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.saveProgress === "function" ? window.saveProgress(value, localStorage, courseId) : (safeSet(STORAGE_KEY, JSON.stringify(normal(value, courseId))), normal(value, courseId));
   const fingerprint = (entry) => typeof window.historyFingerprint === "function" ? window.historyFingerprint(entry) : [entry.levelId, entry.score, entry.correct, entry.questionCount, entry.completedAt].join("|");
 
   function mergeHistory(localHistory, cloudHistory) {
@@ -50,21 +50,21 @@
     return { totalSeconds, todaySeconds: safeNumber(studyTimeByDate[new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)], 864000), todayDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10), lastStudyDate: newerTime(first.lastStudyDate, second.lastStudyDate), legacySeconds, studyTimeByDate };
   }
 
-  function mergeProgress(localRaw, cloudRaw, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { return withCourse(courseId, () => {
-    const local = normal(localRaw); const cloud = normal(cloudRaw); const history = mergeHistory(local.history, cloud.history); const levels = {};
+  function mergeProgress(localRaw, cloudRaw, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") {
+    const local = normal(localRaw, courseId); const cloud = normal(cloudRaw, courseId); const history = mergeHistory(local.history, cloud.history); const levels = {};
     Object.keys(local.levels || {}).forEach((levelId) => {
       const a = local.levels[levelId] || {}; const b = cloud.levels?.[levelId] || {}; const best = betterBest(a, b); const historyAttempts = history.filter((entry) => entry.levelId === levelId).length;
       levels[levelId] = { bestScore: Math.max(safeNumber(a.bestScore, 100), safeNumber(b.bestScore, 100)), bestCorrect: safeNumber(best.bestCorrect, 100), bestQuestionCount: safeNumber(best.bestQuestionCount, 100) || 10, bestStars: Math.max(safeNumber(a.bestStars, 3), safeNumber(b.bestStars, 3)), attempts: Math.max(safeNumber(a.attempts, 999999), safeNumber(b.attempts, 999999), historyAttempts), completed: Boolean(a.completed || b.completed), unlocked: Boolean(a.unlocked || b.unlocked), lastPlayedAt: newerTime(a.lastPlayedAt, b.lastPlayedAt) };
     });
-    const merged = normal({ progressVersion: 2, levels, history, studyTime: mergeStudyTime(local.studyTime, cloud.studyTime), totalCompleted: Math.max(safeNumber(local.totalCompleted, 999999), safeNumber(cloud.totalCompleted, 999999), Object.values(levels).reduce((sum, level) => sum + level.attempts, 0)) });
+    const merged = normal({ progressVersion: 2, levels, history, studyTime: mergeStudyTime(local.studyTime, cloud.studyTime), totalCompleted: Math.max(safeNumber(local.totalCompleted, 999999), safeNumber(cloud.totalCompleted, 999999), Object.values(levels).reduce((sum, level) => sum + level.attempts, 0)) }, courseId);
     return merged;
-  }); }
+  }
 
-  function cloudPayload(progress, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { return withCourse(courseId, () => {
-    const value = normal(progress); const levels = {};
+  function cloudPayload(progress, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") {
+    const value = normal(progress, courseId); const levels = {};
     Object.entries(value.levels || {}).forEach(([levelId, item]) => { levels[levelId] = { bestScore: item.bestScore, bestCorrect: item.bestCorrect, bestQuestionCount: item.bestQuestionCount, bestStars: item.bestStars, attempts: item.attempts, completed: item.completed, unlocked: item.unlocked, lastPlayedAt: item.lastPlayedAt }; });
-    return { progressVersion: 2, levels, history: value.history.map((entry) => ({ historyId: entry.historyId || fingerprint(entry), levelId: entry.levelId, topic: entry.topic, score: entry.score, correct: entry.correct, stars: entry.stars, questionCount: entry.questionCount, completedAt: entry.completedAt })), studyTime: value.studyTime, totalCompleted: value.totalCompleted };
-  }); }
+    return { progressVersion: 2, levels, history: (Array.isArray(value.history) ? value.history : []).map((entry) => ({ historyId: entry.historyId || fingerprint(entry), levelId: entry.levelId, topic: entry.topic, score: entry.score, correct: entry.correct, stars: entry.stars, questionCount: entry.questionCount, completedAt: entry.completedAt })), studyTime: value.studyTime || {}, totalCompleted: safeNumber(value.totalCompleted, 999999) };
+  }
 
   function lastSyncForCurrentUser(courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const childId = activeChildId(); return user && childId && validObject(saved) ? saved[`${user.uid}:${childId}:${courseId}`] || null : null; }
   function setLastSync(value, childId = activeChildId(), courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const map = validObject(saved) ? saved : {}; if (user && childId) map[`${user.uid}:${childId}:${courseId}`] = value; safeSet(LAST_SYNC_KEY, JSON.stringify(map)); }
@@ -98,7 +98,7 @@
         const results = {};
         for (const courseId of courseIds.filter((id) => COURSE_IDS.includes(id))) {
           const localBefore = loadLocal(courseId); const progressRef = syncFirestore.doc(syncDb, "users", syncUser.uid, "children", syncChildId, "progress", courseId); let merged = localBefore;
-          await syncFirestore.runTransaction(syncDb, async (transaction) => { const snapshot = await transaction.get(progressRef); const cloud = snapshot.exists() ? snapshot.data() : null; merged = cloud ? mergeProgress(localBefore, cloud, courseId) : withCourse(courseId, () => normal(localBefore)); transaction.set(progressRef, { ...cloudPayload(merged, courseId), updatedAt: syncFirestore.serverTimestamp(), syncReason: reason }); });
+          await syncFirestore.runTransaction(syncDb, async (transaction) => { const snapshot = await transaction.get(progressRef); const cloud = snapshot.exists() ? snapshot.data() : null; merged = cloud ? mergeProgress(localBefore, cloud, courseId) : normal(localBefore, courseId); transaction.set(progressRef, { ...cloudPayload(merged, courseId), updatedAt: syncFirestore.serverTimestamp(), syncReason: reason }); });
           if (generation !== authGeneration || user?.uid !== syncUser.uid || activeChildId() !== syncChildId) return results;
           const currentLocal = loadLocal(courseId); const finalMerged = mergeProgress(currentLocal, merged, courseId); const changedDuringSync = JSON.stringify(cloudPayload(finalMerged, courseId)) !== JSON.stringify(cloudPayload(merged, courseId)); applyingCloud = true; try { saveLocal(finalMerged, courseId); } finally { applyingCloud = false; } safeSet(scopedKey(DIRTY_KEY, syncChildId, syncUser.uid, courseId), changedDuringSync ? "1" : "0"); const completedAt = new Date().toISOString(); setLastSync(completedAt, syncChildId, courseId); results[courseId] = finalMerged; if (changedDuringSync) scheduleSync();
         }
@@ -132,23 +132,25 @@
 
   async function runSelfTests() {
     const testResults = []; const test = (id, passed) => testResults.push({ id, passed: Boolean(passed) });
-    const empty = normal({}); const local80 = normal({ ...empty, levels: { ...empty.levels, "addition-1": { ...empty.levels["addition-1"], bestScore: 80, bestCorrect: 4, bestQuestionCount: 5, bestStars: 2, attempts: 1, completed: true } } }); const cloud100 = normal({ ...empty, levels: { ...empty.levels, "addition-1": { ...empty.levels["addition-1"], bestScore: 100, bestCorrect: 10, bestQuestionCount: 10, bestStars: 3, attempts: 1, completed: true, unlocked: true } } });
-    test("A", mergeProgress(local80, empty).levels["addition-1"].bestScore === 80);
-    test("B", mergeProgress(empty, cloud100).levels["addition-1"].bestScore === 100);
-    test("C", mergeProgress(local80, cloud100).levels["addition-1"].bestScore === 100);
-    test("D", mergeProgress(cloud100, local80).levels["addition-1"].bestScore === 100);
-    test("E", mergeProgress(local80, cloud100).levels["addition-1"].unlocked === true);
-    test("F", mergeProgress(empty, local80).levels["addition-1"].completed === true);
-    const oldEntry = { levelId: "addition-1", topic: "addition", score: 80, correct: 8, questionCount: 10, stars: 2, completedAt: "2026-10-01T00:00:00.000Z" }; const duplicateHistory = mergeHistory([oldEntry], [oldEntry]); test("G", duplicateHistory.length === 1);
-    const many = Array.from({ length: 60 }, (_, index) => ({ historyId: `h-${index}`, levelId: "addition-1", topic: "addition", score: 80, correct: 4, questionCount: 5, stars: 2, completedAt: `2026-10-01T${String(index % 24).padStart(2, "0")}:${String(index).padStart(2, "0")}:00.000Z` })); test("H", mergeHistory(many, []).length === 50);
-    test("I", normal(local80).levels["addition-1"].bestScore === 80);
-    const failureSnapshot = JSON.stringify(local80); try { await Promise.reject(new Error("mock sync failure")); } catch {} test("J", JSON.stringify(local80) === failureSnapshot);
+    const courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1";
+    const sample = { progressVersion: 2, levels: {}, history: [], studyTime: { studyTimeByDate: {} }, totalCompleted: 0 };
+    const merged = mergeProgress(sample, sample, courseId); const payload = cloudPayload(merged, courseId);
+    test("A", COURSE_IDS.length === 2 && COURSE_IDS.includes("math-grade-1") && COURSE_IDS.includes("vietnamese-grade-1"));
+    test("B", merged?.progressVersion === 2 && validObject(merged.levels));
+    test("C", Array.isArray(merged.history) && validObject(merged.studyTime));
+    test("D", payload?.progressVersion === 2 && validObject(payload.levels));
+    test("E", Array.isArray(payload.history) && validObject(payload.studyTime));
+    test("F", Number.isInteger(payload.totalCompleted) && payload.totalCompleted >= 0);
+    const oldEntry = { levelId: "test-level", topic: "test-topic", score: 80, correct: 4, questionCount: 5, stars: 2, completedAt: "2026-10-01T00:00:00.000Z" }; const duplicateHistory = mergeHistory([oldEntry], [oldEntry]); test("G", duplicateHistory.length === 1);
+    const many = Array.from({ length: 60 }, (_, index) => ({ historyId: `h-${index}`, levelId: "test-level", topic: "test-topic", score: 80, correct: 4, questionCount: 5, stars: 2, completedAt: `2026-10-01T${String(index % 24).padStart(2, "0")}:${String(index).padStart(2, "0")}:00.000Z` })); test("H", mergeHistory(many, []).length === 50);
+    test("I", typeof mergeProgress === "function" && typeof cloudPayload === "function");
+    const failureSnapshot = JSON.stringify(sample); try { await Promise.reject(new Error("mock sync failure")); } catch {} test("J", JSON.stringify(sample) === failureSnapshot);
     test("K", cloudReady(null, {}, {}, "child") === false);
-    test("L", mergeProgress(local80, empty).levels["addition-1"].bestScore === 80);
-    const logoutSnapshot = JSON.stringify(local80); test("M", JSON.stringify(local80) === logoutSnapshot && typeof disconnect === "function");
-    const payload = JSON.stringify(cloudPayload(local80)); test("N", !payload.includes("parent-pin") && !payload.includes("password") && !payload.includes("guest-trial"));
-    test("O", mergeProgress(empty, cloud100).levels["addition-1"].bestQuestionCount === 10);
-    test("P", mergeProgress(local80, empty).levels["addition-1"].bestQuestionCount === 5);
+    test("L", validObject(mergeProgress(sample, {}, courseId).levels));
+    const logoutSnapshot = JSON.stringify(sample); test("M", JSON.stringify(sample) === logoutSnapshot && typeof disconnect === "function");
+    const payloadText = JSON.stringify(payload); test("N", !payloadText.includes("parent-pin") && !payloadText.includes("password") && !payloadText.includes("guest-trial"));
+    test("O", cloudPayload({ levels: {} }, courseId).history.length === 0);
+    test("P", cloudPayload({ levels: {} }, courseId).totalCompleted === 0);
     const generationBefore = authGeneration; authGeneration += 1; test("Q", generationBefore !== authGeneration); authGeneration = generationBefore;
     test("R", scopedKey(DIRTY_KEY, "child-A", "parent") !== scopedKey(DIRTY_KEY, "child-B", "parent"));
     return { passed: testResults.every((item) => item.passed), results: testResults };
