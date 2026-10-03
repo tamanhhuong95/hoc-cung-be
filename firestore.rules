@@ -49,6 +49,49 @@ service cloud.firestore {
       && request.resource.data.syncReason is string;
     }
 
+    function validChildSettings() {
+      return request.resource.data.keys().hasOnly([
+        'settingsVersion', 'dailyTimeLimitMinutes', 'dailyLessonLimit',
+        'breakEnabled', 'breakAfterMinutes', 'breakDurationMinutes',
+        'allowedTimeEnabled', 'allowedStartTime', 'allowedEndTime',
+        'soundEnabled', 'speechEnabled', 'updatedAt'
+      ])
+      && request.resource.data.settingsVersion == 1
+      && (request.resource.data.dailyTimeLimitMinutes == null
+        || (request.resource.data.dailyTimeLimitMinutes is int
+          && request.resource.data.dailyTimeLimitMinutes >= 1
+          && request.resource.data.dailyTimeLimitMinutes <= 1440))
+      && (request.resource.data.dailyLessonLimit == null
+        || (request.resource.data.dailyLessonLimit is int
+          && request.resource.data.dailyLessonLimit >= 1
+          && request.resource.data.dailyLessonLimit <= 100))
+      && request.resource.data.breakEnabled is bool
+      && (request.resource.data.breakAfterMinutes == null
+        || (request.resource.data.breakAfterMinutes is int
+          && request.resource.data.breakAfterMinutes >= 1
+          && request.resource.data.breakAfterMinutes <= 240))
+      && (request.resource.data.breakDurationMinutes == null
+        || (request.resource.data.breakDurationMinutes is int
+          && request.resource.data.breakDurationMinutes >= 1
+          && request.resource.data.breakDurationMinutes <= 120))
+      && (!request.resource.data.breakEnabled
+        || (request.resource.data.breakAfterMinutes is int
+          && request.resource.data.breakDurationMinutes is int))
+      && request.resource.data.allowedTimeEnabled is bool
+      && (request.resource.data.allowedStartTime == null
+        || (request.resource.data.allowedStartTime is string
+          && request.resource.data.allowedStartTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$')))
+      && (request.resource.data.allowedEndTime == null
+        || (request.resource.data.allowedEndTime is string
+          && request.resource.data.allowedEndTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$')))
+      && (!request.resource.data.allowedTimeEnabled
+        || (request.resource.data.allowedStartTime is string
+          && request.resource.data.allowedEndTime is string))
+      && request.resource.data.soundEnabled is bool
+      && request.resource.data.speechEnabled is bool
+      && request.resource.data.updatedAt is timestamp;
+    }
+
     match /users/{userId} {
       allow read: if ownsUserData(userId);
       allow create, update: if ownsUserData(userId) && validProfile(userId);
@@ -66,6 +109,13 @@ service cloud.firestore {
           allow create, update: if ownsUserData(userId)
             && courseId == 'math-grade-1'
             && validProgress();
+        }
+
+        match /settings/{settingsId} {
+          allow read: if ownsUserData(userId);
+          allow create, update: if ownsUserData(userId)
+            && settingsId == 'learning'
+            && validChildSettings();
         }
       }
     }

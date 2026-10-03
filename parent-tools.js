@@ -104,9 +104,19 @@
     $("#parent-pin-enter").select();
   }
   function showParentDashboard() { $("#parent-refresh-button")?.click(); showOnly("parent-dashboard-screen"); }
+  async function authorizeChange(label = "thay đổi này") {
+    if (!hasPin()) return true;
+    const seconds = cooldownSeconds();
+    if (seconds) { window.alert(`Vui lòng thử lại sau ${seconds} giây.`); return false; }
+    const pin = window.prompt(`Nhập mã PIN phụ huynh để xác nhận ${label}:`);
+    if (pin === null) return false;
+    const verification = await verifyStoredPin(pin);
+    if (verification.verified) { resetAttempts(); parentUnlockedForSession = true; return true; }
+    noteWrongPin(); window.alert(verification.unsupported ? WEB_CRYPTO_MESSAGE : "Mã PIN phụ huynh chưa đúng."); return false;
+  }
   function feedbackPayload(values) {
     const lines = ["Góp ý cho Học Cùng Bé", "", `Loại góp ý: ${values.type}`, `Tiêu đề: ${values.title}`, "", "Nội dung:", values.message, "", `Email liên hệ: ${values.email || "(không cung cấp)"}`];
-    if (values.technical) lines.push("", "Thông tin kỹ thuật (được phụ huynh chủ động chọn):", `URL: ${location.href}`, `Trình duyệt: ${navigator.userAgent}`, "Phiên bản ứng dụng: hoc-cung-be-v17");
+    if (values.technical) lines.push("", "Thông tin kỹ thuật (được phụ huynh chủ động chọn):", `URL: ${location.href}`, `Trình duyệt: ${navigator.userAgent}`, "Phiên bản ứng dụng: hoc-cung-be-v18");
     return lines.join("\r\n");
   }
   function buildFeedbackMailto(values, destination = FEEDBACK_EMAIL) { return `mailto:${encodeURIComponent(destination)}?subject=${encodeURIComponent(`[Học Cùng Bé] ${values.type}: ${values.title}`)}&body=${encodeURIComponent(feedbackPayload(values))}`; }
@@ -123,7 +133,7 @@
     danger.insertAdjacentHTML("beforebegin", `<section class="parent-section" id="parent-pin-tools"><p class="eyebrow">Bảo mật thiết bị</p><h2>🔐 Đổi mã bảo mật</h2><p>Parent PIN chỉ khóa cục bộ khu phụ huynh trên thiết bị này, không phải mật khẩu Firebase.</p><form class="parent-tools-form" id="parent-pin-change-form" novalidate><label>Mã hiện tại<input id="parent-pin-current" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password" /></label><label>Mã mới<input id="parent-pin-next" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" /></label><label>Xác nhận mã mới<input id="parent-pin-next-confirm" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" /></label><p class="parent-gate__feedback" id="parent-pin-change-status" role="status"></p><button class="secondary-button" type="submit">Đổi mã bảo mật</button></form></section><section class="parent-section" id="parent-feedback"><p class="eyebrow">Liên hệ</p><h2>💬 Góp ý cho Học Cùng Bé</h2><p>Góp ý chỉ được mở trong khu phụ huynh. Ứng dụng sẽ mở email của bạn để gửi, không lưu nội dung góp ý trên thiết bị.</p><form class="parent-tools-form" id="feedback-form" novalidate><label>Loại góp ý<select id="feedback-type" required><option value="">Chọn loại góp ý</option><option>Báo lỗi</option><option>Đề xuất bài học</option><option>Góp ý giao diện</option><option>Góp ý nội dung</option><option>Ý kiến khác</option></select></label><label>Tiêu đề<input id="feedback-title" maxlength="140" required /></label><label>Nội dung<textarea id="feedback-message" minlength="10" maxlength="2000" required></textarea><small id="feedback-count">0 / 2000 ký tự</small></label><label>Email liên hệ <small>(không bắt buộc)</small><input id="feedback-email" type="email" inputmode="email" autocomplete="email" maxlength="254" /></label><label class="parent-check"><input id="feedback-consent" type="checkbox" /> Tôi đồng ý để Học Cùng Bé dùng thông tin này để phản hồi.</label><label class="parent-check"><input id="feedback-technical" type="checkbox" /> Đính kèm thông tin kỹ thuật cơ bản (URL, trình duyệt và phiên bản app).</label><p class="parent-gate__feedback" id="feedback-status" role="status" aria-live="polite"></p><button class="secondary-button" type="submit">Mở email để gửi góp ý</button></form></section>`);
   }
   document.addEventListener("click", (event) => {
-    if (event.target.closest("#parent-entry-button")) { event.preventDefault(); openParentGate(); }
+    if (event.target.closest("#parent-entry-button, #header-parent-entry")) { event.preventDefault(); if (document.body.dataset.authenticated === "true") openParentGate(); }
     if (event.target.closest("[data-parent-home]")) showOnly("home-screen");
     const toggle = event.target.closest("[data-parent-pin-toggle]");
     if (toggle) { const input = $("input", toggle.parentElement); input.type = input.type === "password" ? "text" : "password"; toggle.textContent = input.type === "password" ? "Hiện" : "Ẩn"; }
@@ -174,6 +184,7 @@
     test("L", typeof window.HOC_CUNG_BE_FIREBASE_CONFIG !== "undefined" && !Object.keys(record || {}).includes("firebasePassword"));
     return { passed: results.every((item) => item.passed), results };
   }
+  window.HocCungBeParentPin = { hasPin, authorizeChange, openParentGate, isUnlocked: () => parentUnlockedForSession };
   window.__hocCungBeParentPinFeedbackTests = { pending: true };
   runSelfTests().then((result) => { window.__hocCungBeParentPinFeedbackTests = result; }).catch(() => { window.__hocCungBeParentPinFeedbackTests = { passed: false, results: [] }; });
 })();

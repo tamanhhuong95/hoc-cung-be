@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v17";
+const CACHE_NAME = "hoc-cung-be-v18";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./script.js",
   "./child-profiles.js",
   "./cloud-sync.js",
+  "./child-settings.js",
   "./firebase-config.js",
   "./feedback-config.js",
   "./parent-auth.js",
