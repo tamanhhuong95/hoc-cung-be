@@ -365,7 +365,7 @@ function renderHeader() { const stats = statistics(loadProgress()); elements.hea
 function showAuthGate() { elements.authGate.hidden = false; document.body.classList.add("has-auth-gate"); elements.authGate.querySelector("button")?.focus(); }
 function hideAuthGate() { elements.authGate.hidden = true; document.body.classList.remove("has-auth-gate"); }
 function openAuthScreen(name) { hideAuthGate(); window.dispatchEvent(new CustomEvent("hoc-cung-be:open-auth", { detail: { screen: name } })); }
-function handleAuthState(user) { const wasSignedIn = Boolean(currentLearningUser); currentLearningUser = user || null; hideAuthGate(); if (!currentLearningUser) { window.HocCungBeChildSettings?.stopLearningSession?.(); window.HocCungBeChildSettings?.dismissBreak?.(true); } if (!currentLearningUser && (!screens.parentDashboard.hidden || !screens.parentGate.hidden)) showScreen("home"); if (wasSignedIn && !currentLearningUser && quiz && getLevelLockReason(quiz.level.id, null, loadProgress(), loadGuestTrial()) === "account" && !screens.quiz.hidden) { selectedTopic = quiz.level.topic; quiz = null; showScreen("levels"); showAuthGate(); return; } renderHeader(); if (!screens.levels.hidden) renderLevels(); if (!screens.result.hidden && quiz) renderResult(loadProgress()); }
+function handleAuthState(user) { const wasSignedIn = Boolean(currentLearningUser); currentLearningUser = user || null; hideAuthGate(); if (!currentLearningUser) { window.HocCungBeChildSettings?.stopLearningSession?.(); window.HocCungBeChildSettings?.dismissBreak?.(true); } if (!currentLearningUser && (!screens["parent-dashboard"].hidden || !screens["parent-gate"].hidden)) showScreen("home"); if (wasSignedIn && !currentLearningUser && quiz && getLevelLockReason(quiz.level.id, null, loadProgress(), loadGuestTrial()) === "account" && !screens.quiz.hidden) { selectedTopic = quiz.level.topic; quiz = null; showScreen("levels"); showAuthGate(); return; } renderHeader(); if (!screens.levels.hidden) renderLevels(); if (!screens.result.hidden && quiz) renderResult(loadProgress()); }
 function formatDuration(seconds) { const minutes = Math.floor(safeNumber(seconds, 2147483647) / 60); if (!minutes) return "0 phút"; const hours = Math.floor(minutes / 60); return hours ? `${hours} giờ ${minutes % 60} phút` : `${minutes} phút`; }
 function formatDateTime(value) { const date = value ? new Date(value) : null; return date && !Number.isNaN(date.getTime()) ? date.toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" }) : "Chưa có"; }
 function topicSummary(progress, topicId) { return getTopicProgress(progress, topicId); }
@@ -394,7 +394,7 @@ function shouldTrackQuiz(isQuizScreen, isDocumentHidden) { return Boolean(isQuiz
 function startStudyTracking() { if (shouldTrackQuiz(!screens.quiz.hidden, document.hidden)) studyTrackingSince = Date.now(); }
 function stopStudyTracking() { flushStudyTime(); studyTrackingSince = null; }
 function handleChildWillChange() { cancelSpeech(); stopStudyTracking(); window.HocCungBeChildSettings?.stopLearningSession?.(); window.HocCungBeChildSettings?.dismissBreak?.(true); }
-function handleChildChanged() { quiz = null; selectedTopic = "addition"; selectedLevelId = "addition-1"; if (currentLearningUser) showScreen("home"); renderHeader(); if (!screens.parentDashboard.hidden) renderParentDashboard(); }
+function handleChildChanged() { quiz = null; selectedTopic = "addition"; selectedLevelId = "addition-1"; if (currentLearningUser) showScreen("home"); renderHeader(); if (!screens["parent-dashboard"].hidden) renderParentDashboard(); }
 function resetDeleteConfirmation() { elements.parentDeleteConfirm.hidden = true; elements.parentDeleteStep.textContent = "Bạn có chắc muốn xóa toàn bộ tiến độ học?"; elements.parentDeleteCodeLabel.hidden = true; elements.parentDeleteCode.hidden = true; elements.parentDeleteCode.value = ""; elements.parentDeleteConfirmButton.hidden = true; elements.parentDeleteNext.hidden = false; }
 function updateAudioControls() {
   if (!elements.soundEnabledToggle) return;
@@ -464,7 +464,7 @@ elements.authGateLater.onclick = hideAuthGate;
 elements.authGate.onclick = (event) => { if (event.target === elements.authGate) hideAuthGate(); };
 window.addEventListener("keydown", (event) => { if (event.key === "Escape" && !elements.authGate.hidden) hideAuthGate(); });
 window.addEventListener("hoc-cung-be:auth-state", (event) => handleAuthState(event.detail?.user || null));
-window.addEventListener("hoc-cung-be:cloud-synced", () => { renderHeader(); if (!screens.levels.hidden) renderLevels(); if (!screens.parentDashboard.hidden) renderParentDashboard(); });
+window.addEventListener("hoc-cung-be:cloud-synced", () => { renderHeader(); if (!screens.levels.hidden) renderLevels(); if (!screens["parent-dashboard"].hidden) renderParentDashboard(); });
 window.addEventListener("hoc-cung-be:child-will-change", handleChildWillChange);
 window.addEventListener("hoc-cung-be:child-changed", handleChildChanged);
 window.addEventListener("hoc-cung-be:child-break-started", () => stopStudyTracking());
