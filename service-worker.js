@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v16";
+const CACHE_NAME = "hoc-cung-be-v17";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,8 +13,15 @@ const APP_SHELL = [
   "./parent-auth.js",
   "./parent-tools.js",
   "./manifest.webmanifest",
+  "./assets/branding/logo-hoc-cung-be-web.png",
+  "./assets/icons/favicon-32.png",
+  "./assets/icons/favicon-48.png",
+  "./assets/icons/apple-touch-icon.png",
+  "./assets/icons/icon-96.png",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
+  "./assets/icons/icon-maskable-192.png",
+  "./assets/icons/icon-maskable-512.png",
 ];
 
 self.addEventListener("install", (event) => {

@@ -21,11 +21,8 @@ button { cursor: pointer; }
 .skip-link { position: fixed; top: -60px; left: 16px; z-index: 20; padding: 10px 16px; background: var(--ink); color: white; border-radius: 9px; }
 .skip-link:focus { top: 16px; }
 .site-header { min-height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 1180px; margin: auto; padding: 14px 28px; }
-.brand { display: flex; align-items: center; gap: 10px; border: 0; background: none; color: var(--ink); padding: 0; text-align: left; }
-.brand__mascot { width: 47px; height: 47px; display: grid; place-items: center; border-radius: 15px; background: linear-gradient(145deg, #ffd771, #ffb951); color: white; font-size: 29px; transform: rotate(-8deg); box-shadow: 0 5px 0 #f1a63d; }
-.brand strong, .brand small { display: block; line-height: 1.08; }
-.brand strong { font-size: 23px; }
-.brand small { margin-top: 4px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.brand { display: flex; align-items: center; flex: 0 0 auto; border: 0; background: none; color: var(--ink); padding: 0; }
+.brand__logo { display: block; width: auto; height: 68px; object-fit: contain; }
 .header-progress { font-size: 14px; color: var(--muted); font-weight: 800; }
 .header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 13px; }.sound-settings { position: relative; }.sound-settings__button, .read-question-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 2px solid #d8d3f8; border-radius: 14px; color: var(--purple-dark); background: #f7f6ff; font-weight: 900; transition: transform .18s, background .18s; }.sound-settings__button { min-height: 43px; padding: 8px 13px; font-size: 14px; }.sound-settings__button:hover, .read-question-button:hover:not(:disabled) { transform: translateY(-2px); background: #eeeaff; }.sound-settings__panel { position: absolute; z-index: 15; top: calc(100% + 9px); right: 0; display: grid; min-width: 245px; gap: 11px; padding: 16px; border: 1px solid #e0ddf8; border-radius: 17px; background: white; box-shadow: var(--shadow); font-size: 15px; }.sound-settings__panel[hidden] { display: none; }.sound-settings__panel strong { color: var(--purple-dark); }.sound-settings__panel label { display: flex; align-items: center; gap: 9px; color: var(--ink); font-weight: 800; }.sound-settings__panel input { width: 19px; height: 19px; accent-color: var(--purple); }
 main { max-width: 1180px; min-height: calc(100vh - 148px); margin: auto; padding: 0 28px 58px; }
@@ -39,6 +36,7 @@ h1 { max-width: 710px; margin-bottom: 16px; font-size: clamp(34px, 5vw, 57px); l
 h1 span { color: var(--purple); }
 h2 { margin-bottom: 0; font-size: clamp(28px, 3.5vw, 38px); line-height: 1.15; letter-spacing: -.03em; }
 .hero__description { max-width: 550px; margin-bottom: 28px; color: var(--muted); font-size: clamp(17px, 2vw, 20px); }
+.hero__brand-logo { display: block; width: 150px; height: 150px; margin: -12px 0 4px; object-fit: contain; }
 .home-auth-status { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px 11px; margin-bottom: 15px; }.home-auth-status span { padding: 5px 11px; border-radius: 99px; color: #5b4ab8; background: rgba(255,255,255,.78); font-size: 14px; font-weight: 900; }.home-auth-status small { color: #66749a; font-size: 14px; font-weight: 800; }
 .primary-button, .secondary-button, .next-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 55px; padding: 12px 23px; border: 0; border-radius: 16px; text-decoration: none; font-weight: 900; transition: transform .18s, box-shadow .18s, background .18s; }
 .primary-button, .next-button { background: var(--purple); color: white; box-shadow: 0 6px 0 var(--purple-dark); }
@@ -69,7 +67,7 @@ h2 { margin-bottom: 0; font-size: clamp(28px, 3.5vw, 38px); line-height: 1.15; l
 .toast { position: fixed; z-index: 10; bottom: 25px; left: 50%; max-width: calc(100% - 36px); padding: 13px 19px; border-radius: 13px; color: white; background: var(--ink); box-shadow: var(--shadow); font-weight: 800; opacity: 0; pointer-events: none; transform: translate(-50%, 20px); transition: opacity .2s, transform .2s; }.toast.is-visible { opacity: 1; transform: translate(-50%, 0); } footer { padding: 22px; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: 14px; font-weight: 700; }
 button:focus-visible, a:focus-visible { outline: 4px solid rgba(255, 190, 54, .65); outline-offset: 3px; }
 @media (max-width: 760px) { body { font-size: 16px; }.site-header { min-height: 72px; padding: 12px 18px; }.header-progress { display: none; } main { min-height: calc(100vh - 130px); padding: 0 17px 42px; }.hero { grid-template-columns: 1fr; min-height: 0; padding: 35px 27px 0; }.hero__illustration { min-height: 200px; margin-top: 10px; }.hero__kid { right: 17%; font-size: 119px; }.sun { font-size: 57px; }.rainbow { left: 7%; font-size: 54px; }.cloud { font-size: 51px; }.cloud--two { display: none; }.hero__blocks { left: 5%; }.hero__blocks span { width: 40px; height: 40px; }.grade-section { padding-top: 48px; }.grade-grid { grid-template-columns: repeat(2, 1fr); }.grade-card:last-child { grid-column: 1 / -1; }.grade-card { min-height: 154px; }.page-intro { min-height: 0; display: block; padding: 24px; }.page-intro .back-button { margin-bottom: 27px; }.intro-decoration { right: 13px; bottom: 5px; opacity: .42; font-size: 73px; }.subject-grid, .lesson-grid { grid-template-columns: 1fr; }.subject-card { min-height: 118px; padding: 17px; }.subject-card__icon { flex-basis: 55px; width: 55px; height: 55px; font-size: 28px; }.subject-card__content strong { font-size: 20px; }.lesson-card { min-height: 142px; }.quiz-topbar { flex-wrap: wrap; }.quiz-title { order: 3; width: 100%; justify-content: center; font-size: 17px; }.quiz-card { padding: 26px 17px; }.question-progress { grid-template-columns: 1fr; gap: 8px; }.question-helper { margin-top: 33px; }.equation { margin-bottom: 27px; }.answer-button { min-height: 68px; font-size: 27px; }.result-card { padding: 37px 20px; }.result-actions { flex-direction: column; }.result-actions > * { width: 100%; } }
-@media (max-width: 380px) { .brand strong { font-size: 20px; }.brand__mascot { width: 41px; height: 41px; }.grade-grid { gap: 11px; }.grade-card__icon { font-size: 37px; }.answer-grid { gap: 10px; }.answer-button { font-size: 24px; } }
+@media (max-width: 380px) { .grade-grid { gap: 11px; }.grade-card__icon { font-size: 37px; }.answer-grid { gap: 10px; }.answer-button { font-size: 24px; } }
 
 /* Bản đồ học Toán lớp 1 và hệ thống level */
 .learning-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 0 0 25px; }
@@ -142,4 +140,25 @@ button:focus-visible, a:focus-visible { outline: 4px solid rgba(255, 190, 54, .6
   .child-form-actions { display: grid; grid-template-columns: 1fr; }
   .child-form-actions button { width: 100%; }
   .avatar-picker { justify-content: center; }
+}
+
+/* Học Cùng Bé branding */
+.account-brand-logo { display: block; width: 104px; height: 104px; margin: -8px auto 2px; object-fit: contain; }
+.pwa-install-button img { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; object-fit: contain; }
+
+@media (max-width: 760px) {
+  .brand__logo { height: 52px; }
+  .hero__brand-logo { width: 126px; height: 126px; margin: -18px 0 2px; }
+  #account-login-screen, #account-register-screen, #account-forgot-screen { margin: 12px auto; }
+  #account-login-screen .account-panel, #account-register-screen .account-panel, #account-forgot-screen .account-panel { padding: 18px; }
+  #account-login-screen .account-brand-logo, #account-register-screen .account-brand-logo, #account-forgot-screen .account-brand-logo { width: 68px; height: 68px; margin-top: -4px; }
+  #account-login-screen .eyebrow, #account-register-screen .eyebrow, #account-forgot-screen .eyebrow { margin-bottom: 4px; }
+  #account-login-screen h1, #account-register-screen h1, #account-forgot-screen h1 { margin-bottom: 10px; font-size: 29px; }
+}
+
+@media (max-width: 380px) {
+  .site-header { gap: 10px; padding-inline: 12px; }
+  .brand__logo { height: 48px; }
+  .hero__brand-logo { width: 112px; height: 112px; }
+  #account-login-screen .account-brand-logo, #account-register-screen .account-brand-logo, #account-forgot-screen .account-brand-logo { width: 64px; height: 64px; }
 }

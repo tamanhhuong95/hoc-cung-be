@@ -604,3 +604,44 @@ function runPwaTests() {
   return { passed: Object.values(results).every(Boolean), results };
 }
 window.__hocCungBePwaTests = runPwaTests();
+
+// ==================== Branding and app-icon checks A-Y ====================
+async function runBrandingTests() {
+  const results = []; const test = (id, passed) => results.push({ id, passed: Boolean(passed) });
+  const loadImage = (src) => new Promise((resolve) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(null); image.src = src; });
+  const [logo, icon96, icon192, icon512, maskable192, maskable512, cssResponse, manifestResponse] = await Promise.all([
+    loadImage("assets/branding/logo-hoc-cung-be-web.png"), loadImage("assets/icons/icon-96.png"), loadImage("assets/icons/icon-192.png"), loadImage("assets/icons/icon-512.png"),
+    loadImage("assets/icons/icon-maskable-192.png"), loadImage("assets/icons/icon-maskable-512.png"), fetch("styles.css"), fetch("manifest.webmanifest"),
+  ]);
+  const css = cssResponse.ok ? await cssResponse.text() : ""; const manifest = manifestResponse.ok ? await manifestResponse.json() : {};
+  const icons = Array.isArray(manifest.icons) ? manifest.icons : []; const bySrc = (src) => icons.find((icon) => icon.src === src);
+  const cornerOpaque = (image) => { if (!image) return false; const canvas = document.createElement("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight; const context = canvas.getContext("2d", { willReadFrequently: true }); context.drawImage(image, 0, 0); const points = [[0, 0], [canvas.width - 1, 0], [0, canvas.height - 1], [canvas.width - 1, canvas.height - 1]]; return points.every(([x, y]) => context.getImageData(x, y, 1, 1).data[3] === 255); };
+  const headerLogo = document.querySelector(".brand__logo"), homeLogo = document.querySelector(".hero__brand-logo");
+  test("A", Boolean(headerLogo && logo?.naturalWidth));
+  test("B", getComputedStyle(headerLogo).objectFit === "contain" && headerLogo.clientWidth > 0 && headerLogo.clientHeight > 0);
+  test("C", logo?.naturalWidth === logo?.naturalHeight && headerLogo.getAttribute("width") === "68" && headerLogo.getAttribute("height") === "68" && css.includes("height: 68px"));
+  test("D", document.querySelector(".brand")?.textContent.trim() === "");
+  test("E", Boolean(document.querySelector("#account-login-screen .account-brand-logo")));
+  test("F", Boolean(document.querySelector("#account-register-screen .account-brand-logo")));
+  test("G", Boolean(document.querySelector("#account-forgot-screen .account-brand-logo")));
+  test("H", Boolean(document.querySelector("#parent-dashboard-screen") && document.querySelector("#account-me-screen") && homeLogo));
+  test("I", css.includes("@media (max-width: 380px)") && css.includes("height: 48px"));
+  test("J", css.includes("@media (max-width: 760px)") && css.includes("height: 52px"));
+  test("K", css.includes(".brand__logo") && css.includes("object-fit: contain"));
+  test("L", document.documentElement.scrollWidth <= document.documentElement.clientWidth);
+  test("M", Boolean(document.querySelector("#sound-settings-button") && document.querySelector(".brand[data-go='home']")));
+  test("N", css.includes(".hero__brand-logo { width: 112px; height: 112px;") && css.includes("width: 64px; height: 64px;"));
+  test("O", document.querySelector("#account-login-screen .account-brand-logo")?.getAttribute("width") === "104");
+  test("P", icon192?.naturalWidth === 192 && icon192?.naturalHeight === 192 && bySrc("assets/icons/icon-192.png")?.purpose === "any");
+  test("Q", icon512?.naturalWidth === 512 && icon512?.naturalHeight === 512 && bySrc("assets/icons/icon-512.png")?.purpose === "any");
+  test("R", maskable192?.naturalWidth === 192 && bySrc("assets/icons/icon-maskable-192.png")?.purpose === "maskable");
+  test("S", maskable512?.naturalWidth === 512 && bySrc("assets/icons/icon-maskable-512.png")?.purpose === "maskable");
+  test("T", [...document.querySelectorAll('link[rel="icon"]')].some((link) => link.getAttribute("href") === "assets/icons/favicon-32.png"));
+  test("U", document.querySelector('link[rel="apple-touch-icon"]')?.getAttribute("href") === "assets/icons/apple-touch-icon.png");
+  test("V", icons.every((icon) => !icon.src.startsWith("/")) && manifest.start_url === "./" && manifest.scope === "./");
+  test("W", document.querySelector("#pwa-install-button img")?.getAttribute("src") === "assets/icons/icon-96.png");
+  test("X", icon96?.naturalWidth === 96 && icon96?.naturalHeight === 96);
+  test("Y", cornerOpaque(maskable192) && cornerOpaque(maskable512));
+  return { passed: results.every((item) => item.passed), results };
+}
+window.__hocCungBeBrandingTests = runBrandingTests();
