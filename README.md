@@ -33,23 +33,26 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v14`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v15`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Firebase `onAuthStateChanged()` là nguồn sự thật cho Guest Trial Mode/Full Learning Mode; ứng dụng không tự đánh dấu login trong localStorage. Parent Dashboard vẫn chỉ cần Parent PIN đúng và không phụ thuộc Firebase login.
+- Một tài khoản Firebase của phụ huynh quản lý tối đa 5 hồ sơ bé. Trẻ không có email, mật khẩu, Phone Auth hoặc Firebase Auth account riêng. Mỗi hồ sơ dùng Firestore auto-ID, có tên, lớp, năm sinh tùy chọn và avatar; hiện chỉ hỗ trợ `grade-1`.
+- Sau đăng nhập, tài khoản có một bé sẽ tự chọn bé đó; tài khoản có nhiều bé luôn mở màn hình **Chọn bé đang học**. Home/quiz hiển thị **Đang học**, Dashboard hiển thị **Đang xem tiến độ của**, và nút **Đổi bé** không cần đăng xuất.
 - Tiến độ dùng kiến trúc **local-first**: quiz luôn ghi `localStorage` trước, sau đó mới đồng bộ nền/thủ công với Cloud Firestore khi phụ huynh đã đăng nhập và có mạng. Firestore lỗi không chặn bài học, không xóa local và không reset progress.
-- Firestore dùng `users/{uid}` cho profile tối thiểu và `users/{uid}/progress/math-grade-1` cho Toán lớp 1. Cấu trúc này có thể mở rộng bằng các document như `math-grade-2`, `vietnamese-grade-1` hoặc `english-grade-1`.
+- Progress local của account được namespace bằng `hoc-cung-be:progress:{childId}`; `hoc-cung-be:active-child` chỉ chứa child ID. Guest Trial vẫn dùng dữ liệu riêng và không tự merge vào một bé sau đăng ký nếu chưa có lựa chọn đích an toàn.
+- Firestore dùng `users/{uid}` cho profile phụ huynh, `users/{uid}/children/{childId}` cho hồ sơ bé và `users/{uid}/children/{childId}/progress/math-grade-1` cho Toán lớp 1. Mọi lần sync được xác định bằng `uid + childId + courseId`, không merge chéo hai bé.
 - Cloud sync chỉ gửi progress level, kết quả tốt nhất, attempts, trạng thái hoàn thành/mở khóa, lịch sử, thời gian học, `totalCompleted` và `progressVersion`. Không gửi Parent PIN/PIN attempts, password, OTP, auth token, guest trial, audio settings hoặc feedback draft.
 - Khi local và cloud cùng có dữ liệu, ứng dụng merge từng field thay vì chọn một bên: điểm/sao dùng giá trị tốt hơn, kết quả đúng và mẫu số đi cùng record điểm tốt nhất, boolean dùng OR, thời gian gần nhất dùng timestamp mới hơn, attempts dùng MAX kết hợp số history đã dedupe để tránh cộng mù quáng.
 - History mới có `historyId`; history cũ được gắn fingerprint ổn định từ `levelId + score + correct + questionCount + completedAt`, dedupe và giữ tối đa 50 lượt mới nhất. Record `/10` cũ và `/5` mới giữ đúng `questionCount`.
 - Study time có thêm `studyTimeByDate`; mỗi ngày merge bằng MAX để tránh double count khi cùng dữ liệu đã xuất hiện ở hai phía. Tổng cũ được giữ trong `legacySeconds`, vì vậy migration không làm mất `studyTime.totalSeconds` cũ và vẫn giữ `progressVersion: 2`.
 - Auto sync chạy khi đăng nhập, hoàn thành quiz, app chuyển background, mở/cập nhật Parent Dashboard và khi mạng trở lại nếu còn dữ liệu pending. Thay đổi thường được debounce 5 giây; không ghi từng câu hoặc từng giây.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + visible reCAPTCHA. Flow link dùng `linkWithCredential()` và bắt buộc giữ nguyên UID; mật khẩu, OTP, `verificationId` và token không được ứng dụng lưu vào storage hoặc Firestore.
-- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v14` và không xử lý/cache Firebase Auth, Firestore API, Google API, Google Identity, Firebase CDN hoặc reCAPTCHA request.
+- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v15` và không xử lý/cache Firebase Auth, Firestore API, Google API, Google Identity, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
 Thêm một level bằng cách thêm một object vào `LEVELS` trong `script.js`, gồm tối thiểu `id`, `topic`, `title`, `type`, `min`, `max` và `order`. Có thể cấu hình thêm `questionCount`, `unlockScore`, `imageMode`, `visualSet` và `hint`. Không đổi ID của level đã phát hành để giữ tiến độ cũ. Nếu thêm loại `type` mới, bổ sung generator tương ứng trong `generateQuestion()`.
 
-Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeFiveQuestionTests` (A–O), `window.__hocCungBeClockTests` (A–J và các mốc bổ sung), `window.__hocCungBeGuestTrialTests` (K–S), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (Phone Link A–R), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
+Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Console qua `window.__hocCungBeFiveQuestionTests` (A–O), `window.__hocCungBeClockTests` (A–J và các mốc bổ sung), `window.__hocCungBeGuestTrialTests` (K–S), `window.__hocCungBeDynamicLevelTests` (A–L), `window.__hocCungBeParentAuthTests` (Phone Link A–R), `window.__hocCungBeChildProfilesTests` (Multiple Children A–T), `window.__hocCungBeParentPinFeedbackTests` (A–L) và các test progress/dashboard/PWA hiện có.
 
 ## Parent PIN và góp ý phụ huynh
 
@@ -107,7 +110,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v14` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v15` cập nhật app shell.
 5. Luồng hiện tại dùng action URL mặc định của Firebase nên không thêm `actionCodeSettings` không cần thiết. Nếu sau này cấu hình action URL tùy chỉnh, URL production phải là `https://tamanhhuong95.github.io/hoc-cung-be/`, không dùng localhost trong production.
 
 ### 5. Quên mật khẩu, đổi mật khẩu và re-authentication
@@ -175,7 +178,8 @@ Repository có file `firestore.rules`. Rules yêu cầu có Firebase Authenticat
 
 ```text
 users/{uid}
-users/{uid}/progress/{courseId}
+users/{uid}/children/{childId}
+users/{uid}/children/{childId}/progress/{courseId}
 ```
 
 Trong Firebase Console:
@@ -185,17 +189,32 @@ Trong Firebase Console:
 3. Nhấn **Publish**.
 4. Không dùng `allow read, write: if true` và không mở public write.
 
-Rules chỉ cho chủ tài khoản quản lý profile và progress `math-grade-1` của chính mình, đồng thời whitelist field/schema mà ứng dụng đang ghi; mọi document hoặc field ngoài cấu trúc đó bị từ chối mặc định.
+Rules chỉ cho chủ tài khoản quản lý profile, children và progress `math-grade-1` của chính mình, đồng thời whitelist field/schema mà ứng dụng đang ghi. Không có public read/write, UID khác bị chặn, child document không được delete và mọi document hoặc field ngoài cấu trúc đó bị từ chối mặc định. Đường dẫn progress legacy chỉ còn quyền đọc để migration/rollback; ứng dụng mới không ghi hoặc xóa document legacy.
 
 ### 3. Cấu trúc collection/document
 
-- `users/{uid}`: `uid`, `displayName`, `email`, `emailVerified`, `createdAt`, `updatedAt`. Không có password.
-- `users/{uid}/progress/math-grade-1`: progress Toán lớp 1, history tối đa 50 record, study time và metadata đồng bộ.
+- `users/{uid}`: `uid`, `displayName`, `email`, `emailVerified`, `createdAt`, `updatedAt`; có thể có `childrenMigrationVersion` và `childrenMigrationChildId`. Không có password hoặc full child objects.
+- `users/{uid}/children/{childId}`: `childVersion: 1`, `name`, `grade: "grade-1"`, `birthYear`, `avatar`, `createdAt`, `updatedAt`. `childId` do Firestore tạo tự động, không dùng tên bé.
+- `users/{uid}/children/{childId}/progress/math-grade-1`: progress Toán lớp 1 riêng của một bé, history tối đa 50 record, study time và metadata đồng bộ.
 - Document ID môn học/lớp học độc lập để sau này thêm `math-grade-2`, `vietnamese-grade-1`, `english-grade-1` mà không đổi cây user.
 
-Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID tại `users/{uid}` và document `users/{uid}/progress/math-grade-1`. Không được thấy Parent PIN, PIN attempts, password, OTP, token, guest trial, audio settings hoặc feedback draft.
+Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID tại `users/{uid}`, child tại `users/{uid}/children/{childId}` và progress tại `users/{uid}/children/{childId}/progress/math-grade-1`. Không được thấy Parent PIN, PIN attempts, password, OTP, token, guest trial, audio settings hoặc feedback draft.
 
-### 4. Merge và local-first
+### 4. Tạo, sửa và đổi hồ sơ bé
+
+- Sau đăng nhập lần đầu, nếu chưa có child và không có progress legacy, ứng dụng yêu cầu tạo hồ sơ bé đầu tiên.
+- Form gồm tên, năm sinh tùy chọn, lớp và avatar. Giai đoạn này chỉ cho Lớp 1 và tối đa 5 bé/tài khoản.
+- Có thể sửa tên, năm sinh và avatar; không đổi `childId`. Chưa có chức năng xóa hồ sơ bé để tránh xóa nhầm toàn bộ progress.
+- Khi có từ hai bé trở lên, màn hình chọn bé hiển thị avatar, tên, lớp, số level hoàn thành và tổng sao. Đổi bé kết thúc bộ đếm study session hiện tại, hủy quiz đang làm và tải lại progress/dashboard theo child mới.
+
+### 5. Migration tài khoản cũ
+
+- Nếu account chưa có child nhưng có `users/{uid}/progress/math-grade-1`, transaction tạo đúng một child mặc định **Bé 1**, copy progress sang child mới và ghi `childrenMigrationVersion: 1` cùng `childrenMigrationChildId` vào parent profile.
+- Marker và toàn bộ bản copy cloud được ghi atomically; sau đó ứng dụng đọc lại progress mới để xác minh. Chỉ sau xác minh child mới được dùng.
+- Migration idempotent: chạy lại dùng child ID trong marker, không tạo thêm **Bé 1**. Document progress legacy không bị xóa và chỉ còn read-only trong rules để rollback.
+- Nếu thiết bị đang có local progress legacy của account cũ, dữ liệu đó được copy sang namespace local của child migration rồi merge với cloud. Việc này chỉ áp dụng cho migration account cũ; guest trial/guest progress của đăng ký mới không tự merge vào child.
+
+### 6. Merge và local-first
 
 - Cloud trống + local có dữ liệu: upload local sau lần login đầu tiên.
 - Local trống + cloud có dữ liệu: tải cloud, normalize rồi ghi xuống local.
@@ -205,42 +224,43 @@ Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID
 - `completed`/`unlocked`: OR. `lastPlayedAt`: timestamp mới hơn.
 - History mới có ID phiên; history cũ dùng fingerprint ổn định và giới hạn 50.
 - Study time dùng MAX theo từng ngày; tổng legacy cũ được giữ riêng để không mất dữ liệu.
-- Logout chỉ dừng sync, không xóa local progress. Guest không ghi Firestore; sau login, progress học thử local được merge lên account. Nếu logout hoặc đổi account khi một transaction cũ còn chạy, kết quả của phiên cũ không được áp ngược xuống local của phiên mới.
+- Logout chỉ dừng sync, không xóa local progress. Guest không ghi Firestore và không bắt buộc tạo child. Nếu logout, đổi account hoặc đổi child khi transaction cũ còn chạy, kết quả của phiên cũ không được áp ngược xuống namespace local của phiên mới.
 
-### 5. Test đồng bộ hai thiết bị
+### 7. Test đồng bộ hai thiết bị
 
 1. Bật Firestore và publish rules trước.
-2. Trên thiết bị A, đăng nhập, hoàn thành một level rồi chờ trạng thái **Đã đồng bộ**.
-3. Trên thiết bị B, đăng nhập cùng account và nhấn **☁️ Đồng bộ tiến độ**.
+2. Trên thiết bị A, đăng nhập, chọn cùng một bé, hoàn thành một level rồi chờ trạng thái **Đã đồng bộ**.
+3. Trên thiết bị B, đăng nhập cùng account, chọn đúng bé đó và nhấn **☁️ Đồng bộ tiến độ**.
 4. Kiểm tra điểm, số câu đúng/mẫu số, sao, mở khóa, history và study time xuất hiện đúng.
 5. Tạo kết quả tốt hơn ở A và kết quả thấp hơn ở B; đồng bộ hai bên và xác nhận kết quả tốt hơn không bị ghi đè.
 6. Tắt mạng, học thêm một level, xác nhận quiz vẫn hoàn thành local và trạng thái là **Không có mạng/Chưa đồng bộ**. Bật mạng lại để app sync pending.
 
-### 6. Quota và chi phí
+### 8. Quota và chi phí
 
 - Thiết kế không dùng realtime listener, không write từng câu và không write từng giây. Mỗi chu kỳ thường đọc một progress document và ghi tối đa profile + progress document.
 - Sync thay đổi thường được debounce 5 giây; trigger quan trọng gồm login, hoàn thành quiz, background, dashboard, manual sync và online trở lại.
 - Cloud Firestore có quota và có thể phát sinh chi phí theo số lần đọc/ghi, dung lượng và băng thông tùy plan/chính sách hiện hành. Hãy theo dõi trang Usage trong Firebase Console.
 - Repository **không bật billing tự động, không nâng plan và không tạo budget**. Chủ dự án phải tự quyết định mọi thay đổi billing. Nếu dùng billing, nên cấu hình budget/alert; budget alert không phải hard spending cap.
 
-### 7. Troubleshooting
+### 9. Troubleshooting
 
 - **`permission-denied`**: kiểm tra user đã đăng nhập, UID trong path, và rules đã Publish đúng từ `firestore.rules`.
 - **`failed-precondition` / database chưa tồn tại**: vào **Build → Firestore Database → Create database**.
 - **Sync báo lỗi nhưng quiz vẫn chạy**: đây là hành vi local-first dự kiến; không xóa localStorage, sửa cấu hình/mạng/rules rồi bấm sync lại.
 - **Thiết bị mới chưa thấy dữ liệu**: xác nhận dùng cùng Firebase account, có mạng, document đúng UID tồn tại và nhấn manual sync.
-- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v14`.
+- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v15`.
 - **History trùng từ dữ liệu rất cũ**: record không ID chỉ được dedupe khi năm field fingerprint giống hoàn toàn; timestamp khác được coi là lượt học khác.
 
-### 8. Self-test Cloud Sync A–Q
+### 10. Self-test Multiple Children A–T và Cloud Sync
 
 Mở DevTools Console và chạy:
 
 ```js
 window.__hocCungBeCloudSyncTests
+window.__hocCungBeChildProfilesTests
 ```
 
-Kết quả gồm A–Q: upload local khi cloud trống, download cloud khi local trống, giữ best score theo cả hai chiều, OR unlocked/completed, history dedupe/giới hạn 50, offline/local safety, sync failure không xóa local, guest không ghi cloud, giữ trial progress sau login, logout không xóa local, payload không có Parent PIN, tương thích record `/10` và record `/5`, và token phiên auth thay đổi khi account lifecycle thay đổi. Runner `py __run_browser_tests.py` còn fail nếu có `window.error` hoặc `unhandledrejection`.
+Multiple Children A–T kiểm tra tạo hai child, ID/namespace khác nhau, đổi active child, không trộn progress, đường dẫn cloud theo child, dashboard/quiz theo active child, migration marker/legacy retention, Parent PIN/Email/Phone/Guest không bị ảnh hưởng, child ID an toàn, giới hạn 5 và PWA. Cloud Sync kiểm tra merge progress hiện có cùng isolation key theo child. Runner `py __run_browser_tests.py` còn fail nếu có self-test fail, `window.error` hoặc `unhandledrejection`.
 
 ### Chính sách quyền riêng tư placeholder
 

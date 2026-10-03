@@ -8,10 +8,30 @@ service cloud.firestore {
 
     function validProfile(userId) {
       return request.resource.data.keys().hasOnly([
-        'uid', 'displayName', 'email', 'emailVerified', 'createdAt', 'updatedAt'
+        'uid', 'displayName', 'email', 'emailVerified', 'createdAt', 'updatedAt',
+        'childrenMigrationVersion', 'childrenMigrationChildId'
       ])
       && request.resource.data.uid == userId
       && request.resource.data.emailVerified is bool;
+    }
+
+    function validChild() {
+      return request.resource.data.keys().hasOnly([
+        'childVersion', 'name', 'grade', 'birthYear', 'avatar', 'createdAt', 'updatedAt'
+      ])
+      && request.resource.data.childVersion == 1
+      && request.resource.data.name is string
+      && request.resource.data.name.size() > 0
+      && request.resource.data.name.size() <= 60
+      && request.resource.data.grade == 'grade-1'
+      && (request.resource.data.birthYear == null
+        || (request.resource.data.birthYear is int
+          && request.resource.data.birthYear >= 2000
+          && request.resource.data.birthYear <= 2100))
+      && request.resource.data.avatar is string
+      && request.resource.data.avatar in ['🧒', '👧', '👦', '🐻', '🐰', '🐼', '🦊', '🐱']
+      && request.resource.data.createdAt is timestamp
+      && request.resource.data.updatedAt is timestamp;
     }
 
     function validProgress() {
@@ -34,10 +54,19 @@ service cloud.firestore {
       allow create, update: if ownsUserData(userId) && validProfile(userId);
 
       match /progress/{courseId} {
-        allow read, delete: if ownsUserData(userId) && courseId == 'math-grade-1';
-        allow create, update: if ownsUserData(userId)
-          && courseId == 'math-grade-1'
-          && validProgress();
+        allow read: if ownsUserData(userId) && courseId == 'math-grade-1';
+      }
+
+      match /children/{childId} {
+        allow read: if ownsUserData(userId);
+        allow create, update: if ownsUserData(userId) && validChild();
+
+        match /progress/{courseId} {
+          allow read: if ownsUserData(userId) && courseId == 'math-grade-1';
+          allow create, update: if ownsUserData(userId)
+            && courseId == 'math-grade-1'
+            && validProgress();
+        }
       }
     }
 

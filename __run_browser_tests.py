@@ -29,7 +29,7 @@ setTimeout(async () => {
   }
   const all = Object.values(suites).flatMap((suite) => Array.isArray(suite) ? suite : (suite?.results || []));
   const failed = all.filter((item) => item && item.passed === false);
-  document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ suiteCount: names.length, total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, auth: suites.__hocCungBeParentAuthTests, cloud: suites.__hocCungBeCloudSyncTests })}</pre>`;
+  document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ suiteCount: names.length, total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, auth: suites.__hocCungBeParentAuthTests, children: suites.__hocCungBeChildProfilesTests, cloud: suites.__hocCungBeCloudSyncTests })}</pre>`;
 }, 4000);
 </script>
 '''
