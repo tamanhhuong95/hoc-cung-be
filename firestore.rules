@@ -46,7 +46,8 @@ service cloud.firestore {
       && request.resource.data.studyTime is map
       && request.resource.data.totalCompleted is int
       && request.resource.data.totalCompleted >= 0
-      && request.resource.data.syncReason is string;
+      && request.resource.data.syncReason is string
+      && request.resource.data.updatedAt is timestamp;
     }
 
     function validChildSettings() {
@@ -112,7 +113,8 @@ service cloud.firestore {
         }
 
         match /settings/{settingsId} {
-          allow read: if ownsUserData(userId);
+          allow read: if ownsUserData(userId)
+            && settingsId == 'learning';
           allow create, update: if ownsUserData(userId)
             && settingsId == 'learning'
             && validChildSettings();
