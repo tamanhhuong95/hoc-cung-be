@@ -63,10 +63,11 @@
     return settings;
   }
 
-  function todayUsage(progress = window.loadProgress?.() || {}) {
+  function todayUsage(progress = null) {
     const today = dateKey();
-    const seconds = Math.max(0, Number(progress.studyTime?.studyTimeByDate?.[today]) || 0);
-    const lessons = (Array.isArray(progress.history) ? progress.history : []).filter((entry) => entry?.completedAt && dateKey(new Date(entry.completedAt)) === today).length;
+    const courses = progress ? [progress] : ["math-grade-1", "vietnamese-grade-1"].map((courseId) => window.HocCungBeLearning?.loadProgressByCourse?.(courseId) || window.loadProgress?.());
+    const seconds = courses.reduce((sum, item) => sum + Math.max(0, Number(item?.studyTime?.studyTimeByDate?.[today]) || 0), 0);
+    const lessons = courses.reduce((sum, item) => sum + (Array.isArray(item?.history) ? item.history : []).filter((entry) => entry?.completedAt && dateKey(new Date(entry.completedAt)) === today).length, 0);
     return { today, seconds, lessons };
   }
   function withinAllowedTime(value = settings, now = new Date()) {
@@ -76,7 +77,7 @@
     const start = toMinutes(value.allowedStartTime), end = toMinutes(value.allowedEndTime);
     return start <= end ? current >= start && current <= end : current >= start || current <= end;
   }
-  function evaluateStart(progress = window.loadProgress?.() || {}, value = settings, now = new Date()) {
+  function evaluateStart(progress = null, value = settings, now = new Date()) {
     const usage = todayUsage(progress);
     if (!withinAllowedTime(value, now)) return { allowed: false, reason: "allowed-time", message: "Hiện chưa đến giờ học do phụ huynh cài đặt." };
     if (value.dailyTimeLimitMinutes !== null && usage.seconds >= value.dailyTimeLimitMinutes * 60) return { allowed: false, reason: "daily-time", message: "Hôm nay bé đã học đủ thời gian phụ huynh cài đặt." };
@@ -86,7 +87,7 @@
   function showLimit(message) {
     ensureMarkup(); const modal = $("#learning-limit-dialog"); $("#learning-limit-message").textContent = message; modal.hidden = false; modal.querySelector("button")?.focus();
   }
-  function canStartLesson(progress) { if (!user || !activeChildId()) return true; const result = evaluateStart(progress); if (!result.allowed) showLimit(result.message); return result.allowed; }
+  function canStartLesson(progress = null) { if (!user || !activeChildId()) return true; const result = evaluateStart(progress); if (!result.allowed) showLimit(result.message); return result.allowed; }
 
   function startLearningSession() {
     learningStartedAt = Date.now(); clearInterval(breakTimer); breakTimer = null;
@@ -188,7 +189,7 @@
     test("R", rules.includes("ownsUserData(userId)") && rules.includes("validChildSettings") && rules.includes("match /settings/{settingsId}") && !rules.includes("allow delete"));
     test("S", script.includes('hoc-cung-be:child-will-change') && script.includes('hoc-cung-be:child-changed') && typeof loadActive === "function" && typeof dismissBreak === "function"); test("T", typeof window.completeGuestTrialLevel === "function" || document.body.textContent.includes("2 level học thử"));
     test("U", typeof window.HocCungBeCloudSync?.syncNow === "function"); test("V", document.body.textContent.includes("Liên kết số điện thoại") || document.body.textContent.includes("Số điện thoại"));
-    test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width") && css.includes("@media (max-width: 760px)") && css.includes(".setting-card { grid-template-columns: 1fr")); test("X", sw.includes("hoc-cung-be-v18") && sw.includes('"./child-settings.js"') && document.querySelector('link[rel="manifest"]'));
+    test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width") && css.includes("@media (max-width: 760px)") && css.includes(".setting-card { grid-template-columns: 1fr")); test("X", sw.includes("hoc-cung-be-v19") && sw.includes('"./child-settings.js"') && sw.includes('"./data/vietnamese-grade-1.js"') && document.querySelector('link[rel="manifest"]'));
     return { passed: results.every((item) => item.passed), results };
   }
   window.__hocCungBeChildSettingsTests = selfTests();

@@ -3,6 +3,7 @@
 // Local-first Firestore sync. Only the whitelisted learning payload below is sent to cloud.
 (() => {
   const STORAGE_KEY = "hoc-cung-be:math-grade-1-progress";
+  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1"];
   const DIRTY_KEY = "hoc-cung-be:cloud-sync-pending";
   const LAST_SYNC_KEY = "hoc-cung-be:last-cloud-sync";
   const SYNC_DEBOUNCE_MS = 5000;
@@ -16,11 +17,12 @@
   const parse = (value) => { try { return value ? JSON.parse(value) : null; } catch { return null; } };
   const newerTime = (a, b) => [a, b].filter((value) => typeof value === "string" && !Number.isNaN(new Date(value).getTime())).sort().at(-1) || null;
   const activeChildId = () => window.HocCungBeChildren?.getActiveChildId?.() || null;
-  const scopedKey = (base, childId = activeChildId(), uid = user?.uid) => uid && childId ? `${base}:${uid}:${childId}` : base;
+  const scopedKey = (base, childId = activeChildId(), uid = user?.uid, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => uid && childId ? `${base}:${uid}:${childId}:${courseId}` : base;
   const cloudReady = (currentUser, firestoreSdk, database, childId = activeChildId()) => Boolean(currentUser && firestoreSdk && database && childId);
   const normal = (value) => typeof window.normalizeProgress === "function" ? window.normalizeProgress(value) : value;
-  const loadLocal = () => typeof window.loadProgress === "function" ? window.loadProgress() : normal(parse(safeGet(STORAGE_KEY)) || {});
-  const saveLocal = (value) => typeof window.saveProgress === "function" ? window.saveProgress(value) : (safeSet(STORAGE_KEY, JSON.stringify(normal(value))), normal(value));
+  const withCourse = (courseId, callback) => { const previous = window.HocCungBeLearning?.getActiveCourseId?.(); if (courseId && previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(courseId); try { return callback(); } finally { if (previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(previous); } };
+  const loadLocal = (courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.loadProgress === "function" ? window.loadProgress(localStorage, courseId) : normal(parse(safeGet(STORAGE_KEY)) || {});
+  const saveLocal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.saveProgress === "function" ? window.saveProgress(value, localStorage, courseId) : (safeSet(STORAGE_KEY, JSON.stringify(normal(value))), normal(value));
   const fingerprint = (entry) => typeof window.historyFingerprint === "function" ? window.historyFingerprint(entry) : [entry.levelId, entry.score, entry.correct, entry.questionCount, entry.completedAt].join("|");
 
   function mergeHistory(localHistory, cloudHistory) {
@@ -48,7 +50,7 @@
     return { totalSeconds, todaySeconds: safeNumber(studyTimeByDate[new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)], 864000), todayDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10), lastStudyDate: newerTime(first.lastStudyDate, second.lastStudyDate), legacySeconds, studyTimeByDate };
   }
 
-  function mergeProgress(localRaw, cloudRaw) {
+  function mergeProgress(localRaw, cloudRaw, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { return withCourse(courseId, () => {
     const local = normal(localRaw); const cloud = normal(cloudRaw); const history = mergeHistory(local.history, cloud.history); const levels = {};
     Object.keys(local.levels || {}).forEach((levelId) => {
       const a = local.levels[levelId] || {}; const b = cloud.levels?.[levelId] || {}; const best = betterBest(a, b); const historyAttempts = history.filter((entry) => entry.levelId === levelId).length;
@@ -56,16 +58,16 @@
     });
     const merged = normal({ progressVersion: 2, levels, history, studyTime: mergeStudyTime(local.studyTime, cloud.studyTime), totalCompleted: Math.max(safeNumber(local.totalCompleted, 999999), safeNumber(cloud.totalCompleted, 999999), Object.values(levels).reduce((sum, level) => sum + level.attempts, 0)) });
     return merged;
-  }
+  }); }
 
-  function cloudPayload(progress) {
+  function cloudPayload(progress, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { return withCourse(courseId, () => {
     const value = normal(progress); const levels = {};
     Object.entries(value.levels || {}).forEach(([levelId, item]) => { levels[levelId] = { bestScore: item.bestScore, bestCorrect: item.bestCorrect, bestQuestionCount: item.bestQuestionCount, bestStars: item.bestStars, attempts: item.attempts, completed: item.completed, unlocked: item.unlocked, lastPlayedAt: item.lastPlayedAt }; });
     return { progressVersion: 2, levels, history: value.history.map((entry) => ({ historyId: entry.historyId || fingerprint(entry), levelId: entry.levelId, topic: entry.topic, score: entry.score, correct: entry.correct, stars: entry.stars, questionCount: entry.questionCount, completedAt: entry.completedAt })), studyTime: value.studyTime, totalCompleted: value.totalCompleted };
-  }
+  }); }
 
-  function lastSyncForCurrentUser() { const saved = parse(safeGet(LAST_SYNC_KEY)); const childId = activeChildId(); return user && childId && validObject(saved) ? saved[`${user.uid}:${childId}`] || null : null; }
-  function setLastSync(value, childId = activeChildId()) { const saved = parse(safeGet(LAST_SYNC_KEY)); const map = validObject(saved) ? saved : {}; if (user && childId) map[`${user.uid}:${childId}`] = value; safeSet(LAST_SYNC_KEY, JSON.stringify(map)); }
+  function lastSyncForCurrentUser(courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const childId = activeChildId(); return user && childId && validObject(saved) ? saved[`${user.uid}:${childId}:${courseId}`] || null : null; }
+  function setLastSync(value, childId = activeChildId(), courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const map = validObject(saved) ? saved : {}; if (user && childId) map[`${user.uid}:${childId}:${courseId}`] = value; safeSet(LAST_SYNC_KEY, JSON.stringify(map)); }
   function statusText(status) { return ({ syncing: "Đang đồng bộ...", synced: "Đã đồng bộ", pending: "Chưa đồng bộ", offline: "Không có mạng", error: "Lỗi đồng bộ", guest: "Đăng nhập để đồng bộ" })[status] || "Chưa đồng bộ"; }
   function renderStatus(status = lastStatus) {
     lastStatus = status; document.querySelectorAll("[data-cloud-sync-status]").forEach((element) => { element.textContent = statusText(status); element.dataset.state = status; });
@@ -79,30 +81,28 @@
     document.querySelectorAll("[data-cloud-sync-button]").forEach((button) => { button.onclick = () => syncNow("manual"); }); renderStatus(user && activeChildId() ? (safeGet(scopedKey(DIRTY_KEY)) === "1" ? "pending" : (lastSyncForCurrentUser() ? "synced" : "pending")) : "guest");
   }
 
-  function markPending(childId = activeChildId()) { if (user && childId) safeSet(scopedKey(DIRTY_KEY, childId), "1"); if (user) renderStatus(navigator.onLine ? "pending" : "offline"); }
+  function markPending(childId = activeChildId(), courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { if (user && childId) safeSet(scopedKey(DIRTY_KEY, childId, user.uid, courseId), "1"); if (user) renderStatus(navigator.onLine ? "pending" : "offline"); }
   function scheduleSync() { markPending(); if (!user || !firestore || !navigator.onLine) return; clearTimeout(debounceTimer); debounceTimer = setTimeout(() => syncNow("debounced"), SYNC_DEBOUNCE_MS); }
 
-  async function syncNow(reason = "manual") {
+  async function syncNow(reason = "manual", requestedCourseId = null) {
     const childId = activeChildId();
     if (!cloudReady(user, firestore, db, childId)) { renderStatus("guest"); return null; }
     if (!navigator.onLine) { markPending(); renderStatus("offline"); return null; }
+    const courseIds = requestedCourseId ? [requestedCourseId] : COURSE_IDS;
     const syncUser = user, syncFirestore = firestore, syncDb = db, generation = authGeneration, syncChildId = childId;
-    const syncKey = `${syncUser.uid}:${syncChildId}:${generation}`;
+    const syncKey = `${syncUser.uid}:${syncChildId}:${generation}:${courseIds.join(",")}`;
     if (syncPromises.has(syncKey)) return syncPromises.get(syncKey);
-    const localBefore = loadLocal(); renderStatus("syncing");
+    renderStatus("syncing");
     const promise = (async () => {
       try {
-        const progressRef = syncFirestore.doc(syncDb, "users", syncUser.uid, "children", syncChildId, "progress", "math-grade-1");
-        let merged = localBefore;
-        await syncFirestore.runTransaction(syncDb, async (transaction) => {
-          const snapshot = await transaction.get(progressRef); const cloud = snapshot.exists() ? snapshot.data() : null;
-          merged = cloud ? mergeProgress(localBefore, cloud) : normal(localBefore);
-          transaction.set(progressRef, { ...cloudPayload(merged), updatedAt: syncFirestore.serverTimestamp(), syncReason: reason });
-        });
-        if (generation !== authGeneration || user?.uid !== syncUser.uid || activeChildId() !== syncChildId) return merged;
-        const currentLocal = loadLocal(); const finalMerged = mergeProgress(currentLocal, merged); const changedDuringSync = JSON.stringify(cloudPayload(finalMerged)) !== JSON.stringify(cloudPayload(merged));
-        applyingCloud = true; try { saveLocal(finalMerged); } finally { applyingCloud = false; } safeSet(scopedKey(DIRTY_KEY, syncChildId), changedDuringSync ? "1" : "0"); const completedAt = new Date().toISOString(); setLastSync(completedAt, syncChildId); renderStatus(changedDuringSync ? "pending" : "synced");
-        window.dispatchEvent(new CustomEvent("hoc-cung-be:cloud-synced", { detail: { progress: finalMerged, completedAt, childId: syncChildId } })); if (changedDuringSync) scheduleSync(); return finalMerged;
+        const results = {};
+        for (const courseId of courseIds.filter((id) => COURSE_IDS.includes(id))) {
+          const localBefore = loadLocal(courseId); const progressRef = syncFirestore.doc(syncDb, "users", syncUser.uid, "children", syncChildId, "progress", courseId); let merged = localBefore;
+          await syncFirestore.runTransaction(syncDb, async (transaction) => { const snapshot = await transaction.get(progressRef); const cloud = snapshot.exists() ? snapshot.data() : null; merged = cloud ? mergeProgress(localBefore, cloud, courseId) : withCourse(courseId, () => normal(localBefore)); transaction.set(progressRef, { ...cloudPayload(merged, courseId), updatedAt: syncFirestore.serverTimestamp(), syncReason: reason }); });
+          if (generation !== authGeneration || user?.uid !== syncUser.uid || activeChildId() !== syncChildId) return results;
+          const currentLocal = loadLocal(courseId); const finalMerged = mergeProgress(currentLocal, merged, courseId); const changedDuringSync = JSON.stringify(cloudPayload(finalMerged, courseId)) !== JSON.stringify(cloudPayload(merged, courseId)); applyingCloud = true; try { saveLocal(finalMerged, courseId); } finally { applyingCloud = false; } safeSet(scopedKey(DIRTY_KEY, syncChildId, syncUser.uid, courseId), changedDuringSync ? "1" : "0"); const completedAt = new Date().toISOString(); setLastSync(completedAt, syncChildId, courseId); results[courseId] = finalMerged; if (changedDuringSync) scheduleSync();
+        }
+        renderStatus("synced"); window.dispatchEvent(new CustomEvent("hoc-cung-be:cloud-synced", { detail: { progressByCourse: results, childId: syncChildId } })); return results;
       } catch (error) {
         console.warn("Không thể đồng bộ Cloud Firestore; dữ liệu local được giữ nguyên.", error);
         if (generation === authGeneration && user?.uid === syncUser.uid && activeChildId() === syncChildId) { markPending(syncChildId); renderStatus(navigator.onLine ? "error" : "offline"); }

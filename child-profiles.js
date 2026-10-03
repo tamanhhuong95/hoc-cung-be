@@ -5,7 +5,7 @@
   const ACTIVE_CHILD_KEY = "hoc-cung-be:active-child";
   const CHILD_PROGRESS_KEY_PREFIX = "hoc-cung-be:progress:";
   const LEGACY_PROGRESS_KEY = "hoc-cung-be:math-grade-1-progress";
-  const COURSE_ID = "math-grade-1";
+  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1"];
   const MAX_CHILDREN = 5;
   const CHILD_VERSION = 1;
   const MIGRATION_VERSION = 1;
@@ -16,7 +16,8 @@
   const safeSet = (key, value) => { try { localStorage.setItem(key, value); return true; } catch { return false; } };
   const safeRemove = (key) => { try { localStorage.removeItem(key); } catch {} };
   const parse = (value) => { try { return value ? JSON.parse(value) : null; } catch { return null; } };
-  const childProgressKey = (childId) => `${CHILD_PROGRESS_KEY_PREFIX}${childId}`;
+  const childProgressKey = (childId, courseId = "math-grade-1") => `${CHILD_PROGRESS_KEY_PREFIX}${childId}:${courseId}`;
+  const legacyChildProgressKey = (childId) => `${CHILD_PROGRESS_KEY_PREFIX}${childId}`;
   const validChildId = (value) => typeof value === "string" && /^[A-Za-z0-9_-]{8,128}$/.test(value);
   const normalizeName = (value) => String(value || "").trim().replace(/\s+/g, " ").slice(0, 60);
   const normalizeBirthYear = (value) => value === "" || value == null ? null : Number.parseInt(value, 10);
@@ -25,7 +26,7 @@
   const childPayload = (values) => ({ childVersion: CHILD_VERSION, name: normalizeName(values.name), grade: "grade-1", birthYear: normalizeBirthYear(values.birthYear), avatar: normalizeAvatar(values.avatar) });
   const validPayload = (value) => Boolean(value && value.childVersion === CHILD_VERSION && value.name && value.name.length <= 60 && value.grade === "grade-1" && validBirthYear(value.birthYear) && AVATARS.includes(value.avatar));
   const normalizeChild = (id, data = {}) => ({ id, childVersion: CHILD_VERSION, name: normalizeName(data.name) || "Bé", grade: "grade-1", birthYear: validBirthYear(data.birthYear) ? data.birthYear : null, avatar: normalizeAvatar(data.avatar), createdAt: data.createdAt || null, updatedAt: data.updatedAt || null, summary: data.summary || { completed: 0, stars: 0 } });
-  const progressSummary = (raw) => { const progress = typeof window.normalizeProgress === "function" ? window.normalizeProgress(raw || {}) : raw || {}; const levels = Object.values(progress.levels || {}); return { completed: levels.filter((item) => item?.completed).length, stars: levels.reduce((sum, item) => sum + Math.max(0, Number(item?.bestStars) || 0), 0) }; };
+  const progressSummary = (raw, courseId = "math-grade-1") => { const previous = window.HocCungBeLearning?.getActiveCourseId?.(); if (previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(courseId); const progress = typeof window.normalizeProgress === "function" ? window.normalizeProgress(raw || {}) : raw || {}; if (previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(previous); const levels = Object.values(progress.levels || {}); return { completed: levels.filter((item) => item?.completed).length, stars: levels.reduce((sum, item) => sum + Math.max(0, Number(item?.bestStars) || 0), 0) }; };
 
   function getActiveChild() { return children.find((child) => child.id === activeId) || null; }
   function getChildren() { return children.map((child) => ({ ...child, summary: { ...child.summary } })); }
@@ -81,7 +82,7 @@
     renderManagement();
   }
 
-  function refreshLocalSummary(child) { const currentLocal = parse(safeGet(childProgressKey(child.id))); if (currentLocal) child.summary = progressSummary(currentLocal); return child; }
+  function refreshLocalSummary(child) { const math = parse(safeGet(childProgressKey(child.id, "math-grade-1"))) || parse(safeGet(legacyChildProgressKey(child.id))); const vietnamese = parse(safeGet(childProgressKey(child.id, "vietnamese-grade-1"))); const mathSummary = progressSummary(math, "math-grade-1"), vietnameseSummary = progressSummary(vietnamese, "vietnamese-grade-1"); child.summary = { math: mathSummary, vietnamese: vietnameseSummary, completed: mathSummary.completed + vietnameseSummary.completed, stars: mathSummary.stars + vietnameseSummary.stars }; return child; }
   function childCard(child, actionText) {
     refreshLocalSummary(child); const active = child.id === activeId;
     const card = document.createElement("article"); card.className = `child-card${active ? " is-active" : ""}`; card.dataset.childCard = child.id;
@@ -108,10 +109,10 @@
   function escapeHtml(value) { const node = document.createElement("span"); node.textContent = value; return node.innerHTML; }
 
   async function loadSummary(childId) {
-    const local = parse(safeGet(childProgressKey(childId)));
-    if (local) return progressSummary(local);
-    if (!firestore || !db || !user) return { completed: 0, stars: 0 };
-    try { const snap = await firestore.getDoc(firestore.doc(db, "users", user.uid, "children", childId, "progress", COURSE_ID)); return snap.exists() ? progressSummary(snap.data()) : { completed: 0, stars: 0 }; } catch { return { completed: 0, stars: 0 }; }
+    const localMath = parse(safeGet(childProgressKey(childId, "math-grade-1"))) || parse(safeGet(legacyChildProgressKey(childId))); const localVietnamese = parse(safeGet(childProgressKey(childId, "vietnamese-grade-1")));
+    if (localMath || localVietnamese) { const math = progressSummary(localMath, "math-grade-1"), vietnamese = progressSummary(localVietnamese, "vietnamese-grade-1"); return { math, vietnamese, completed: math.completed + vietnamese.completed, stars: math.stars + vietnamese.stars }; }
+    if (!firestore || !db || !user) return { math: { completed: 0, stars: 0 }, vietnamese: { completed: 0, stars: 0 }, completed: 0, stars: 0 };
+    try { const snapshots = await Promise.all(COURSE_IDS.map((courseId) => firestore.getDoc(firestore.doc(db, "users", user.uid, "children", childId, "progress", courseId)))); const math = progressSummary(snapshots[0].exists() ? snapshots[0].data() : {}, "math-grade-1"), vietnamese = progressSummary(snapshots[1].exists() ? snapshots[1].data() : {}, "vietnamese-grade-1"); return { math, vietnamese, completed: math.completed + vietnamese.completed, stars: math.stars + vietnamese.stars }; } catch { return { math: { completed: 0, stars: 0 }, vietnamese: { completed: 0, stars: 0 }, completed: 0, stars: 0 }; }
   }
 
   async function loadChildren() {
@@ -126,7 +127,7 @@
     if (migrationPromise) return migrationPromise;
     migrationPromise = (async () => {
       if (!firestore || !db || !user || children.length) return null;
-      const parentRef = firestore.doc(db, "users", user.uid); const legacyRef = firestore.doc(db, "users", user.uid, "progress", COURSE_ID); const newChildRef = firestore.doc(firestore.collection(db, "users", user.uid, "children")); const newProgressRef = firestore.doc(db, "users", user.uid, "children", newChildRef.id, "progress", COURSE_ID);
+      const parentRef = firestore.doc(db, "users", user.uid); const legacyRef = firestore.doc(db, "users", user.uid, "progress", "math-grade-1"); const newChildRef = firestore.doc(firestore.collection(db, "users", user.uid, "children")); const newProgressRef = firestore.doc(db, "users", user.uid, "children", newChildRef.id, "progress", "math-grade-1");
       const migratedId = await firestore.runTransaction(db, async (transaction) => {
         const parentSnap = await transaction.get(parentRef);
         if (parentSnap.exists() && parentSnap.data().childrenMigrationVersion === MIGRATION_VERSION) return parentSnap.data().childrenMigrationChildId || null;
@@ -139,9 +140,9 @@
         return newChildRef.id;
       });
       if (!migratedId) return null;
-      const verification = await firestore.getDoc(firestore.doc(db, "users", user.uid, "children", migratedId, "progress", COURSE_ID));
+      const verification = await firestore.getDoc(firestore.doc(db, "users", user.uid, "children", migratedId, "progress", "math-grade-1"));
       if (!verification.exists()) throw new Error("Không thể xác minh progress sau migration.");
-      const legacyLocal = safeGet(LEGACY_PROGRESS_KEY); const migratedLocalKey = childProgressKey(migratedId);
+      const legacyLocal = safeGet(LEGACY_PROGRESS_KEY); const migratedLocalKey = childProgressKey(migratedId, "math-grade-1");
       if (legacyLocal && !safeGet(migratedLocalKey)) safeSet(migratedLocalKey, legacyLocal);
       return migratedId;
     })();
