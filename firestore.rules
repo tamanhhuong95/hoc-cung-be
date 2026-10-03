@@ -50,7 +50,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read, delete: if ownsUserData(userId);
+      allow read: if ownsUserData(userId);
       allow create, update: if ownsUserData(userId) && validProfile(userId);
 
       match /progress/{courseId} {
