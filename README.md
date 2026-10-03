@@ -33,7 +33,7 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Animation có hỗ trợ `prefers-reduced-motion` và không tải ảnh, GIF, CDN hay thư viện bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v15`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, bài Toán lớp 1, mã nguồn, manifest và icon được cache để có thể tiếp tục học và xem tiến độ khi offline. Visual dùng emoji Unicode nội bộ nên không có asset ảnh bên thứ ba hoặc request mạng mới; cache hiện là `hoc-cung-be-v16`.
 - Có khu vực gọn **👤 Tài khoản phụ huynh**. Firebase `onAuthStateChanged()` là nguồn sự thật cho Guest Trial Mode/Full Learning Mode; ứng dụng không tự đánh dấu login trong localStorage. Parent Dashboard vẫn chỉ cần Parent PIN đúng và không phụ thuộc Firebase login.
 - Một tài khoản Firebase của phụ huynh quản lý tối đa 5 hồ sơ bé. Trẻ không có email, mật khẩu, Phone Auth hoặc Firebase Auth account riêng. Mỗi hồ sơ dùng Firestore auto-ID, có tên, lớp, năm sinh tùy chọn và avatar; hiện chỉ hỗ trợ `grade-1`.
 - Sau đăng nhập, tài khoản có một bé sẽ tự chọn bé đó; tài khoản có nhiều bé luôn mở màn hình **Chọn bé đang học**. Home/quiz hiển thị **Đang học**, Dashboard hiển thị **Đang xem tiến độ của**, và nút **Đổi bé** không cần đăng xuất.
@@ -46,7 +46,7 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Study time có thêm `studyTimeByDate`; mỗi ngày merge bằng MAX để tránh double count khi cùng dữ liệu đã xuất hiện ở hai phía. Tổng cũ được giữ trong `legacySeconds`, vì vậy migration không làm mất `studyTime.totalSeconds` cũ và vẫn giữ `progressVersion: 2`.
 - Auto sync chạy khi đăng nhập, hoàn thành quiz, app chuyển background, mở/cập nhật Parent Dashboard và khi mạng trở lại nếu còn dữ liệu pending. Thay đổi thường được debounce 5 giây; không ghi từng câu hoặc từng giây.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + visible reCAPTCHA. Flow link dùng `linkWithCredential()` và bắt buộc giữ nguyên UID; mật khẩu, OTP, `verificationId` và token không được ứng dụng lưu vào storage hoặc Firestore.
-- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v15` và không xử lý/cache Firebase Auth, Firestore API, Google API, Google Identity, Firebase CDN hoặc reCAPTCHA request.
+- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK hoặc Firestore chưa bật, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v16` và không xử lý/cache Firebase Auth, Firestore API, Google API, Google Identity, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
@@ -110,7 +110,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v15` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v16` cập nhật app shell.
 5. Luồng hiện tại dùng action URL mặc định của Firebase nên không thêm `actionCodeSettings` không cần thiết. Nếu sau này cấu hình action URL tùy chỉnh, URL production phải là `https://tamanhhuong95.github.io/hoc-cung-be/`, không dùng localhost trong production.
 
 ### 5. Quên mật khẩu, đổi mật khẩu và re-authentication
@@ -248,7 +248,7 @@ Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID
 - **`failed-precondition` / database chưa tồn tại**: vào **Build → Firestore Database → Create database**.
 - **Sync báo lỗi nhưng quiz vẫn chạy**: đây là hành vi local-first dự kiến; không xóa localStorage, sửa cấu hình/mạng/rules rồi bấm sync lại.
 - **Thiết bị mới chưa thấy dữ liệu**: xác nhận dùng cùng Firebase account, có mạng, document đúng UID tồn tại và nhấn manual sync.
-- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v15`.
+- **PWA còn code cũ**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v16`.
 - **History trùng từ dữ liệu rất cũ**: record không ID chỉ được dedupe khi năm field fingerprint giống hoàn toàn; timestamp khác được coi là lượt học khác.
 
 ### 10. Self-test Multiple Children A–T và Cloud Sync
