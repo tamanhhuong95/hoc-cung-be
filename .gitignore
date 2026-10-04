@@ -35,3 +35,20 @@ __pycache__/
 __browser-test-profile/
 __browser-test-runner.html
 __browser_report*.txt
+__full_regression_*
+
+# Temporary browser/navigation diagnostics and release audit output
+__navigation_*
+__navigation-*
+__diagnostic_*
+__mouse_*
+__mutation_*
+__final_*
+__final-*
+__release_*
+__check_browser_capabilities.py
+__browser_capabilities.json
+__current_runner.txt
+__quiz_runner.txt
+__run_navigation_matrix.cmd
+__script_diff_current.txt
