@@ -17,10 +17,11 @@
 html { scroll-behavior: smooth; }
 body { position: relative; isolation: isolate; min-height: 100vh; margin: 0; min-width: 320px; color: var(--ink); background: #fbfcff; font-family: "Nunito", "Arial Rounded MT Bold", Arial, sans-serif; font-size: 18px; line-height: 1.5; }
 body::before, body::after { content: ""; position: fixed; inset: -10px; pointer-events: none; }
-body::before { z-index: -2; background: url("assets/backgrounds/van-mieu-quoc-tu-giam.webp") center / cover no-repeat; filter: blur(3px); opacity: .18; transform: scale(1.02); }
+body::before { z-index: -2; background: url("assets/backgrounds/van-mieu-quoc-tu-giam.webp") center / cover no-repeat; filter: blur(3px); opacity: .24; transform: scale(1.02); }
 body::after { z-index: -1; background: rgba(251, 252, 255, .76); }
 body:has(#quiz-screen:not([hidden]))::after { background: rgba(251, 252, 255, .9); }
 body:not([data-auth-resolved="true"]) [data-guest-only] { display: none !important; }
+[data-guest-only][hidden], [data-auth-only][hidden] { display: none !important; }
 button, a { font: inherit; }
 button { cursor: pointer; }
 .skip-link { position: fixed; top: -60px; left: 16px; z-index: 20; padding: 10px 16px; background: var(--ink); color: white; border-radius: 9px; }
