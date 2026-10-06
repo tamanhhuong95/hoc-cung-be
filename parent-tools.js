@@ -103,7 +103,7 @@
     setGateStatus(lockedUntil ? "Vui lòng thử lại sau ít giây." : "Mã bảo mật chưa đúng. Vui lòng thử lại.", "is-error");
     $("#parent-pin-enter").select();
   }
-  function showParentDashboard() { $("#parent-refresh-button")?.click(); showOnly("parent-dashboard-screen"); }
+  function showParentDashboard() { $("#parent-refresh-button")?.click(); showOnly("parent-dashboard-screen"); window.dispatchEvent(new CustomEvent("hoc-cung-be:parent-dashboard-open")); }
   async function authorizeChange(label = "thay đổi này") {
     if (!hasPin()) return true;
     const seconds = cooldownSeconds();
@@ -116,7 +116,7 @@
   }
   function feedbackPayload(values) {
     const lines = ["Góp ý cho Học Cùng Bé", "", `Loại góp ý: ${values.type}`, `Tiêu đề: ${values.title}`, "", "Nội dung:", values.message, "", `Email liên hệ: ${values.email || "(không cung cấp)"}`];
-    if (values.technical) lines.push("", "Thông tin kỹ thuật (được phụ huynh chủ động chọn):", `URL: ${location.href}`, `Trình duyệt: ${navigator.userAgent}`, "Phiên bản ứng dụng: hoc-cung-be-v22");
+    if (values.technical) lines.push("", "Thông tin kỹ thuật (được phụ huynh chủ động chọn):", `URL: ${location.href}`, `Trình duyệt: ${navigator.userAgent}`, "Phiên bản ứng dụng: hoc-cung-be-v23");
     return lines.join("\r\n");
   }
   function buildFeedbackMailto(values, destination = FEEDBACK_EMAIL) { return `mailto:${encodeURIComponent(destination)}?subject=${encodeURIComponent(`[Học Cùng Bé] ${values.type}: ${values.title}`)}&body=${encodeURIComponent(feedbackPayload(values))}`; }
@@ -184,7 +184,7 @@
     test("L", typeof window.HOC_CUNG_BE_FIREBASE_CONFIG !== "undefined" && !Object.keys(record || {}).includes("firebasePassword"));
     return { passed: results.every((item) => item.passed), results };
   }
-  window.HocCungBeParentPin = { hasPin, authorizeChange, openParentGate, isUnlocked: () => parentUnlockedForSession };
+  window.HocCungBeParentPin = { hasPin, authorizeChange, openParentGate, showParentDashboard, isUnlocked: () => parentUnlockedForSession };
   window.__hocCungBeParentPinFeedbackTests = { pending: true };
   runSelfTests().then((result) => { window.__hocCungBeParentPinFeedbackTests = result; }).catch(() => { window.__hocCungBeParentPinFeedbackTests = { passed: false, results: [] }; });
 })();

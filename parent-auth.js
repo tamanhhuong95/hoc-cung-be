@@ -94,12 +94,12 @@ async function changePasswordWithReauth(user, currentPassword, nextPassword, sdk
 async function reloadVerifiedUser(user, sdk = firebase, authInstance = auth) { await sdk.reload(user); return authInstance?.currentUser || user; }
 
 async function loadFirebase() {
-  if (!hasFirebaseConfig) return;
+  if (!hasFirebaseConfig) { publishAuthState(null); return; }
   try {
     const appSdk = await import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app.js`); firebase = await import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-auth.js`); firestore = await import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-firestore.js`);
     const app = appSdk.initializeApp(config); auth = firebase.getAuth(app); db = firestore.getFirestore(app); await firebase.setPersistence(auth, firebase.browserLocalPersistence);
     firebase.onAuthStateChanged(auth, async (user) => { const previousUid = currentUser?.uid || null; if (!user || (previousUid && previousUid !== user.uid)) clearPhoneFlow(true); currentUser = user; renderAuthUi(user); if (user) { try { await updateFirestoreProfile(user); } catch (error) { console.warn("Không thể cập nhật profile Firestore.", error); } try { await window.HocCungBeChildren?.configure({ firestore, db, user }); } catch (error) { console.warn("Không thể tải hồ sơ bé.", error); } await window.HocCungBeChildSettings?.configure({ firestore, db, user }); publishAuthState(user); await window.HocCungBeCloudSync?.configure({ firestore, db, user }); } else { window.HocCungBeChildren?.disconnect(); window.HocCungBeChildSettings?.disconnect(); publishAuthState(null); window.HocCungBeCloudSync?.disconnect(); } });
-  } catch (error) { console.warn("Không thể khởi tạo Firebase Authentication hoặc Cloud Firestore.", error); }
+  } catch (error) { console.warn("Không thể khởi tạo Firebase Authentication hoặc Cloud Firestore.", error); publishAuthState(null); }
 }
 
 async function registerParent(event) {
@@ -179,7 +179,7 @@ async function addSelfTests() {
 }
 
 function setup() {
-  accountMarkup(); window.addEventListener("hoc-cung-be:open-auth", (event) => showAccountScreen(event.detail?.screen === "register" ? "register" : "login"));
+  accountMarkup(); window.addEventListener("hoc-cung-be:open-auth", (event) => showAccountScreen(event.detail?.screen === "register" ? "register" : "login")); window.addEventListener("hoc-cung-be:open-account", () => { if (currentUser) showAccountScreen("me"); }); window.addEventListener("hoc-cung-be:sign-out", () => signOutParent());
   document.addEventListener("click", (event) => { const toggle = event.target.closest("[data-password-toggle]"); if (toggle) { const input = $("input", toggle.parentElement); input.type = input.type === "password" ? "text" : "password"; toggle.textContent = input.type === "password" ? "Hiện" : "Ẩn"; toggle.setAttribute("aria-label", input.type === "password" ? "Hiện mật khẩu" : "Ẩn mật khẩu"); } if (event.target.closest("[data-account-home]")) showHome(); if (event.target.closest("[data-go]")) $$(".account-screen").forEach((screen) => { screen.hidden = true; }); });
   $("#register-form").addEventListener("submit", registerParent); $("#login-form").addEventListener("submit", loginParent); $("#forgot-form").addEventListener("submit", forgotPassword); $("#resend-verification").onclick = resendVerification; $("#refresh-verification").onclick = reloadVerificationStatus; $("#open-phone-link").onclick = async () => { const panel = $("#account-me-screen"), phonePanel = $("#phone-link-panel"), opening = phonePanel.hidden; phonePanel.hidden = !opening; if (!opening) { clearPhoneFlow(); return; } if (phoneUnavailable(panel) || !canLinkPhone(currentUser)) return; try { await ensurePhoneRecaptcha(); } catch (error) { clearRecaptchaVerifier(); setStatus(panel, accountMessage(error.code), "is-error"); } }; $("#open-password-change").onclick = () => { $("#password-change-panel").hidden = !$("#password-change-panel").hidden; }; $("#account-signout").onclick = signOutParent; $("#send-phone-code").onclick = () => sendPhoneCode(); $("#resend-phone-code").onclick = resendPhoneCode; $("#confirm-phone-code").onclick = confirmPhoneCode; $("#change-password").onclick = changePassword;
   renderAuthUi(); window.__hocCungBeParentAuthTests = addSelfTests(); window.dispatchEvent(new Event("hoc-cung-be:parent-auth-ready")); loadFirebase();

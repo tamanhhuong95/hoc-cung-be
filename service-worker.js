@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v22";
+const CACHE_NAME = "hoc-cung-be-v23";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -16,6 +16,7 @@ const APP_SHELL = [
   "./parent-tools.js",
   "./manifest.webmanifest",
   "./assets/branding/logo-hoc-cung-be-web.png",
+  "./assets/backgrounds/van-mieu-quoc-tu-giam.webp",
   "./assets/icons/favicon-32.png",
   "./assets/icons/favicon-48.png",
   "./assets/icons/apple-touch-icon.png",
