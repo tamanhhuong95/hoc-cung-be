@@ -21,7 +21,7 @@ body::before { z-index: -2; background: url("assets/backgrounds/van-mieu-quoc-tu
 body::after { z-index: -1; background: rgba(251, 252, 255, .18); }
 body:has(#quiz-screen:not([hidden]))::after { background: rgba(251, 252, 255, .72); }
 body:not([data-auth-resolved="true"]) [data-guest-only] { display: none !important; }
-[data-guest-only][hidden], [data-auth-only][hidden] { display: none !important; }
+[data-guest-only][hidden], [data-auth-only][hidden], [data-home-auth-redundant][hidden] { display: none !important; }
 button, a { font: inherit; }
 button { cursor: pointer; }
 .skip-link { position: fixed; top: -60px; left: 16px; z-index: 20; padding: 10px 16px; background: var(--ink); color: white; border-radius: 9px; }
