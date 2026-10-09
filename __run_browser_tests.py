@@ -3,11 +3,13 @@ import json
 import pathlib
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
 import threading
 import time
+import traceback
 import uuid
 
 import requests
@@ -20,12 +22,18 @@ REPORT = ROOT / "__full_regression_report.json"
 DIAGNOSTIC = ROOT / "__browser_test_diagnostic.json"
 CHROME = pathlib.Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 DEBUG_PORT = 9342
+HTTP_PORT = 8767
+MIN_CHECKS = 350
+CHROME_STDERR = pathlib.Path(tempfile.gettempdir()) / f"hoc-cung-be-chrome-{uuid.uuid4().hex}.stderr.txt"
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 probe = r'''
 <script>
 const runtimeErrors = [];
+window.__hcbRegressionState = { stage: "J. suite hooks ready", hooksReady: false, pendingHooks: [], suitesComplete: false };
 const originalConsoleError = console.error.bind(console);
 console.error = (...args) => { runtimeErrors.push({ type: "console.error", message: args.map((value) => value instanceof Error ? value.stack || value.message : String(value)).join(" ") }); originalConsoleError(...args); };
 window.addEventListener("error", (event) => {
@@ -65,6 +73,8 @@ window.addEventListener("load", async () => {
   while (registry.some(([, hook]) => !hookReady(hook)) && performance.now() < hookDeadline) {
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
+  window.__hcbRegressionState.hooksReady = registry.every(([, hook]) => hookReady(hook));
+  window.__hcbRegressionState.pendingHooks = registry.filter(([, hook]) => !hookReady(hook)).map(([suite, hook]) => ({ suite, hook, exists: hook in window, pending: window[hook]?.pending === true }));
   const state = () => ({ activeScreen: [...document.querySelectorAll(".screen")].find((screen) => !screen.hidden)?.id || null, course: document.body.dataset.course || null, authenticated: document.body.dataset.authenticated || null, topics: document.querySelectorAll("#topic-grid button").length, levels: document.querySelectorAll("#level-grid button").length, answers: document.querySelectorAll("#answer-grid button").length, quizHidden: document.querySelector("#quiz-screen")?.hidden });
   const isQuiz = () => { const screen = document.querySelector("#quiz-screen"); return Boolean(screen && !screen.hidden && document.querySelectorAll("#answer-grid button").length === 4 && document.querySelector("#question-count")?.textContent.includes("1 / 5")); };
   const click = (selector, root = document) => { const node = root.querySelector(selector); if (!node) throw new Error(`Missing clickable element: ${selector}`); if (node.disabled) throw new Error(`Clickable element is disabled: ${selector}`); node.click(); return node; };
@@ -255,6 +265,7 @@ window.addEventListener("load", async () => {
   missingSuites.forEach((item) => runtimeErrors.push({ type: "missing-suite", message: `${item.suite}: ${item.hook}` }));
   if (all.length < 350) runtimeErrors.push({ type: "incomplete-coverage", message: `Expected at least 350 checks, got ${all.length}` });
   const realExitCode = failed.length || runtimeErrors.length || missingSuites.length ? 1 : 0;
+  window.__hcbRegressionState = { ...window.__hcbRegressionState, stage: "L. report extraction", suitesComplete: true, suiteCount: Object.keys(suites).length, totalChecks: all.length, failedCount: failed.length, runtimeErrorCount: runtimeErrors.length, missingSuites };
   document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ realExitCode, suiteCount: Object.keys(suites).length, suiteNames: Object.keys(suites), total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, missingSuites })}</pre>`;
 });
 </script>
@@ -293,7 +304,7 @@ class Cdp:
         self.ws.close()
 
 
-def wait_for_page():
+def wait_for_page(chrome):
     deadline = time.time() + 15
     while time.time() < deadline:
         try:
@@ -301,71 +312,257 @@ def wait_for_page():
             page = next((item for item in pages if item.get("type") == "page"), None)
             if page:
                 return page
-        except requests.RequestException:
-            pass
+        except (requests.RequestException, ValueError):
+            if chrome.poll() is not None:
+                raise RuntimeError(f"Chrome exited before CDP endpoint became ready (exit code {chrome.returncode})")
         time.sleep(0.1)
     raise RuntimeError("Chrome remote debugging endpoint did not become available")
 
 
-def wait_for_server(server, timeout=15):
+def wait_for_server(server, server_thread, timeout=15):
     deadline = time.time() + timeout
-    urls = ["http://127.0.0.1:8767/", "http://127.0.0.1:8767/service-worker.js"]
+    urls = [f"http://127.0.0.1:{HTTP_PORT}/", f"http://127.0.0.1:{HTTP_PORT}/service-worker.js", f"http://127.0.0.1:{HTTP_PORT}/{RUNNER.name}"]
     last_error = None
     while time.time() < deadline:
-        if not thread.is_alive():
+        if not server_thread.is_alive():
             raise RuntimeError("Local test server stopped before browser startup")
         try:
             responses = [requests.get(url, timeout=1) for url in urls]
             if all(response.status_code == 200 for response in responses) and "hoc-cung-be-v30" in responses[1].text:
-                return
+                return responses
             last_error = RuntimeError(f"Unexpected readiness status: {[response.status_code for response in responses]}")
         except requests.RequestException as error:
             last_error = error
         time.sleep(0.1)
     raise RuntimeError(f"Local test server was not ready within {timeout}s: {last_error}")
 
-try:
-    app_html = (ROOT / "index.html").read_text(encoding="utf-8")
-    RUNNER.write_text(re.sub(r"(<body\b[^>]*>)", r"\1" + probe, app_html, count=1, flags=re.I), encoding="utf-8")
-    shutil.rmtree(PROFILE, ignore_errors=True)
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", 8767), lambda *args, **kwargs: QuietHandler(*args, directory=str(ROOT), **kwargs))
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    wait_for_server(server)
-    chrome = subprocess.Popen([
-        str(CHROME), "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
-        f"--user-data-dir={PROFILE}", f"--remote-debugging-port={DEBUG_PORT}", "about:blank",
-    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    cdp = Cdp(wait_for_page()["webSocketDebuggerUrl"])
-    cdp.call("Page.enable")
-    cdp.call("Runtime.enable")
-    cdp.call("Page.navigate", {"url": "http://127.0.0.1:8767/__browser-test-runner.html"})
-    deadline = time.time() + 55
-    report_text = None
-    while time.time() < deadline:
-        report_text = cdp.evaluate("document.querySelector('#test-output')?.textContent || null")
-        if report_text:
-            break
-        time.sleep(0.1)
-    if not report_text:
-        DIAGNOSTIC.write_text(json.dumps({"error": "Chrome did not produce test output within 55 seconds"}, ensure_ascii=False, indent=2), encoding="utf-8")
-        raise RuntimeError("Chrome did not produce test output")
-    report = json.loads(report_text)
-    REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    if report.get("realExitCode", 1):
-        raise SystemExit(1)
-finally:
-    if "cdp" in globals():
-        cdp.close()
-    if "chrome" in globals():
-        chrome.terminate()
+def port_owner(port):
+    try:
+        output = subprocess.run(["netstat", "-ano", "-p", "tcp"], capture_output=True, text=True, timeout=5, check=False).stdout
+        match = next((line for line in output.splitlines() if re.search(rf"127\.0\.0\.1:{port}\s+.*LISTENING\s+(\d+)\s*$", line)), None)
+        if not match:
+            return None
+        pid = int(match.split()[-1])
+        process = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"], capture_output=True, text=True, timeout=5, check=False).stdout.strip()
+        return {"pid": pid, "process": process}
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return None
+
+
+def port_available(port):
+    probe_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        probe_socket.bind(("127.0.0.1", port))
+        return True
+    except OSError:
+        return False
+    finally:
+        probe_socket.close()
+
+
+def browser_diagnostic(cdp):
+    expression = """(() => ({
+      readyState: document.readyState,
+      currentUrl: location.href,
+      outputPresent: Boolean(document.querySelector('#test-output')),
+      runnerState: window.__hcbRegressionState || null,
+      runtimeErrors: typeof runtimeErrors !== 'undefined' ? runtimeErrors : []
+    }))()"""
+    try:
+        return cdp.evaluate(expression)
+    except Exception as error:
+        return {"diagnosticError": f"{type(error).__name__}: {error}"}
+
+
+def print_final_summary(summary):
+    print("FINAL SUMMARY")
+    for key in [
+        "RUNNER_STAGE", "PYTHON_EXCEPTION", "PORT_8767_IN_USE", "PORT_8767_OWNER",
+        "SERVER_READY", "SERVICE_WORKER_READY", "RUNNER_HTML_READY", "CHROME_READY",
+        "CHROME_PID", "CHROME_ALIVE", "CDP_READY", "CDP_URL", "PAGE_READY",
+        "SUITE_HOOKS_READY", "SUITE_COUNT", "TOTAL_CHECKS", "FAILED_COUNT",
+        "RUNTIME_ERROR_COUNT", "MISSING_SUITES", "COVERAGE_GUARD_FAILED", "MIN_CHECKS",
+        "REPORT_GENERATED", "REPORT_PATH", "REAL_EXIT_CODE",
+        "CLEANUP_ERRORS",
+    ]:
+        value = summary.get(key)
+        if isinstance(value, (dict, list)):
+            value = json.dumps(value, ensure_ascii=False)
+        print(f"{key}={value}")
+
+
+def main():
+    preserved_files = {
+        path: path.read_bytes() if path.exists() else None
+        for path in (REPORT, DIAGNOSTIC)
+    }
+    summary = {
+        "RUNNER_STAGE": "A. Python startup", "PYTHON_EXCEPTION": "none",
+        "PORT_8767_IN_USE": False, "PORT_8767_OWNER": None, "SERVER_READY": False,
+        "SERVICE_WORKER_READY": False, "RUNNER_HTML_READY": False, "CHROME_READY": False,
+        "CHROME_PID": None, "CHROME_ALIVE": False, "CDP_READY": False, "CDP_URL": None,
+        "PAGE_READY": False, "SUITE_HOOKS_READY": False, "SUITE_COUNT": 0,
+        "TOTAL_CHECKS": 0, "FAILED_COUNT": 0, "RUNTIME_ERROR_COUNT": 0,
+        "MISSING_SUITES": [], "COVERAGE_GUARD_FAILED": False, "MIN_CHECKS": MIN_CHECKS,
+        "REPORT_GENERATED": False, "REPORT_PATH": str(REPORT), "REAL_EXIT_CODE": 1,
+        "CLEANUP_ERRORS": [],
+    }
+    server = server_thread = chrome = cdp = chrome_stderr_handle = None
+    report = None
+    try:
+        summary["RUNNER_STAGE"] = "B. temporary runner HTML generation"
+        app_html = (ROOT / "index.html").read_text(encoding="utf-8")
+        runner_html = re.sub(r"(<body\b[^>]*>)", r"\1" + probe, app_html, count=1, flags=re.I)
+        if runner_html == app_html:
+            raise RuntimeError("Could not inject regression probe into runner HTML")
+        RUNNER.write_text(runner_html, encoding="utf-8")
+        if not RUNNER.is_file() or RUNNER.stat().st_size == 0:
+            raise RuntimeError("Temporary runner HTML was not created")
+
+        summary["RUNNER_STAGE"] = "C. local HTTP server start"
+        if not port_available(HTTP_PORT):
+            summary["PORT_8767_IN_USE"] = True
+            summary["PORT_8767_OWNER"] = port_owner(HTTP_PORT)
+            raise RuntimeError(f"Port {HTTP_PORT} is already in use: {summary['PORT_8767_OWNER']}")
+        shutil.rmtree(PROFILE, ignore_errors=True)
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", HTTP_PORT), lambda *args, **kwargs: QuietHandler(*args, directory=str(ROOT), **kwargs))
+        server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+        server_thread.start()
+
+        summary["RUNNER_STAGE"] = "D-F. HTTP readiness"
+        responses = wait_for_server(server, server_thread)
+        summary["SERVER_READY"] = responses[0].status_code == 200
+        summary["SERVICE_WORKER_READY"] = responses[1].status_code == 200
+        summary["RUNNER_HTML_READY"] = responses[2].status_code == 200
+
+        summary["RUNNER_STAGE"] = "F. Chrome launch"
+        if not CHROME.is_file():
+            raise FileNotFoundError(f"Chrome executable not found: {CHROME}")
+        chrome_stderr_handle = CHROME_STDERR.open("w", encoding="utf-8")
+        chrome = subprocess.Popen([
+            str(CHROME), "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
+            f"--user-data-dir={PROFILE}", f"--remote-debugging-port={DEBUG_PORT}", "about:blank",
+        ], stdout=subprocess.DEVNULL, stderr=chrome_stderr_handle)
+        summary["CHROME_PID"] = chrome.pid
+        summary["CHROME_READY"] = True
+        summary["CHROME_ALIVE"] = chrome.poll() is None
+
+        summary["RUNNER_STAGE"] = "G-H. CDP endpoint and page target discovery"
+        page = wait_for_page(chrome)
+        summary["CDP_URL"] = page.get("webSocketDebuggerUrl")
+        cdp = Cdp(summary["CDP_URL"])
+        summary["CDP_READY"] = True
+        cdp.call("Page.enable")
+        cdp.call("Runtime.enable")
+
+        summary["RUNNER_STAGE"] = "I. runner page navigation"
+        cdp.call("Page.navigate", {"url": f"http://127.0.0.1:{HTTP_PORT}/{RUNNER.name}"})
+        deadline = time.time() + 55
+        report_text = None
+        while time.time() < deadline:
+            summary["RUNNER_STAGE"] = "J-K. suite hooks and async suites"
+            report_text = cdp.evaluate("document.querySelector('#test-output')?.textContent || null")
+            if report_text:
+                break
+            time.sleep(0.1)
+        summary["PAGE_READY"] = cdp.evaluate("document.readyState") == "complete"
+        if not report_text:
+            diagnostic = browser_diagnostic(cdp)
+            summary["SUITE_HOOKS_READY"] = bool(diagnostic.get("runnerState", {}).get("hooksReady"))
+            DIAGNOSTIC.write_text(json.dumps(diagnostic, ensure_ascii=False, indent=2), encoding="utf-8")
+            print("BROWSER_DIAGNOSTIC=" + json.dumps(diagnostic, ensure_ascii=False))
+            raise RuntimeError("Chrome did not produce test output within 55 seconds")
+
+        summary["RUNNER_STAGE"] = "L. report extraction"
+        report = json.loads(report_text)
+        REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        summary.update({
+            "SUITE_HOOKS_READY": not report.get("missingSuites"),
+            "SUITE_COUNT": report.get("suiteCount", 0), "TOTAL_CHECKS": report.get("total", 0),
+            "FAILED_COUNT": report.get("failedCount", 0), "RUNTIME_ERROR_COUNT": report.get("runtimeErrorCount", 0),
+            "MISSING_SUITES": report.get("missingSuites", []), "REPORT_GENERATED": True,
+        })
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+
+        summary["RUNNER_STAGE"] = "M. coverage guard"
+        summary["COVERAGE_GUARD_FAILED"] = summary["TOTAL_CHECKS"] < MIN_CHECKS
+        summary["REAL_EXIT_CODE"] = 1 if report.get("realExitCode", 1) or summary["COVERAGE_GUARD_FAILED"] else 0
+    except BaseException as error:
+        if isinstance(error, KeyboardInterrupt):
+            raise
+        summary["PYTHON_EXCEPTION"] = f"{type(error).__name__}: {error}"
+        summary["REAL_EXIT_CODE"] = 1
+        traceback.print_exc(file=sys.stderr)
+    finally:
+        summary["CHROME_ALIVE"] = bool(chrome and chrome.poll() is None)
+        if chrome_stderr_handle:
+            chrome_stderr_handle.flush()
+        if summary["REAL_EXIT_CODE"] and CHROME_STDERR.exists():
+            chrome_error = CHROME_STDERR.read_text(encoding="utf-8", errors="replace").strip()
+            if chrome_error:
+                print("CHROME_STDERR_BEGIN", file=sys.stderr)
+                print(chrome_error, file=sys.stderr)
+                print("CHROME_STDERR_END", file=sys.stderr)
+        if cdp:
+            try:
+                cdp.close()
+            except Exception as error:
+                summary["CLEANUP_ERRORS"].append(f"CDP: {type(error).__name__}: {error}")
+        if chrome:
+            try:
+                subprocess.run(["taskkill", "/PID", str(chrome.pid), "/T", "/F"], capture_output=True, text=True, timeout=10, check=False)
+                chrome.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError) as error:
+                summary["CLEANUP_ERRORS"].append(f"Chrome: {type(error).__name__}: {error}")
+                if chrome.poll() is None:
+                    chrome.kill()
+                    chrome.wait(timeout=5)
+        if chrome_stderr_handle:
+            try:
+                chrome_stderr_handle.close()
+            except OSError as error:
+                summary["CLEANUP_ERRORS"].append(f"Chrome stderr: {type(error).__name__}: {error}")
+        if server:
+            try:
+                server.shutdown()
+                server.server_close()
+            except OSError as error:
+                summary["CLEANUP_ERRORS"].append(f"Server: {type(error).__name__}: {error}")
+        summary["CHROME_ALIVE"] = bool(chrome and chrome.poll() is None)
+        print_final_summary(summary)
+        summary["RUNNER_STAGE"] = "N. cleanup"
         try:
-            chrome.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            chrome.kill()
-    if "server" in globals():
-        server.shutdown()
-        server.server_close()
-    RUNNER.unlink(missing_ok=True)
-    shutil.rmtree(PROFILE, ignore_errors=True)
+            RUNNER.unlink(missing_ok=True)
+        except OSError as error:
+            print(f"CLEANUP_RUNNER_ERROR={type(error).__name__}: {error}", file=sys.stderr)
+        for path, original_content in preserved_files.items():
+            try:
+                if original_content is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    path.write_bytes(original_content)
+            except OSError as error:
+                print(f"CLEANUP_PRESERVED_FILE_ERROR={path}: {type(error).__name__}: {error}", file=sys.stderr)
+        for attempt in range(10):
+            try:
+                CHROME_STDERR.unlink(missing_ok=True)
+                break
+            except PermissionError as error:
+                if attempt == 9:
+                    print(f"CLEANUP_CHROME_STDERR_ERROR={type(error).__name__}: {error}", file=sys.stderr)
+                else:
+                    time.sleep(0.2)
+            except OSError as error:
+                print(f"CLEANUP_CHROME_STDERR_ERROR={type(error).__name__}: {error}", file=sys.stderr)
+                break
+        try:
+            shutil.rmtree(PROFILE, ignore_errors=False)
+        except FileNotFoundError:
+            pass
+        except OSError as error:
+            print(f"CLEANUP_PROFILE_ERROR={type(error).__name__}: {error}", file=sys.stderr)
+    return summary["REAL_EXIT_CODE"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
