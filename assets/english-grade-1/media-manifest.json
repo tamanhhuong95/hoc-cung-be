@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "courseId": "english-grade-1",
   "videoAssetsRequired": true,
   "clips": [
@@ -34,6 +34,50 @@
       "poster": "assets/english-grade-1/posters/actions.webp",
       "fallbackImage": "assets/english-grade-1/images/actions.webp",
       "animationFallback": "actions-move",
+      "available": true
+    },
+    {
+      "levelId": "EN-25",
+      "id": "classroom-instructions",
+      "durationSeconds": 12,
+      "webm": "assets/english-grade-1/videos/en-25-classroom.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/classroom-instructions.webp",
+      "fallbackImage": "assets/english-grade-1/images/classroom-instructions.webp",
+      "animationFallback": "book-open",
+      "available": true
+    },
+    {
+      "levelId": "EN-27",
+      "id": "places",
+      "durationSeconds": 13,
+      "webm": "assets/english-grade-1/videos/en-27-places.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/places.webp",
+      "fallbackImage": "assets/english-grade-1/images/places.webp",
+      "animationFallback": "places-go",
+      "available": true
+    },
+    {
+      "levelId": "EN-29",
+      "id": "weather",
+      "durationSeconds": 14,
+      "webm": "assets/english-grade-1/videos/en-29-weather.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/weather.webp",
+      "fallbackImage": "assets/english-grade-1/images/weather.webp",
+      "animationFallback": "weather-rain",
+      "available": true
+    },
+    {
+      "levelId": "EN-37",
+      "id": "ask-for-help",
+      "durationSeconds": 13,
+      "webm": "assets/english-grade-1/videos/en-37-help.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/ask-for-help.webp",
+      "fallbackImage": "assets/english-grade-1/images/ask-for-help.webp",
+      "animationFallback": "help-book",
       "available": true
     }
   ]

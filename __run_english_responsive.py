@@ -39,8 +39,8 @@ frame.addEventListener("load", async () => {
     const learnVideo = media?.querySelector("video"), learnRect = learnVideo?.getBoundingClientRect();
     check(learnVideo && learnVideo.controls && learnVideo.playsInline && learnVideo.preload === "metadata", "Learn video attributes invalid");
     check(learnRect && learnRect.left >= 0 && learnRect.right <= win.innerWidth && Math.abs((learnRect.width / learnRect.height) - (16 / 9)) < .15, "Learn video aspect/overflow invalid");
-    const quizHost = document.createElement("div"), en19 = win.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-19"), quizQuestion = en19.questions[0];
-    quizHost.className = "english-quiz-video"; document.body.append(quizHost); win.renderEnglishMedia(quizHost, quizQuestion.video, en19.title);
+    const quizHost = document.createElement("div"), en37 = win.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-37"), quizQuestion = en37.questions.find((item) => item.type === "video-choice");
+    quizHost.className = "english-quiz-video"; document.body.append(quizHost); win.renderEnglishMedia(quizHost, quizQuestion.video, en37.title);
     const quizVideo = quizHost.querySelector("video"), quizRect = quizVideo?.getBoundingClientRect();
     check(quizRect && quizRect.left >= 0 && quizRect.right <= win.innerWidth && quizRect.height < win.innerHeight, "Quiz video overflow/fullscreen sizing invalid");
     check(!quizHost.textContent.toLowerCase().includes(quizQuestion.answer), "Quiz video container leaks answer"); quizHost.remove();

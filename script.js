@@ -707,14 +707,14 @@ function runMultiCourseTests() {
 }
 window.__hocCungBeMultiCourseTests = runMultiCourseTests();
 
-// ==================== English Grade 1 EN-01 → EN-20 self-tests ====================
+// ==================== English Grade 1 EN-01 → EN-40 self-tests ====================
 async function runEnglishGrade1Tests() {
   const results = []; const test = (id, passed, detail = "") => results.push({ id, passed: Boolean(passed), detail: passed ? undefined : detail });
   const previousCourse = activeCourseId; const english = COURSES["english-grade-1"]; const allQuestions = english?.levels?.flatMap((item) => item.questions) || [];
   await new Promise((resolve) => setTimeout(resolve, 0));
   test("A", Boolean(english && english.id === "english-grade-1"));
-  test("B", english?.levels?.length === 20);
-  test("C", new Set(english?.levels?.map((item) => item.id)).size === 20 && english.levels.every((item, index) => item.id === `EN-${String(index + 1).padStart(2, "0")}`));
+  test("B", english?.levels?.length === 40);
+  test("C", new Set(english?.levels?.map((item) => item.id)).size === 40 && english.levels.every((item, index) => item.id === `EN-${String(index + 1).padStart(2, "0")}`));
   test("D", english?.levels?.every((item) => item.questions.length === 5 && item.questionCount === 5));
   test("E", allQuestions.every((item) => item.type === "true-false" ? item.options.length === 2 : item.options.length === 4));
   test("F", allQuestions.every((item) => item.answer && item.options.includes(item.answer)));
@@ -727,30 +727,33 @@ async function runEnglishGrade1Tests() {
   setActiveCourse("english-grade-1"); const blank = defaultProgress();
   test("M", blank.levels["EN-01"]?.unlocked === true);
   test("N", blank.levels["EN-02"]?.unlocked === false && normalizeProgress({ levels: { "EN-01": { bestScore: 80 } } }).levels["EN-02"].unlocked);
-  let chain = {}; english.levels.slice(0, -1).forEach((item) => { chain[item.id] = { bestScore: 80, attempts: 1 }; }); test("O", normalizeProgress({ levels: chain }).levels["EN-20"].unlocked);
+  const oldProgress = normalizeProgress({ progressVersion: 2, levels: { "EN-20": { bestScore: 80, bestCorrect: 4, bestQuestionCount: 5, bestStars: 2, attempts: 1, completed: true, unlocked: true } }, history: [], studyTime: {}, totalCompleted: 1 });
+  test("O", oldProgress.levels["EN-20"].completed && oldProgress.levels["EN-21"].unlocked && !oldProgress.levels["EN-22"].unlocked);
+  let chain = {}; english.levels.slice(0, -1).forEach((item) => { chain[item.id] = { bestScore: 80, attempts: 1 }; }); test("O2", normalizeProgress({ levels: chain }).levels["EN-40"].unlocked);
   const mathKey = courseProgressKey("testchild01", "math-grade-1"), vietnameseKey = courseProgressKey("testchild01", "vietnamese-grade-1"), englishKey = courseProgressKey("testchild01", "english-grade-1");
   test("P", englishKey !== mathKey); test("Q", englishKey !== vietnameseKey);
   const trialMathEnglish = normalizeGuestTrial({ completedLevelIds: ["counting-1", "EN-01"] }); test("R", guestTrialCount(trialMathEnglish) === 2 && guestTrialExhausted(trialMathEnglish));
   const trialVietnameseEnglish = normalizeGuestTrial({ completedLevelIds: ["TV-01", "EN-01"] }); test("S", guestTrialCount(trialVietnameseEnglish) === 2 && guestTrialExhausted(trialVietnameseEnglish));
   test("T", document.querySelector('[data-course="english-grade-1"]')?.textContent.includes("Tiếng Anh lớp 1"));
   test("U", document.querySelector('[data-parent-course="english-grade-1"]')?.textContent.includes("Tiếng Anh lớp 1"));
-  test("V", english.levels.length === 20 && parentStatistics(blank).totalLevels === 20);
+  test("V", english.levels.length === 40 && parentStatistics(blank).totalLevels === 40 && parentStatistics(oldProgress).opened >= 2);
   for (let attempt = 0; attempt < 40 && typeof window.HocCungBeCloudSync?.cloudPath !== "function"; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 50));
   test("W", window.HocCungBeCloudSync?.cloudPath?.("uid", "child", english.id) === "users/uid/children/child/progress/english-grade-1");
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v29"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"')); } catch (error) { test("X", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v30"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
   test("Y", new Set(allQuestions.map((item) => item.type)).size >= 8 && ["choice", "image-choice", "listen-choice", "word-to-image", "match", "letter-order", "true-false", "animation-choice"].every((type) => allQuestions.some((item) => item.type === type)));
   const mediaPaths = english.levels.flatMap((item) => [item.media?.learn?.[0]?.src, item.media?.featured?.poster, item.media?.featured?.fallback]).filter(Boolean);
   try { const responses = await Promise.all([...new Set(mediaPaths)].map((path) => fetch(path, { cache: "no-store" }))); test("Z", responses.every((response) => response.ok)); } catch (error) { test("Z", false, String(error)); }
   test("AA", english.levels.every((item) => item.standards?.vietnam?.length && item.standards?.cefr?.length && item.standards?.preA1Skill?.length && item.skills?.length));
-  const videoLevels = ["EN-08", "EN-12", "EN-19"].map((id) => english.levels.find((item) => item.id === id));
+  const expanded = english.levels.slice(20); test("AA2", expanded.length === 20 && expanded.every((item) => item.targetVocabulary.length && item.targetExpressions.length && item.skills.includes("listening") && item.skills.includes("speaking") && item.questions.some((question) => question.type === "listen-choice") && new Set(item.questions.map((question) => question.type)).size >= 3));
+  const videoLevels = ["EN-08", "EN-12", "EN-19", "EN-25", "EN-27", "EN-29", "EN-37"].map((id) => english.levels.find((item) => item.id === id));
   test("AB", videoLevels.every((item) => item?.media?.featured?.type === "video" && item.media.featured.available === true && item.media.featured.mimeType === "video/webm"));
-  test("AC", allQuestions.every((item) => item.id && item.displayText.trim() && item.answer.trim()) && new Set(allQuestions.map((item) => item.id)).size === 100);
+  test("AC", allQuestions.every((item) => item.id && item.displayText.trim() && item.answer.trim()) && new Set(allQuestions.map((item) => item.id)).size === 200);
   test("AD", !JSON.stringify(english).includes("TODO") && !JSON.stringify(english).match(/https?:\/\//));
   test("AE", videoLevels.every((item) => item.media.featured.webm.endsWith(".webm") && item.media.featured.poster.endsWith(".webp") && item.media.featured.fallback.endsWith(".webp") && item.media.featured.animationFallback && item.media.featured.duration >= 10 && item.media.featured.duration <= 25));
-  const actionsVideoQuestion = english.levels.find((item) => item.id === "EN-19")?.questions.find((item) => item.type === "video-choice");
-  test("AF", actionsVideoQuestion?.answer === "jump" && actionsVideoQuestion.video?.webm.endsWith("en-19-actions.webm") && !actionsVideoQuestion.video.ariaLabel.toLowerCase().includes(actionsVideoQuestion.answer));
-  try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.videoAssetsRequired === true && manifest.clips.length === 3 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.includes('const CACHE_NAME = "hoc-cung-be-v29"') && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange")); } catch (error) { test("AH", false, String(error)); }
+  const videoQuestions = allQuestions.filter((item) => item.type === "video-choice");
+  test("AF", videoQuestions.length === 5 && videoQuestions.every((item) => item.video?.webm.endsWith(".webm") && !item.video.ariaLabel.toLowerCase().includes(item.answer.toLowerCase())));
+  try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.version === 2 && manifest.videoAssetsRequired === true && manifest.clips.length === 7 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v30" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange")); } catch (error) { test("AH", false, String(error)); }
   if (previousCourse !== activeCourseId) setActiveCourse(previousCourse);
   return { passed: results.every((item) => item.passed), results };
 }
