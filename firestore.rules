@@ -99,7 +99,7 @@ service cloud.firestore {
 
       match /progress/{courseId} {
         allow read: if ownsUserData(userId)
-          && courseId in ['math-grade-1', 'vietnamese-grade-1'];
+          && courseId in ['math-grade-1', 'vietnamese-grade-1', 'english-grade-1'];
       }
 
       match /children/{childId} {
@@ -108,9 +108,9 @@ service cloud.firestore {
 
         match /progress/{courseId} {
           allow read: if ownsUserData(userId)
-            && courseId in ['math-grade-1', 'vietnamese-grade-1'];
+            && courseId in ['math-grade-1', 'vietnamese-grade-1', 'english-grade-1'];
           allow create, update: if ownsUserData(userId)
-            && courseId in ['math-grade-1', 'vietnamese-grade-1']
+            && courseId in ['math-grade-1', 'vietnamese-grade-1', 'english-grade-1']
             && validProgress();
         }
 

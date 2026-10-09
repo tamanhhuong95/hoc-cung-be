@@ -66,7 +66,7 @@
 
   function todayUsage(progress = null) {
     const today = dateKey();
-    const courses = progress ? [progress] : ["math-grade-1", "vietnamese-grade-1"].map((courseId) => window.HocCungBeLearning?.loadProgressByCourse?.(courseId) || window.loadProgress?.());
+    const courses = progress ? [progress] : ["math-grade-1", "vietnamese-grade-1", "english-grade-1"].map((courseId) => window.HocCungBeLearning?.loadProgressByCourse?.(courseId) || window.loadProgress?.());
     const seconds = courses.reduce((sum, item) => sum + Math.max(0, Number(item?.studyTime?.studyTimeByDate?.[today]) || 0), 0);
     const lessons = courses.reduce((sum, item) => sum + (Array.isArray(item?.history) ? item.history : []).filter((entry) => entry?.completedAt && dateKey(new Date(entry.completedAt)) === today).length, 0);
     return { today, seconds, lessons };
@@ -190,11 +190,11 @@
     test("R", rules.includes("ownsUserData(userId)") && rules.includes("validChildSettings") && rules.includes("match /settings/{settingsId}") && !rules.includes("allow delete"));
     test("S", script.includes('hoc-cung-be:child-will-change') && script.includes('hoc-cung-be:child-changed') && typeof loadActive === "function" && typeof dismissBreak === "function"); test("T", typeof window.completeGuestTrialLevel === "function" || document.body.textContent.includes("2 level học thử"));
     test("U", typeof window.HocCungBeCloudSync?.syncNow === "function"); test("V", document.body.textContent.includes("Liên kết số điện thoại") || document.body.textContent.includes("Số điện thoại"));
-    test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width") && css.includes("@media (max-width: 760px)") && css.includes(".setting-card { grid-template-columns: 1fr")); test("X", sw.includes("hoc-cung-be-v28") && sw.includes('"./child-settings.js"') && sw.includes('"./data/vietnamese-grade-1.js"') && sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"') && !sw.includes(".webp" + ".png") && document.querySelector('link[rel="manifest"]'));
+    test("W", document.querySelector('meta[name="viewport"]')?.content.includes("width=device-width") && css.includes("@media (max-width: 760px)") && css.includes(".setting-card { grid-template-columns: 1fr")); test("X", sw.includes("hoc-cung-be-v29") && sw.includes('"./child-settings.js"') && sw.includes('"./data/vietnamese-grade-1.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"') && !sw.includes(".webp" + ".png") && document.querySelector('link[rel="manifest"]'));
     const learning = window.HocCungBeLearning, originalLoadProgressByCourse = learning?.loadProgressByCourse;
-    if (learning) learning.loadProgressByCourse = (courseId) => courseId === "math-grade-1" ? { studyTime: { studyTimeByDate: { [dateKey()]: 5 * 60 } }, history: [{ completedAt: new Date().toISOString() }] } : { studyTime: { studyTimeByDate: { [dateKey()]: 7 * 60 } }, history: [{ completedAt: new Date().toISOString() }, { completedAt: new Date().toISOString() }] };
-    const combinedUsage = todayUsage(); const timeBlocked = !evaluateStart(null, { ...defaults(), dailyTimeLimitMinutes: 12 }).allowed; const lessonsBlocked = !evaluateStart(null, { ...defaults(), dailyLessonLimit: 3 }).allowed; if (learning) learning.loadProgressByCourse = originalLoadProgressByCourse;
-    test("Y", combinedUsage.seconds === 12 * 60 && combinedUsage.lessons === 3 && timeBlocked && lessonsBlocked);
+    if (learning) learning.loadProgressByCourse = (courseId) => { const values = { "math-grade-1": [5, 1], "vietnamese-grade-1": [4, 2], "english-grade-1": [3, 1] }; const [minutes, lessons] = values[courseId]; return { studyTime: { studyTimeByDate: { [dateKey()]: minutes * 60 } }, history: Array.from({ length: lessons }, () => ({ completedAt: new Date().toISOString() })) }; };
+    const combinedUsage = todayUsage(); const timeBlocked = !evaluateStart(null, { ...defaults(), dailyTimeLimitMinutes: 12 }).allowed; const lessonsBlocked = !evaluateStart(null, { ...defaults(), dailyLessonLimit: 4 }).allowed; if (learning) learning.loadProgressByCourse = originalLoadProgressByCourse;
+    test("Y", combinedUsage.seconds === 12 * 60 && combinedUsage.lessons === 4 && timeBlocked && lessonsBlocked);
     return { passed: results.every((item) => item.passed), results };
   }
   window.__hocCungBeChildSettingsTests = selfTests();

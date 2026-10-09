@@ -3,7 +3,7 @@
 // Local-first Firestore sync. Only the whitelisted learning payload below is sent to cloud.
 (() => {
   const STORAGE_KEY = "hoc-cung-be:math-grade-1-progress";
-  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1"];
+  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1", "english-grade-1"];
   const DIRTY_KEY = "hoc-cung-be:cloud-sync-pending";
   const LAST_SYNC_KEY = "hoc-cung-be:last-cloud-sync";
   const SYNC_DEBOUNCE_MS = 5000;
@@ -17,6 +17,7 @@
   const parse = (value) => { try { return value ? JSON.parse(value) : null; } catch { return null; } };
   const newerTime = (a, b) => [a, b].filter((value) => typeof value === "string" && !Number.isNaN(new Date(value).getTime())).sort().at(-1) || null;
   const activeChildId = () => window.HocCungBeChildren?.getActiveChildId?.() || null;
+  const cloudPath = (uid, childId, courseId) => `users/${uid}/children/${childId}/progress/${courseId}`;
   const scopedKey = (base, childId = activeChildId(), uid = user?.uid, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => uid && childId ? `${base}:${uid}:${childId}:${courseId}` : base;
   const cloudReady = (currentUser, firestoreSdk, database, childId = activeChildId()) => Boolean(currentUser && firestoreSdk && database && childId);
   const withCourse = (courseId, callback) => { const previous = window.HocCungBeLearning?.getActiveCourseId?.(); if (courseId && previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(courseId); try { return callback(); } finally { if (previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(previous); } };
@@ -135,7 +136,7 @@
     const courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1";
     const sample = { progressVersion: 2, levels: {}, history: [], studyTime: { studyTimeByDate: {} }, totalCompleted: 0 };
     const merged = mergeProgress(sample, sample, courseId); const payload = cloudPayload(merged, courseId);
-    test("A", COURSE_IDS.length === 2 && COURSE_IDS.includes("math-grade-1") && COURSE_IDS.includes("vietnamese-grade-1"));
+    test("A", COURSE_IDS.length === 3 && COURSE_IDS.includes("math-grade-1") && COURSE_IDS.includes("vietnamese-grade-1") && COURSE_IDS.includes("english-grade-1"));
     test("B", merged?.progressVersion === 2 && validObject(merged.levels));
     test("C", Array.isArray(merged.history) && validObject(merged.studyTime));
     test("D", payload?.progressVersion === 2 && validObject(payload.levels));
@@ -156,6 +157,6 @@
     return { passed: testResults.every((item) => item.passed), results: testResults };
   }
 
-  window.HocCungBeCloudSync = { configure, disconnect, installUi, syncNow, markPending, mergeProgress, mergeHistory, cloudPayload };
+  window.HocCungBeCloudSync = { configure, disconnect, installUi, syncNow, markPending, mergeProgress, mergeHistory, cloudPayload, cloudPath };
   window.__hocCungBeCloudSyncTests = runSelfTests();
 })();

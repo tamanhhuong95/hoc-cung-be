@@ -199,3 +199,34 @@ button:focus-visible, a:focus-visible { outline: 4px solid rgba(255, 190, 54, .6
   .hero__brand-logo { width: 112px; height: 112px; }
   #account-login-screen .account-brand-logo, #account-register-screen .account-brand-logo, #account-forgot-screen .account-brand-logo { width: 64px; height: 64px; }
 }
+
+/* English Grade 1: Learn → Practice → Review */
+.answer-button { min-height: 48px; }
+.subject-card--english { border-color: #acd7cc; background: linear-gradient(135deg, #f0fff9, #eff6ff); }
+.english-learn-screen { width: min(1080px, calc(100% - 32px)); margin: 24px auto 60px; }
+.english-learn-card { padding: clamp(22px, 4vw, 42px); border: 1px solid #dfe7f2; border-radius: 30px; background: rgba(255,255,255,.96); box-shadow: var(--shadow); text-align: center; }
+.english-learn-card .back-button { display: block; margin-bottom: 18px; }
+.english-featured-media { position: relative; display: grid; place-items: center; min-height: 220px; max-width: 760px; margin: 20px auto; overflow: hidden; border-radius: 24px; background: #f4f8ff; }
+.english-featured-media > img { display: block; width: 100%; height: auto; max-height: 360px; object-fit: contain; }
+.english-featured-media > video, .english-quiz-video > video { position: relative; z-index: 2; display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #eaf1f8; }.english-video-fallback { position: relative; width: 100%; }.english-video-fallback > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: .18; }
+.english-media-poster { position: absolute; inset: 0; z-index: 0; opacity: .18; }
+.english-word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 14px; margin: 22px 0; }
+.english-word-card { min-height: 135px; display: grid; place-items: center; align-content: center; gap: 5px; padding: 14px; border: 2px solid #d8e7f4; border-radius: 20px; color: var(--ink); background: white; box-shadow: 0 5px 0 #e7edf6; transition: transform .15s, border-color .15s; }
+.english-word-card:hover, .english-word-card:focus-visible { transform: translateY(-3px); border-color: #6bbda8; }
+.english-word-card > span { font-size: 33px; }.english-word-card strong { color: #3f5691; font-size: 21px; }.english-word-card small { color: var(--muted); font-size: 13px; }
+.english-speaking-note { padding: 12px; border-radius: 14px; color: #516784; background: #f0f7ff; font-weight: 800; }
+.english-review-words { margin: 18px 0; padding: 16px; border-radius: 18px; background: #f2f8ff; }.english-review-words[hidden] { display: none; }.english-review-words > strong { display: block; margin-bottom: 10px; color: #40588d; }.english-review-words > div { display: flex; justify-content: center; flex-wrap: wrap; gap: 9px; }.english-review-words button { min-height: 44px; padding: 8px 13px; border: 2px solid #cfe1ef; border-radius: 99px; color: #334d82; background: white; font-weight: 900; }
+.english-learn-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }.english-learn-actions button { min-height: 50px; }.english-learn-actions .is-complete { border-color: #62b28d; color: #276d4d; background: #e8f9f0; }
+.english-question-visual { display: block; margin-bottom: 10px; font-size: clamp(70px, 16vw, 130px); line-height: 1; }
+.english-quiz-video { display: block; width: min(100%, 560px); min-height: 180px; margin: 0 auto 14px; overflow: hidden; border-radius: 20px; background: #eef6fb; }.english-quiz-video video::-webkit-media-controls-play-button, .english-featured-media video::-webkit-media-controls-play-button { min-width: 44px; min-height: 44px; }.english-quiz-video .english-video-fallback { min-height: 180px; }.english-quiz-video .english-animation { min-height: 180px; }
+.answer-grid--visual .answer-button--visual { min-height: 145px; display: grid; place-items: center; align-content: center; gap: 8px; }.answer-visual { font-size: clamp(45px, 8vw, 72px); line-height: 1; }
+.english-animation { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 28px; width: min(100%, 620px); min-height: 220px; overflow: hidden; }
+.english-animation__friend, .english-animation__wave, .english-animation__person { font-size: clamp(70px, 15vw, 130px); }.english-animation__wave { animation: english-wave 1.2s ease-in-out infinite; transform-origin: 70% 80%; }
+.english-animation__color { width: clamp(50px, 10vw, 85px); height: clamp(50px, 10vw, 85px); border-radius: 50%; animation: english-colors 4s steps(1) infinite; }.english-animation__color:nth-child(2) { animation-delay: -1s; }.english-animation__color:nth-child(3) { animation-delay: -2s; }.english-animation__color:nth-child(4) { animation-delay: -3s; }
+.english-animation--actions-move { align-items: end; }.english-animation--actions-move .english-animation__person { animation: english-actions 3.2s ease-in-out infinite; }.english-animation__ground { position: absolute; right: 10%; bottom: 28px; left: 10%; height: 8px; border-radius: 99px; background: #bfe3d4; }
+@keyframes english-wave { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(24deg); } }
+@keyframes english-colors { 0% { background:#e94545; } 25% { background:#3670db; } 50% { background:#f5c232; } 75% { background:#3cae5c; } }
+@keyframes english-actions { 0%,100% { transform: translateX(-110px) translateY(0); } 35% { transform: translateX(0) translateY(-45px) rotate(-7deg); } 65% { transform: translateX(100px) translateY(0); } }
+@media (max-width: 760px) { .english-learn-screen { width: min(100% - 20px, 1080px); margin-top: 12px; }.english-learn-card { border-radius: 22px; }.english-featured-media { min-height: 180px; }.english-word-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.english-word-card { min-height: 120px; }.parent-course-selector { grid-template-columns: 1fr; } }
+@media (max-width: 400px) { .english-word-grid { grid-template-columns: 1fr 1fr; gap: 9px; }.english-word-card { padding: 10px 6px; }.english-animation { min-height: 170px; gap: 12px; } }
+@media (prefers-reduced-motion: reduce) { .english-animation *, .english-animation { animation: none !important; } }

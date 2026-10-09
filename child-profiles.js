@@ -5,7 +5,7 @@
   const ACTIVE_CHILD_KEY = "hoc-cung-be:active-child";
   const CHILD_PROGRESS_KEY_PREFIX = "hoc-cung-be:progress:";
   const LEGACY_PROGRESS_KEY = "hoc-cung-be:math-grade-1-progress";
-  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1"];
+  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1", "english-grade-1"];
   const MAX_CHILDREN = 5;
   const CHILD_VERSION = 1;
   const MIGRATION_VERSION = 1;
@@ -82,7 +82,7 @@
     renderManagement();
   }
 
-  function refreshLocalSummary(child) { const math = parse(safeGet(childProgressKey(child.id, "math-grade-1"))) || parse(safeGet(legacyChildProgressKey(child.id))); const vietnamese = parse(safeGet(childProgressKey(child.id, "vietnamese-grade-1"))); const mathSummary = progressSummary(math, "math-grade-1"), vietnameseSummary = progressSummary(vietnamese, "vietnamese-grade-1"); child.summary = { math: mathSummary, vietnamese: vietnameseSummary, completed: mathSummary.completed + vietnameseSummary.completed, stars: mathSummary.stars + vietnameseSummary.stars }; return child; }
+  function refreshLocalSummary(child) { const math = parse(safeGet(childProgressKey(child.id, "math-grade-1"))) || parse(safeGet(legacyChildProgressKey(child.id))); const vietnamese = parse(safeGet(childProgressKey(child.id, "vietnamese-grade-1"))); const english = parse(safeGet(childProgressKey(child.id, "english-grade-1"))); const mathSummary = progressSummary(math, "math-grade-1"), vietnameseSummary = progressSummary(vietnamese, "vietnamese-grade-1"), englishSummary = progressSummary(english, "english-grade-1"); child.summary = { math: mathSummary, vietnamese: vietnameseSummary, english: englishSummary, completed: mathSummary.completed + vietnameseSummary.completed + englishSummary.completed, stars: mathSummary.stars + vietnameseSummary.stars + englishSummary.stars }; return child; }
   function childCard(child, actionText) {
     refreshLocalSummary(child); const active = child.id === activeId;
     const card = document.createElement("article"); card.className = `child-card${active ? " is-active" : ""}`; card.dataset.childCard = child.id;
@@ -109,10 +109,10 @@
   function escapeHtml(value) { const node = document.createElement("span"); node.textContent = value; return node.innerHTML; }
 
   async function loadSummary(childId) {
-    const localMath = parse(safeGet(childProgressKey(childId, "math-grade-1"))) || parse(safeGet(legacyChildProgressKey(childId))); const localVietnamese = parse(safeGet(childProgressKey(childId, "vietnamese-grade-1")));
-    if (localMath || localVietnamese) { const math = progressSummary(localMath, "math-grade-1"), vietnamese = progressSummary(localVietnamese, "vietnamese-grade-1"); return { math, vietnamese, completed: math.completed + vietnamese.completed, stars: math.stars + vietnamese.stars }; }
-    if (!firestore || !db || !user) return { math: { completed: 0, stars: 0 }, vietnamese: { completed: 0, stars: 0 }, completed: 0, stars: 0 };
-    try { const snapshots = await Promise.all(COURSE_IDS.map((courseId) => firestore.getDoc(firestore.doc(db, "users", user.uid, "children", childId, "progress", courseId)))); const math = progressSummary(snapshots[0].exists() ? snapshots[0].data() : {}, "math-grade-1"), vietnamese = progressSummary(snapshots[1].exists() ? snapshots[1].data() : {}, "vietnamese-grade-1"); return { math, vietnamese, completed: math.completed + vietnamese.completed, stars: math.stars + vietnamese.stars }; } catch { return { math: { completed: 0, stars: 0 }, vietnamese: { completed: 0, stars: 0 }, completed: 0, stars: 0 }; }
+    const localMath = parse(safeGet(childProgressKey(childId, "math-grade-1"))) || parse(safeGet(legacyChildProgressKey(childId))); const localVietnamese = parse(safeGet(childProgressKey(childId, "vietnamese-grade-1"))); const localEnglish = parse(safeGet(childProgressKey(childId, "english-grade-1")));
+    if (localMath || localVietnamese || localEnglish) { const math = progressSummary(localMath, "math-grade-1"), vietnamese = progressSummary(localVietnamese, "vietnamese-grade-1"), english = progressSummary(localEnglish, "english-grade-1"); return { math, vietnamese, english, completed: math.completed + vietnamese.completed + english.completed, stars: math.stars + vietnamese.stars + english.stars }; }
+    const empty = { completed: 0, stars: 0 }; if (!firestore || !db || !user) return { math: empty, vietnamese: empty, english: empty, completed: 0, stars: 0 };
+    try { const snapshots = await Promise.all(COURSE_IDS.map((courseId) => firestore.getDoc(firestore.doc(db, "users", user.uid, "children", childId, "progress", courseId)))); const summaries = COURSE_IDS.map((courseId, index) => progressSummary(snapshots[index].exists() ? snapshots[index].data() : {}, courseId)); const [math, vietnamese, english] = summaries; return { math, vietnamese, english, completed: summaries.reduce((sum, item) => sum + item.completed, 0), stars: summaries.reduce((sum, item) => sum + item.stars, 0) }; } catch { return { math: empty, vietnamese: empty, english: empty, completed: 0, stars: 0 }; }
   }
 
   async function loadChildren() {

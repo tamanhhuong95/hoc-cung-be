@@ -1,18 +1,25 @@
-import http.server
+﻿import http.server
 import json
 import pathlib
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
+import uuid
+
+import requests
+import websockets.sync.client
 
 ROOT = pathlib.Path(__file__).resolve().parent
 RUNNER = ROOT / "__browser-test-runner.html"
-PROFILE = ROOT / "__browser-test-profile"
+PROFILE = pathlib.Path(tempfile.gettempdir()) / f"hoc-cung-be-browser-tests-{uuid.uuid4().hex}"
 REPORT = ROOT / "__full_regression_report.json"
+DIAGNOSTIC = ROOT / "__browser_test_diagnostic.json"
 CHROME = pathlib.Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+DEBUG_PORT = 9342
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -43,6 +50,7 @@ window.addEventListener("load", async () => {
     ["Dynamic curriculum", "__hocCungBeDynamicLevelTests"],
     ["Guest Trial", "__hocCungBeGuestTrialTests"],
     ["Multi-course and Vietnamese", "__hocCungBeMultiCourseTests"],
+    ["English Grade 1 EN-01 to EN-20", "__hocCungBeEnglishGrade1Tests"],
     ["PWA and offline", "__hocCungBePwaTests"],
     ["Branding and icons", "__hocCungBeBrandingTests"],
     ["Parent Auth, verification, recovery, password and phone", "__hocCungBeParentAuthTests"],
@@ -75,7 +83,32 @@ window.addEventListener("load", async () => {
     click(`button[data-course="${courseId}"]`);
     click("#topic-grid button");
     click("#level-grid button");
+    if (courseId === "english-grade-1") { expectScreen("learn-screen", "English Learn"); click("#begin-practice-button"); }
     if (!isQuiz()) throw new Error(`${courseId} did not transition to quiz: ${JSON.stringify(state())}`);
+  };
+  const runEnglishInteractionTests = async () => {
+    const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    await test("A. English course opens Learn before Practice", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="english-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); expectScreen("learn-screen", "English Learn"); if (!document.querySelector("#learn-word-grid button") || document.querySelectorAll("#learn-word-grid button").length < 3) throw new Error("English Learn cards missing"); });
+    await test("B. English Learn audio control is clickable", () => { const button = click("#learn-word-grid button"); if (!button.getAttribute("aria-label")?.startsWith("Nghe")) throw new Error("Learn audio aria-label missing"); });
+    await test("C. English Practice renders four choices", () => { click("#begin-practice-button"); if (!isQuiz()) throw new Error(`English Practice invalid: ${JSON.stringify(state())}`); });
+    await test("D. Wrong English answer supports retry feedback", () => { const correct = window.eval("quiz.questions[quiz.index].answer"); const wrong = [...document.querySelectorAll("#answer-grid button")].find((button) => button.dataset.answer !== correct); wrong.click(); if (!wrong.classList.contains("is-wrong") || !document.querySelector("#feedback").textContent.includes("Thử lại")) throw new Error("English retry feedback missing"); });
+    await test("E. Correct English answer advances feedback", () => { const correct = window.eval("quiz.questions[quiz.index].answer"); const button = [...document.querySelectorAll("#answer-grid button")].find((item) => item.dataset.answer === correct); button.click(); if (!button.classList.contains("is-correct") || document.querySelector("#next-button").hidden) throw new Error("English correct feedback missing"); });
+    await test("F. English task remains responsive at mobile width", () => { const card = document.querySelector("#quiz-screen .quiz-card"), answer = document.querySelector("#answer-grid button"); if (!card || !answer || answer.getBoundingClientRect().height < 44 || document.documentElement.scrollWidth > document.documentElement.clientWidth) throw new Error("English mobile interaction target/overflow invalid"); });
+    await test("G. Course switch Math to English to Vietnamese to English preserves progress keys", () => { signedIn(); const keys = ["math-grade-1", "english-grade-1", "vietnamese-grade-1", "english-grade-1"]; for (const courseId of keys) { click("#quiz-back-button"); click('[data-go="grade1"]'); click(`button[data-course="${courseId}"]`); if (document.body.dataset.course !== courseId) throw new Error(`Course switch failed: ${courseId}`); if (courseId === "english-grade-1") { click("#topic-grid button"); click("#level-grid button"); expectScreen("learn-screen", "English re-entry"); } else { click("#topic-grid button"); click("#level-grid button"); expectScreen("quiz-screen", `${courseId} quiz`); } } if (localStorage.getItem("hoc-cung-be:progress:testchild01:english-grade-1") === localStorage.getItem("hoc-cung-be:progress:testchild01:math-grade-1") && localStorage.getItem("hoc-cung-be:progress:testchild01:english-grade-1")) throw new Error("Progress keys collided"); });
+    return { passed: results.every((item) => item.passed), results };
+  };
+  const runEnglishVideoTests = async () => {
+    const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json());
+    const loadMetadata = async (src, poster) => { const response = await fetch(src, { cache: "no-store" }), blob = await response.blob(), url = URL.createObjectURL(blob); return new Promise((resolve, reject) => { const video = document.createElement("video"); video.preload = "metadata"; video.poster = poster; video.playsInline = true; video.muted = true; video.onloadedmetadata = () => { const result = { duration: video.duration, width: video.videoWidth, height: video.videoHeight, readyState: video.readyState, error: video.error }; URL.revokeObjectURL(url); video.remove(); resolve(result); }; video.onerror = () => { URL.revokeObjectURL(url); video.remove(); reject(new Error(`Media error ${video.error?.code || "unknown"}: ${src}`)); }; video.src = url; document.body.append(video); video.load(); video.play().catch(() => {}); }); };
+    await test("A. Three real WebM files have valid MIME, EBML signature and size budget", async () => { const responses = await Promise.all(manifest.clips.map((clip) => fetch(clip.webm, { cache: "no-store" }))); const bodies = await Promise.all(responses.map((response) => response.arrayBuffer())); responses.forEach((response, index) => { const bytes = new Uint8Array(bodies[index]), clip = manifest.clips[index], signature = [...bytes.slice(0, 4)].map((value) => value.toString(16).padStart(2, "0")).join(""); if (!response.ok || !response.headers.get("content-type")?.includes("video/webm") || signature !== "1a45dfa3" || bytes.length <= 0 || bytes.length >= 2 * 1024 * 1024 || !clip.available) throw new Error(`${clip.levelId}: status=${response.status} mime=${response.headers.get("content-type")} signature=${signature} bytes=${bytes.length}`); }); if (bodies.reduce((sum, body) => sum + body.byteLength, 0) >= 4 * 1024 * 1024) throw new Error("Combined video budget exceeded"); });
+    await test("B. All WebM metadata loads without media errors", async () => { const metadata = await Promise.all(manifest.clips.map((clip) => loadMetadata(clip.webm, clip.poster))); metadata.forEach((value, index) => { if (value.error || value.readyState < 1 || value.width !== 960 || value.height !== 540 || (!Number.isFinite(value.duration) && value.duration !== Infinity)) throw new Error(`${manifest.clips[index].levelId}: ${JSON.stringify(value)}`); }); });
+    await test("C. Posters and fallback images exist", async () => { const paths = manifest.clips.flatMap((clip) => [clip.poster, clip.fallbackImage]), responses = await Promise.all(paths.map((path) => fetch(path, { cache: "no-store" }))); if (!responses.every((response) => response.ok && response.headers.get("content-type")?.includes("image/webp"))) throw new Error("Poster or fallback image invalid"); });
+    await test("D. Missing video switches to animation and poster fallback without crash", () => { const host = document.createElement("div"), clip = manifest.clips[0]; document.body.append(host); renderEnglishMedia(host, { type: "video", available: false, poster: clip.poster, fallback: clip.fallbackImage, animationFallback: clip.animationFallback, ariaLabel: "Fallback test" }, "Fallback test"); if (host.querySelector("video") || !host.querySelector(".english-animation") || !host.querySelector(".english-media-poster")) throw new Error("Fallback state invalid"); host.remove(); });
+    await test("E. EN-19 quiz video cue does not expose answer text", () => { const question = window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-19").questions[0], host = document.createElement("div"); renderEnglishMedia(host, question.video, "Actions"); if (question.type !== "video-choice" || question.answer !== "jump" || host.textContent.toLowerCase().includes(question.answer) || host.querySelector("video")?.getAttribute("aria-label").toLowerCase().includes(question.answer)) throw new Error(`Quiz answer leaked: ${host.textContent}`); });
+    await test("F. Video component attributes and replay controls are present", () => { const host = document.createElement("div"), media = window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-08").media.featured; renderEnglishMedia(host, media, "Greetings"); const video = host.querySelector("video"), source = host.querySelector("source"); if (!video?.controls || !video.playsInline || video.preload !== "metadata" || !video.poster || !video.getAttribute("aria-label") || source?.type !== "video/webm") throw new Error("Video attributes invalid"); });
+    await test("G. Offline runtime video cache and v29 remain configured", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v29"') || !sw.includes('request.destination === "video"') || !sw.includes("cacheMediaRange") || !sw.includes("caches.match(request.url")) throw new Error("Offline video runtime cache invalid"); });
+    return { passed: results.every((item) => item.passed), results };
   };
   const runCanEnterQuizTests = async () => {
     const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
@@ -89,7 +122,7 @@ window.addEventListener("load", async () => {
     await test("H. Missing cloud progress does not block start", () => { resetGuest(); signedIn(); localStorage.removeItem("hoc-cung-be:progress:testchild01:math-grade-1"); localStorage.removeItem("hoc-cung-be:progress:testchild01:vietnamese-grade-1"); enterQuiz("vietnamese-grade-1"); });
     await test("I. Course switch Math → Vietnamese → Math still starts quiz", () => { resetGuest(); signedIn(); enterQuiz("math-grade-1"); click("#quiz-back-button"); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); if (!isQuiz()) throw new Error("Vietnamese did not start after switch"); click("#quiz-back-button"); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); if (!isQuiz()) throw new Error("Math did not restart after switch"); });
     await test("J. Refresh then start quiz works", () => { if (!isQuiz()) throw new Error("Refresh flow is executed by a dedicated fresh runner navigation"); });
-    await test("K. v28 app shell includes required modules and shared artwork", async () => { const required = ["./script.js", "./child-settings.js", "./parent-auth.js", "./child-profiles.js", "./data/vietnamese-grade-1.js", "./assets/backgrounds/van-mieu-quoc-tu-giam.webp"]; const text = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!text.includes('const CACHE_NAME = "hoc-cung-be-v28"') || !required.every((path) => text.includes(`"${path}"`))) throw new Error("v28 app shell is incomplete"); });
+    await test("K. v29 app shell includes required modules and shared artwork", async () => { const required = ["./script.js", "./child-settings.js", "./parent-auth.js", "./child-profiles.js", "./data/vietnamese-grade-1.js", "./assets/backgrounds/van-mieu-quoc-tu-giam.webp"]; const text = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!text.includes('const CACHE_NAME = "hoc-cung-be-v29"') || !required.every((path) => text.includes(`"${path}"`))) throw new Error("v29 app shell is incomplete"); });
     await test("L. Math Back stays on Grade 1", async () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); expectScreen("math-screen", "Math course"); click('#math-screen .back-button[data-go="grade1"]'); expectScreen("grade1-screen", "Math Back immediate"); await wait(1100); expectScreen("grade1-screen", "Math Back stable"); });
     await test("M. Vietnamese Back stays on Grade 1", async () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); expectScreen("math-screen", "Vietnamese course"); click('#math-screen .back-button[data-go="grade1"]'); expectScreen("grade1-screen", "Vietnamese Back immediate"); await wait(1100); expectScreen("grade1-screen", "Vietnamese Back stable"); });
     await test("N. Math quiz stays visible and Quiz Back returns to levels", async () => { resetGuest(); enterQuiz("math-grade-1"); await wait(1100); expectScreen("quiz-screen", "Math quiz stable"); click("#quiz-back-button"); expectScreen("levels-screen", "Quiz Back immediate"); await wait(1100); expectScreen("levels-screen", "Quiz Back stable"); });
@@ -114,7 +147,7 @@ window.addEventListener("load", async () => {
         await wait(1200);
         const win = frame.contentWindow, doc = frame.contentDocument;
         win.dispatchEvent(new win.CustomEvent("hoc-cung-be:auth-state", { detail: { user: null } }));
-        await wait(50);
+        await wait(200);
         const shown = (node) => { if (!node) return false; for (let current = node; current; current = current.parentElement) { const style = win.getComputedStyle(current); if (current.hidden || style.display === "none" || style.visibility === "hidden") return false; } return true; };
         const headerLabels = [...doc.querySelectorAll(".site-nav button")].filter(shown).map((node) => node.textContent.trim());
         const heroActions = [...doc.querySelectorAll("#home-screen button, #home-screen a")].filter((node) => shown(node));
@@ -126,8 +159,9 @@ window.addEventListener("load", async () => {
         if (authCounts[0] !== 1 || authCounts[1] !== 1 || !trialRect || trialRect.left < 0 || trialRect.right > width) throw new Error(`Hero actions invalid: ${authCounts.join("/")} trial=${trialRect?.left}-${trialRect?.right}`);
         hiddenSections.forEach((section) => { const rect = section?.getBoundingClientRect(); if (!section?.hidden || rect?.width !== 0 || rect?.height !== 0) throw new Error(`Responsive redundant section visible: ${section?.id}`); });
         win.dispatchEvent(new win.CustomEvent("hoc-cung-be:auth-state", { detail: { user: { uid: "responsive-user", email: "parent@example.com", displayName: "Phụ huynh", emailVerified: true } } }));
-        await wait(50);
-        if (!shown(doc.querySelector("#function-menu-button")) || shown(doc.querySelector("#home-login-button")) || shown(doc.querySelector("#home-register-button")) || doc.querySelector("[data-home-learn-link]")?.textContent.trim() !== "Bắt đầu học →") throw new Error("Responsive logged-in Home is invalid");
+        const loggedInReady = () => shown(doc.querySelector("#function-menu-button")) && !shown(doc.querySelector("#home-login-button")) && !shown(doc.querySelector("#home-register-button")) && doc.querySelector("[data-home-learn-link]")?.textContent.trim() === "Bắt đầu học →";
+        for (let attempt = 0; attempt < 10 && !loggedInReady(); attempt += 1) await wait(100);
+        if (!loggedInReady()) throw new Error(`Responsive logged-in Home is invalid: menu=${shown(doc.querySelector("#function-menu-button"))} login=${shown(doc.querySelector("#home-login-button"))} register=${shown(doc.querySelector("#home-register-button"))} learn=${doc.querySelector("[data-home-learn-link]")?.textContent.trim()}`);
       } finally { frame.remove(); }
     };
     const redundantSections = () => [...document.querySelectorAll("[data-home-auth-redundant]")];
@@ -172,7 +206,7 @@ window.addEventListener("load", async () => {
     await test("X. Hidden backdrop does not intercept clicks", () => { const backdrop = document.querySelector("#function-menu-backdrop"), style = getComputedStyle(backdrop); if (!backdrop.hidden || (style.display !== "none" && style.pointerEvents !== "none")) throw new Error(`Hidden backdrop intercepts: ${style.display}/${style.pointerEvents}`); });
     await test("Y. prefers-reduced-motion exists", async () => { const css = await fetch("styles.css", { cache: "no-store" }).then((r) => r.text()); if (!css.includes("@media (prefers-reduced-motion: reduce)")) throw new Error("Reduced motion CSS missing"); });
     await test("Z. Background clarity and overlays are tuned", async () => { const [response, css] = await Promise.all([fetch("assets/backgrounds/van-mieu-quoc-tu-giam.webp", { cache: "no-store" }), fetch("styles.css", { cache: "no-store" }).then((r) => r.text())]), bytes = new Uint8Array(await response.arrayBuffer()), signature = String.fromCharCode(...bytes.slice(0, 4)) + String.fromCharCode(...bytes.slice(8, 12)); const expected = ["filter: none", "opacity: .72", "rgba(251, 252, 255, .18)", "rgba(251, 252, 255, .72)", "rgba(255,255,255,.90)", "rgba(255,255,255,.93)", "pointer-events: none"]; if (!response.ok || signature !== "RIFFWEBP" || bytes.length < 250000 || bytes.length > 500000 || !expected.every((value) => css.includes(value))) throw new Error(`WebP/background CSS invalid: ${signature}, ${bytes.length}`); });
-    await test("AA. Background WebP is in v28 APP_SHELL", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v28"') || !sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"')) throw new Error("v28 APP_SHELL is invalid"); });
+    await test("AA. Background WebP is in v29 APP_SHELL", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v29"') || !sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"')) throw new Error("v29 APP_SHELL is invalid"); });
     await test("AB. No old double-extension references", async () => { const files = ["index.html", "styles.css", "script.js", "child-settings.js", "service-worker.js", "README.md", "__run_browser_tests.py"], forbidden = ".webp" + ".png"; const texts = await Promise.all(files.map((path) => fetch(path, { cache: "no-store" }).then((r) => r.text()))); if (texts.some((text) => text.includes(forbidden))) throw new Error("Old double extension remains"); });
     await test("AC. Math navigation passes", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); expectScreen("math-screen", "Math navigation"); });
     await test("AD. Vietnamese navigation passes", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); expectScreen("math-screen", "Vietnamese navigation"); if (document.body.dataset.course !== "vietnamese-grade-1") throw new Error("Vietnamese course not active"); });
@@ -193,6 +227,8 @@ window.addEventListener("load", async () => {
     catch (error) { suites[suiteName] = { passed: false, error: String(error), results: [{ id: "suite", passed: false }] }; }
   }
   suites["Can Enter Quiz"] = await runCanEnterQuizTests();
+  suites["English Learn and interaction flow"] = await runEnglishInteractionTests();
+  suites["English real video media"] = await runEnglishVideoTests();
   // A clean navigation validates that no state from the flow tests is required for entry.
   if (!location.search.includes("fresh-quiz")) {
     location.replace(`${location.pathname}?fresh-quiz=1`);
@@ -217,6 +253,48 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *_args):
         pass
 
+
+class Cdp:
+    def __init__(self, url):
+        self.ws = websockets.sync.client.connect(url, open_timeout=10)
+        self.next_id = 0
+
+    def call(self, method, params=None):
+        self.next_id += 1
+        request_id = self.next_id
+        self.ws.send(json.dumps({"id": request_id, "method": method, "params": params or {}}))
+        while True:
+            message = json.loads(self.ws.recv(timeout=20))
+            if message.get("id") != request_id:
+                continue
+            if "error" in message:
+                raise RuntimeError(f"{method}: {message['error']}")
+            return message.get("result", {})
+
+    def evaluate(self, expression):
+        result = self.call("Runtime.evaluate", {"expression": expression, "returnByValue": True})
+        remote = result.get("result", {})
+        if remote.get("subtype") == "error":
+            raise RuntimeError(remote.get("description", "Runtime evaluation error"))
+        return remote.get("value")
+
+    def close(self):
+        self.ws.close()
+
+
+def wait_for_page():
+    deadline = time.time() + 15
+    while time.time() < deadline:
+        try:
+            pages = requests.get(f"http://127.0.0.1:{DEBUG_PORT}/json", timeout=1).json()
+            page = next((item for item in pages if item.get("type") == "page"), None)
+            if page:
+                return page
+        except requests.RequestException:
+            pass
+        time.sleep(0.1)
+    raise RuntimeError("Chrome remote debugging endpoint did not become available")
+
 try:
     app_html = (ROOT / "index.html").read_text(encoding="utf-8")
     RUNNER.write_text(re.sub(r"(<body\b[^>]*>)", r"\1" + probe, app_html, count=1, flags=re.I), encoding="utf-8")
@@ -225,20 +303,38 @@ try:
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     time.sleep(0.5)
-    result = subprocess.run([
-        str(CHROME), "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
-        f"--user-data-dir={PROFILE}", "--virtual-time-budget=15000", "--dump-dom",
-        "http://127.0.0.1:8767/__browser-test-runner.html",
-    ], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=40)
-    match = re.search(r'<pre id="test-output">([\s\S]*?)</pre>', result.stdout)
-    if not match:
+    chrome = subprocess.Popen([
+        str(CHROME), "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
+        f"--user-data-dir={PROFILE}", f"--remote-debugging-port={DEBUG_PORT}", "about:blank",
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    cdp = Cdp(wait_for_page()["webSocketDebuggerUrl"])
+    cdp.call("Page.enable")
+    cdp.call("Runtime.enable")
+    cdp.call("Page.navigate", {"url": "http://127.0.0.1:8767/__browser-test-runner.html"})
+    deadline = time.time() + 55
+    report_text = None
+    while time.time() < deadline:
+        report_text = cdp.evaluate("document.querySelector('#test-output')?.textContent || null")
+        if report_text:
+            break
+        time.sleep(0.1)
+    if not report_text:
+        DIAGNOSTIC.write_text(json.dumps({"error": "Chrome did not produce test output within 55 seconds"}, ensure_ascii=False, indent=2), encoding="utf-8")
         raise RuntimeError("Chrome did not produce test output")
-    report = json.loads(match.group(1).replace("&quot;", '"').replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">"))
+    report = json.loads(report_text)
     REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if report.get("realExitCode", 1):
         raise SystemExit(1)
 finally:
+    if "cdp" in globals():
+        cdp.close()
+    if "chrome" in globals():
+        chrome.terminate()
+        try:
+            chrome.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            chrome.kill()
     if "server" in globals():
         server.shutdown()
         server.server_close()

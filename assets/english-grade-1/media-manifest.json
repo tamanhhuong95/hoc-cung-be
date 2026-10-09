@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "courseId": "english-grade-1",
+  "videoAssetsRequired": true,
+  "clips": [
+    {
+      "levelId": "EN-08",
+      "id": "greetings",
+      "durationSeconds": 12,
+      "webm": "assets/english-grade-1/videos/en-08-greetings.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/greetings.webp",
+      "fallbackImage": "assets/english-grade-1/images/greetings.webp",
+      "animationFallback": "greetings-wave",
+      "available": true
+    },
+    {
+      "levelId": "EN-12",
+      "id": "colors",
+      "durationSeconds": 14,
+      "webm": "assets/english-grade-1/videos/en-12-colors.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/colors.webp",
+      "fallbackImage": "assets/english-grade-1/images/colors.webp",
+      "animationFallback": "colors-change",
+      "available": true
+    },
+    {
+      "levelId": "EN-19",
+      "id": "actions",
+      "durationSeconds": 16,
+      "webm": "assets/english-grade-1/videos/en-19-actions.webm",
+      "mimeType": "video/webm",
+      "poster": "assets/english-grade-1/posters/actions.webp",
+      "fallbackImage": "assets/english-grade-1/images/actions.webp",
+      "animationFallback": "actions-move",
+      "available": true
+    }
+  ]
+}

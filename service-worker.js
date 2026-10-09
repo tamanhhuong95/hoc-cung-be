@@ -1,12 +1,14 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v28";
+const CACHE_NAME = "hoc-cung-be-v29";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./script.js",
   "./data/vietnamese-grade-1.js",
+  "./data/english-grade-1.js",
+  "./assets/english-grade-1/media-manifest.json",
   "./child-profiles.js",
   "./cloud-sync.js",
   "./child-settings.js",
@@ -17,6 +19,27 @@ const APP_SHELL = [
   "./manifest.webmanifest",
   "./assets/branding/logo-hoc-cung-be-web.png",
   "./assets/backgrounds/van-mieu-quoc-tu-giam.webp",
+  "./assets/english-grade-1/images/letters-abcd.webp",
+  "./assets/english-grade-1/images/letters-efgh.webp",
+  "./assets/english-grade-1/images/letters-ijkl.webp",
+  "./assets/english-grade-1/images/letters-mnop.webp",
+  "./assets/english-grade-1/images/letters-qrst.webp",
+  "./assets/english-grade-1/images/letters-uvwxyz.webp",
+  "./assets/english-grade-1/images/uppercase-lowercase.webp",
+  "./assets/english-grade-1/images/greetings.webp",
+  "./assets/english-grade-1/images/numbers.webp",
+  "./assets/english-grade-1/images/colors.webp",
+  "./assets/english-grade-1/images/school-things.webp",
+  "./assets/english-grade-1/images/family.webp",
+  "./assets/english-grade-1/images/body.webp",
+  "./assets/english-grade-1/images/animals.webp",
+  "./assets/english-grade-1/images/fruits.webp",
+  "./assets/english-grade-1/images/toys.webp",
+  "./assets/english-grade-1/images/actions.webp",
+  "./assets/english-grade-1/images/review.webp",
+  "./assets/english-grade-1/posters/greetings.webp",
+  "./assets/english-grade-1/posters/colors.webp",
+  "./assets/english-grade-1/posters/actions.webp",
   "./assets/icons/favicon-32.png",
   "./assets/icons/favicon-48.png",
   "./assets/icons/apple-touch-icon.png",
@@ -45,6 +68,16 @@ function cacheFirstWithUpdate(request) {
   });
 }
 
+function cacheMediaRange(request) {
+  return caches.open(CACHE_NAME).then(async (cache) => {
+    const cached = await cache.match(request.url, { ignoreSearch: true, ignoreVary: true });
+    if (cached) return cached;
+    const response = await fetch(new Request(request.url, { credentials: request.credentials, mode: "same-origin" }));
+    if (response && response.ok) cache.put(request.url, response.clone());
+    return response;
+  }).catch(() => caches.match(request.url, { ignoreSearch: true, ignoreVary: true }));
+}
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
@@ -62,5 +95,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  if (request.destination === "video") { event.respondWith(cacheMediaRange(request)); return; }
   event.respondWith(cacheFirstWithUpdate(request));
 });
