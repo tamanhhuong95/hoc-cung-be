@@ -59,8 +59,12 @@ window.addEventListener("load", async () => {
     ["Parent PIN and feedback", "__hocCungBeParentPinFeedbackTests"],
     ["Child Settings and cross-course limits", "__hocCungBeChildSettingsTests"],
   ];
-  await new Promise((resolve) => setTimeout(resolve, 1500));
   const suites = {}, missingSuites = [];
+  const hookReady = (hook) => Boolean(window[hook]) && window[hook]?.pending !== true;
+  const hookDeadline = performance.now() + 10000;
+  while (registry.some(([, hook]) => !hookReady(hook)) && performance.now() < hookDeadline) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
   const state = () => ({ activeScreen: [...document.querySelectorAll(".screen")].find((screen) => !screen.hidden)?.id || null, course: document.body.dataset.course || null, authenticated: document.body.dataset.authenticated || null, topics: document.querySelectorAll("#topic-grid button").length, levels: document.querySelectorAll("#level-grid button").length, answers: document.querySelectorAll("#answer-grid button").length, quizHidden: document.querySelector("#quiz-screen")?.hidden });
   const isQuiz = () => { const screen = document.querySelector("#quiz-screen"); return Boolean(screen && !screen.hidden && document.querySelectorAll("#answer-grid button").length === 4 && document.querySelector("#question-count")?.textContent.includes("1 / 5")); };
   const click = (selector, root = document) => { const node = root.querySelector(selector); if (!node) throw new Error(`Missing clickable element: ${selector}`); if (node.disabled) throw new Error(`Clickable element is disabled: ${selector}`); node.click(); return node; };
@@ -140,10 +144,16 @@ window.addEventListener("load", async () => {
     const checkResponsiveHome = async (width, height) => {
       const frame = document.createElement("iframe");
       frame.style.cssText = `position:absolute;left:-10000px;top:0;width:${width}px;height:${height}px;border:0`;
-      frame.src = `index.html?responsive=${width}x${height}`;
-      document.body.append(frame);
       try {
-        await new Promise((resolve, reject) => { frame.addEventListener("load", resolve, { once: true }); setTimeout(() => reject(new Error(`Responsive ${width}x${height} load timeout`)), 5000); });
+        frame.src = `index.html?responsive=${width}x${height}`;
+        document.body.append(frame);
+        const frameDeadline = performance.now() + 15000;
+        while (performance.now() < frameDeadline) {
+          const doc = frame.contentDocument;
+          if (doc?.readyState === "complete" && doc.querySelector("#home-screen") && doc.querySelector("[data-home-learn-link]")) break;
+          await wait(50);
+        }
+        if (frame.contentDocument?.readyState !== "complete" || !frame.contentDocument.querySelector("#home-screen") || !frame.contentDocument.querySelector("[data-home-learn-link]")) throw new Error(`Responsive ${width}x${height} app readiness timeout`);
         await wait(1200);
         const win = frame.contentWindow, doc = frame.contentDocument;
         win.dispatchEvent(new win.CustomEvent("hoc-cung-be:auth-state", { detail: { user: null } }));
@@ -243,6 +253,7 @@ window.addEventListener("load", async () => {
   const all = Object.entries(suites).flatMap(([suite, value]) => asChecks(value).map((check) => ({ suite, ...check })));
   const failed = all.filter((item) => item && item.passed === false);
   missingSuites.forEach((item) => runtimeErrors.push({ type: "missing-suite", message: `${item.suite}: ${item.hook}` }));
+  if (all.length < 350) runtimeErrors.push({ type: "incomplete-coverage", message: `Expected at least 350 checks, got ${all.length}` });
   const realExitCode = failed.length || runtimeErrors.length || missingSuites.length ? 1 : 0;
   document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ realExitCode, suiteCount: Object.keys(suites).length, suiteNames: Object.keys(suites), total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, missingSuites })}</pre>`;
 });
@@ -295,6 +306,24 @@ def wait_for_page():
         time.sleep(0.1)
     raise RuntimeError("Chrome remote debugging endpoint did not become available")
 
+
+def wait_for_server(server, timeout=15):
+    deadline = time.time() + timeout
+    urls = ["http://127.0.0.1:8767/", "http://127.0.0.1:8767/service-worker.js"]
+    last_error = None
+    while time.time() < deadline:
+        if not thread.is_alive():
+            raise RuntimeError("Local test server stopped before browser startup")
+        try:
+            responses = [requests.get(url, timeout=1) for url in urls]
+            if all(response.status_code == 200 for response in responses) and "hoc-cung-be-v30" in responses[1].text:
+                return
+            last_error = RuntimeError(f"Unexpected readiness status: {[response.status_code for response in responses]}")
+        except requests.RequestException as error:
+            last_error = error
+        time.sleep(0.1)
+    raise RuntimeError(f"Local test server was not ready within {timeout}s: {last_error}")
+
 try:
     app_html = (ROOT / "index.html").read_text(encoding="utf-8")
     RUNNER.write_text(re.sub(r"(<body\b[^>]*>)", r"\1" + probe, app_html, count=1, flags=re.I), encoding="utf-8")
@@ -302,7 +331,7 @@ try:
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 8767), lambda *args, **kwargs: QuietHandler(*args, directory=str(ROOT), **kwargs))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    time.sleep(0.5)
+    wait_for_server(server)
     chrome = subprocess.Popen([
         str(CHROME), "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
         f"--user-data-dir={PROFILE}", f"--remote-debugging-port={DEBUG_PORT}", "about:blank",
