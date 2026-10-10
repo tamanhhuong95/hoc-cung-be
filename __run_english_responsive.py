@@ -48,6 +48,17 @@ frame.addEventListener("load", async () => {
     const answers = [...document.querySelectorAll("#answer-grid button")];
     check(!document.querySelector("#quiz-screen").hidden && answers.length === 4, "Practice did not render");
     check(answers.every((node) => node.getBoundingClientRect().height >= 44), "Practice touch target invalid");
+    const listening = win.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.flatMap((level) => level.questions.map((question) => ({ level, question }))).find((item) => item.question.type === "listen-choice");
+    const dashboardProgress = { history: Array.from({ length: 8 }, (_, index) => ({ questionId: listening.question.id, levelId: listening.level.id, correct: index > 1, timestamp: `2026-10-${String(index + 1).padStart(2, "0")}T00:00:00Z` })), levels: { [listening.level.id]: { completed: true, attempts: 1, unlocked: true } }, studyTime: { studyTimeByDate: { "2026-10-09": 420 } } };
+    document.querySelectorAll(".screen").forEach((node) => { node.hidden = node.id !== "parent-dashboard-screen"; });
+    win.HocCungBeLearningAnalytics.renderEnglishSkillDashboard({ courseId: "english-grade-1", progress: dashboardProgress, curriculum: win.HOC_CUNG_BE_ENGLISH_GRADE_1 });
+    const skillSection = document.querySelector("#english-skill-analytics"), skillCards = [...document.querySelectorAll(".english-skill-card")], skillGrid = document.querySelector(".english-skill-grid");
+    check(skillSection && !skillSection.hidden && skillCards.length === 4, "English skill dashboard did not render four cards");
+    check(skillCards.every((node) => { const rect = node.getBoundingClientRect(); return rect.left >= 0 && rect.right <= win.innerWidth; }), "Skill card horizontal overflow");
+    check(document.querySelectorAll('.english-skill-progress[role="progressbar"][aria-label]').length === 4, "Skill progress accessibility missing");
+    const rows = new Set(skillCards.map((node) => Math.round(node.getBoundingClientRect().top))).size;
+    const gridStyle = win.getComputedStyle(skillGrid), gridRect = skillGrid.getBoundingClientRect(), cardRects = skillCards.map((node) => node.getBoundingClientRect());
+    check(requestedWidth <= 480 ? rows === 4 : rows === 2, `Unexpected skill grid rows ${rows}; display=${gridStyle.display}; columns=${gridStyle.gridTemplateColumns}; grid=${Math.round(gridRect.width)}x${Math.round(gridRect.height)}; cards=${cardRects.map((rect) => `${Math.round(rect.left)},${Math.round(rect.top)},${Math.round(rect.width)}x${Math.round(rect.height)}`).join("|")}`);
     check(document.documentElement.scrollWidth <= win.innerWidth && document.body.scrollWidth <= win.innerWidth, `Horizontal overflow ${document.documentElement.scrollWidth}/${document.body.scrollWidth}`);
   } catch (error) { failures.push(String(error?.stack || error)); }
   const actualWidth = win.innerWidth, actualHeight = win.innerHeight;

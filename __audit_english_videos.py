@@ -38,7 +38,7 @@ check("Four v30 video levels", all(f'video("{name}"' in source for name in ["en-
 check("No remote English media", not re.search(r'https?://', source + json.dumps(manifest)))
 service_worker = (ROOT / "service-worker.js").read_text(encoding="utf-8")
 cache_match = re.search(r'const CACHE_NAME = "([^"]+)"', service_worker)
-check("Cache is exactly v30", bool(cache_match) and cache_match.group(1) == "hoc-cung-be-v30", str(cache_match.group(1) if cache_match else None))
+check("Cache is exactly v31", bool(cache_match) and cache_match.group(1) == "hoc-cung-be-v31", str(cache_match.group(1) if cache_match else None))
 check("Runtime video cache", 'request.destination === "video"' in service_worker and "cacheMediaRange" in service_worker)
 check("Videos are not precached", "assets/english-grade-1/videos/" not in service_worker)
 for clip in manifest["clips"]:

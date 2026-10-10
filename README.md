@@ -36,8 +36,10 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Màn hình hoàn thành hiển thị số câu đúng trên mẫu số thực tế, điểm trên thang 100, lời khen tích cực và sao xuất hiện tuần tự. Quy tắc sao: dưới 60 điểm là 0 sao, 60 điểm là 1 sao, 80 điểm là 2 sao và 100 điểm là 3 sao; chỉ từ 80 điểm mới mở level tiếp theo.
 - Các card, đáp án, nút quay lại, icon và action button có hiệu ứng nhún bằng CSS (`hover` nâng nhẹ, `active` thu nhỏ), không gây layout shift và có hỗ trợ `prefers-reduced-motion`; bộ nhận diện thương hiệu và app icon được phục vụ nội bộ, không dùng CDN hay thư viện ảnh bên ngoài.
 - Có khu vực **Dành cho phụ huynh** được khóa bằng Parent PIN 4–6 chữ số do phụ huynh tự đặt trên từng thiết bị. Dashboard vẫn tự nhận đủ 12 chuyên đề và mọi level mới, chi tiết từng level, gợi ý luyện thêm, lịch sử 50 bài hoàn thành gần nhất và thao tác xóa tiến độ hai bước bằng mã `XOA`.
+- Khi phụ huynh chọn **Tiếng Anh lớp 1**, Parent Dashboard có thêm phân tích bốn kỹ năng **Listening, Speaking participation, Reading và Writing** từ progress, history gần đây và metadata curriculum hiện có. Analytics được tính local, không tạo database riêng, không gửi dữ liệu sang AI/third-party analytics và không lấy Toán/Tiếng Việt vào mẫu số.
+- Speaking hiện chỉ đo **mức tham gia/luyện tập** qua các lesson thực sự có speaking practice; ứng dụng không có AI pronunciation scoring nên không hiển thị pronunciation accuracy hoặc biến dữ liệu thiếu thành `0%`.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, dữ liệu Toán/Tiếng Việt/Tiếng Anh lớp 1, artwork English quan trọng, mã nguồn, manifest, logo, nền Văn Miếu – Quốc Tử Giám và icon nội bộ được cache để tiếp tục học và xem tiến độ khi offline; cache hiện là `hoc-cung-be-v30`.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, dữ liệu Toán/Tiếng Việt/Tiếng Anh lớp 1, artwork English quan trọng, mã nguồn, manifest, logo, nền Văn Miếu – Quốc Tử Giám và icon nội bộ được cache để tiếp tục học và xem tiến độ khi offline; cache hiện là `hoc-cung-be-v31`.
 - Artwork English là WebP local tự tạo trong `assets/english-grade-1/images/` và poster trong `assets/english-grade-1/posters/`; EN-08, EN-12, EN-19, EN-25, EN-27, EN-29 và EN-37 có video WebM local thật, không audio, kèm poster/image và CSS micro-animation fallback. Video không được precache toàn bộ mà dùng runtime cache; khi video chưa có cache hoặc không tải được, lesson vẫn hoạt động bằng ảnh + TTS + text + animation fallback.
 - Bộ nhận diện dùng master logo đầy đủ tại `assets/branding/logo-hoc-cung-be.png`, master app icon không chữ tại `assets/branding/app-icon-hoc-cung-be.png` và bản logo web tối ưu tại `assets/branding/logo-hoc-cung-be-web.png`. Icon PWA/favicons/Apple touch/maskable được sinh từ app icon không chữ trong `assets/icons/`.
 - Guest Home chỉ giữ một cụm Đăng nhập/Đăng ký trong Hero **Học vui mỗi ngày**; Header chỉ còn Home/Học thử và hai khối phụ huynh/tài khoản phía dưới luôn được ẩn hoàn toàn. Firebase `onAuthStateChanged()` là nguồn sự thật; guest actions chỉ hiện sau khi auth đã xác định trạng thái để tránh flash kéo dài khi refresh. Sau đăng nhập, mọi `data-guest-only` được ẩn, phần chọn lớp đổi thành **CHỌN LỚP – Bé muốn học lớp nào?**, hai khối phụ huynh/tài khoản dư thừa trên Home được ẩn hoàn toàn, và header hiện nút **Chức năng** gồm Thông tin cá nhân, Phân tích kết quả học tập, Hồ sơ của bé, Cài đặt, Đồng bộ dữ liệu, Tài khoản của tôi và Đăng xuất; trạng thái auth được áp lại sau mỗi lần render/navigation Home.
@@ -53,7 +55,7 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - Auto sync chạy khi đăng nhập, hoàn thành quiz, app chuyển background, mở/cập nhật Parent Dashboard và khi mạng trở lại nếu còn dữ liệu pending. Thay đổi thường được debounce 5 giây; không ghi từng câu hoặc từng giây.
 - Mỗi hồ sơ bé có thêm **Cài đặt cho bé** local-first: giới hạn thời gian học/số bài mỗi ngày, khung giờ được học, lời nhắc nghỉ và bật/tắt hiệu ứng âm thanh hoặc đọc câu hỏi. Thay đổi cần xác thực Parent PIN nếu PIN đã được đặt. Cài đặt lưu riêng theo `uid + childId`, chỉ đồng bộ vào `users/{uid}/children/{childId}/settings/learning`; đây là cài đặt học của bé, không phải Parent PIN, mật khẩu, OTP hoặc token.
 - Form phụ huynh có đăng ký/đăng nhập Email + Mật khẩu, quên mật khẩu, email verification, đổi mật khẩu có re-authentication, hiển thị trạng thái email và liên kết số điện thoại Việt Nam vào chính Firebase user hiện có bằng Phone Auth + visible reCAPTCHA. Flow link dùng `linkWithCredential()` và bắt buộc giữ nguyên UID; mật khẩu, OTP, `verificationId` và token không được ứng dụng lưu vào storage hoặc Firestore.
-- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v30` và không xử lý/cache Firebase Auth, Firestore API, Google API, Google Identity, Firebase CDN hoặc reCAPTCHA request.
+- Firebase Authentication và Cloud Firestore dùng Firebase Web config trong `firebase-config.js`. Nếu không có mạng/tài nguyên SDK, app vẫn học local/Guest Trial bình thường. Service worker cache app shell hiện là `hoc-cung-be-v31` và không xử lý/cache Firebase Auth, Firestore API, Google API, Google Identity, Firebase CDN hoặc reCAPTCHA request.
 
 ## Mở rộng level
 
@@ -117,7 +119,7 @@ Các kiểm tra không làm thay đổi dữ liệu thật được xuất ra Co
 1. Trong **Build → Authentication → Settings**, tìm mục **Authorized domains**.
 2. Thêm chính xác domain production: `tamanhhuong95.github.io`.
 3. Khi test local, kiểm tra `localhost` đã có trong danh sách; nếu chưa, thêm `localhost` theo hướng dẫn trong Firebase Console. Không nhập đường dẫn `/hoc-cung-be/` vào ô domain.
-4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v30` cập nhật app shell.
+4. Deploy lên GitHub Pages, mở `https://tamanhhuong95.github.io/hoc-cung-be/` khi online để service worker `hoc-cung-be-v31` cập nhật app shell.
 5. Luồng hiện tại dùng action URL mặc định của Firebase nên không thêm `actionCodeSettings` không cần thiết. Nếu sau này cấu hình action URL tùy chỉnh, URL production phải là `https://tamanhhuong95.github.io/hoc-cung-be/`, không dùng localhost trong production.
 
 ### 5. Quên mật khẩu, đổi mật khẩu và re-authentication
@@ -257,7 +259,7 @@ Trong tab **Data**, đăng nhập một account test rồi kiểm tra đúng UID
 - **`failed-precondition` / database chưa tồn tại**: vào **Build → Firestore Database → Create database**.
 - **Sync báo lỗi nhưng quiz vẫn chạy**: đây là hành vi local-first dự kiến; không xóa localStorage, sửa cấu hình/mạng/rules rồi bấm sync lại.
 - **Thiết bị mới chưa thấy dữ liệu**: xác nhận dùng cùng Firebase account, có mạng, document đúng UID tồn tại và nhấn manual sync.
-- **`PWA còn code cũ`**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v30`.
+- **`PWA còn code cũ`**: mở online, hard reload và kiểm tra service worker/cache đã lên `hoc-cung-be-v31`.
 - **History trùng từ dữ liệu rất cũ**: record không ID chỉ được dedupe khi năm field fingerprint giống hoàn toàn; timestamp khác được coi là lượt học khác.
 
 ### 10. Self-test Multiple Children, Child Settings và Cloud Sync

@@ -230,3 +230,26 @@ button:focus-visible, a:focus-visible { outline: 4px solid rgba(255, 190, 54, .6
 @media (max-width: 760px) { .english-learn-screen { width: min(100% - 20px, 1080px); margin-top: 12px; }.english-learn-card { border-radius: 22px; }.english-featured-media { min-height: 180px; }.english-word-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.english-word-card { min-height: 120px; }.parent-course-selector { grid-template-columns: 1fr; } }
 @media (max-width: 400px) { .english-word-grid { grid-template-columns: 1fr 1fr; gap: 9px; }.english-word-card { padding: 10px 6px; }.english-animation { min-height: 170px; gap: 12px; } }
 @media (prefers-reduced-motion: reduce) { .english-animation *, .english-animation { animation: none !important; } }
+
+/* V31 Parent Dashboard: derived English skill analytics */
+.english-skill-analytics .parent-section__heading { align-items: flex-start; }
+.english-skill-analytics .parent-section__heading p { margin-bottom: 0; color: var(--muted); }
+.english-study-time { max-width: 310px; color: #4c5680; text-align: right; }
+.english-skill-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.english-skill-card { display: grid; align-content: start; gap: 9px; min-width: 0; padding: 20px; border: 1px solid #dfe4f1; border-radius: 19px; background: #fbfcff; }
+.english-skill-card__heading { display: flex; align-items: center; gap: 9px; }
+.english-skill-card__heading span { font-size: 29px; }
+.english-skill-card h3 { margin: 0; font-size: 21px; }
+.english-skill-card__metric { font-size: 29px; }
+.english-skill-card p, .english-skill-card small { margin: 0; color: var(--muted); font-weight: 700; }
+.english-skill-status { color: var(--purple-dark); }
+.english-skill-progress { display: block; width: 100%; height: 12px; overflow: hidden; border-radius: 99px; background: #e7eaf3; }
+.english-skill-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7164df, #79b6e8); }
+.english-skill-recommendation { padding-top: 7px; border-top: 1px solid #e3e7f0; color: #44547a !important; }
+.english-skill-empty { display: grid; gap: 6px; margin-top: 17px; padding: 22px; border-radius: 17px; background: #f4f2ff; color: #4f498d; }
+.english-skill-insight { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.english-skill-insight div { display: grid; gap: 4px; padding: 15px; border-radius: 15px; background: #f4f7fc; }
+.english-skill-insight span { color: var(--muted); font-size: 14px; font-weight: 800; }
+.english-error-pattern { margin: 18px 0 0; padding: 14px 16px; border-radius: 14px; background: #fff7df; color: #6c5725; }
+@media (max-width: 760px) { .english-study-time { max-width: none; margin-top: 10px; text-align: left; } }
+@media (max-width: 480px) { .english-skill-grid, .english-skill-insight { grid-template-columns: 1fr; }.english-skill-card { padding: 17px; } }
