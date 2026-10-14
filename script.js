@@ -405,6 +405,7 @@ function renderParentDashboard() {
   if (!recent.length) elements.parentHistory.innerHTML = "<p class=\"parent-empty\">Chưa có lần hoàn thành bài nào.</p>";
   recent.forEach((entry) => { const item = LEVEL_BY_ID[entry.levelId]; const row = document.createElement("article"); row.className = "parent-history__item"; row.innerHTML = `<time>${formatDateTime(entry.completedAt)}</time><strong>${TOPICS[entry.topic].title} – ${item.title}</strong><span>${entry.score} điểm · ${entry.correct}/${entry.questionCount} · ${"⭐".repeat(entry.stars) || "🌱"}</span>`; elements.parentHistory.append(row); });
   window.HocCungBeLearningAnalytics?.renderEnglishSkillDashboard?.({ courseId: activeCourseId, progress, curriculum: COURSES["english-grade-1"] });
+  window.HocCungBeWeeklyReport?.renderCurrentReport?.();
   resetDeleteConfirmation();
 }
 let studyTrackingSince = null;
@@ -413,7 +414,7 @@ function shouldTrackQuiz(isQuizScreen, isDocumentHidden) { return Boolean(isQuiz
 function startStudyTracking() { if (shouldTrackQuiz(!screens.quiz.hidden, document.hidden)) studyTrackingSince = Date.now(); }
 function stopStudyTracking() { flushStudyTime(); studyTrackingSince = null; }
 function handleChildWillChange() { cancelSpeech(); stopStudyTracking(); window.HocCungBeChildSettings?.stopLearningSession?.(); window.HocCungBeChildSettings?.dismissBreak?.(true); }
-function handleChildChanged() { quiz = null; selectedTopic = "addition"; selectedLevelId = "addition-1"; if (currentLearningUser) showScreen("home"); renderHeader(); if (!screens["parent-dashboard"].hidden) renderParentDashboard(); }
+function handleChildChanged() { const dashboardWasOpen = !screens["parent-dashboard"].hidden; quiz = null; selectedTopic = "addition"; selectedLevelId = "addition-1"; if (dashboardWasOpen) renderParentDashboard(); else if (currentLearningUser) showScreen("home"); renderHeader(); }
 function resetDeleteConfirmation() { elements.parentDeleteConfirm.hidden = true; elements.parentDeleteStep.textContent = "Bạn có chắc muốn xóa toàn bộ tiến độ học?"; elements.parentDeleteCodeLabel.hidden = true; elements.parentDeleteCode.hidden = true; elements.parentDeleteCode.value = ""; elements.parentDeleteConfirmButton.hidden = true; elements.parentDeleteNext.hidden = false; }
 function updateAudioControls() {
   if (!elements.soundEnabledToggle) return;
@@ -515,7 +516,8 @@ elements.parentDeleteNext.onclick = () => { elements.parentDeleteStep.textConten
 elements.parentDeleteConfirmButton.onclick = () => { if (elements.parentDeleteCode.value.trim() !== "XOA") { elements.parentDeleteStep.textContent = "Mã xác nhận chưa đúng. Vui lòng nhập chính xác XOA."; elements.parentDeleteCode.focus(); return; } const key = progressStorageKey(); if (key) writeStorage(localStorage, key, JSON.stringify(defaultProgress())); quiz = null; resetDeleteConfirmation(); renderParentDashboard(); renderHeader(); };
 document.addEventListener("visibilitychange", () => { if (document.hidden) stopStudyTracking(); else if (!screens.quiz.hidden) startStudyTracking(); });
 window.addEventListener("pagehide", () => stopStudyTracking());
-window.HocCungBeLearning = { applyAudioSettings: applyChildAudioSettings, COURSES, getActiveCourseId: () => activeCourseId, setActiveCourse, courseProgressKey, loadProgressByCourse: (courseId) => loadProgress(localStorage, courseId) };
+function openLearningLevel(courseId, levelId) { if (!setActiveCourse(courseId)) return false; const progress = loadProgress(localStorage, courseId); if (!canAccessLevel(levelId, currentLearningUser, progress)) return false; return startQuiz(levelId); }
+window.HocCungBeLearning = { applyAudioSettings: applyChildAudioSettings, COURSES, getActiveCourseId: () => activeCourseId, setActiveCourse, courseProgressKey, loadProgressByCourse: (courseId) => loadProgress(localStorage, courseId), openLevel: openLearningLevel };
 window.loadProgress = loadProgress;
 window.saveProgress = saveProgress;
 window.normalizeProgress = normalizeProgress;
@@ -740,7 +742,7 @@ async function runEnglishGrade1Tests() {
   test("V", english.levels.length === 40 && parentStatistics(blank).totalLevels === 40 && parentStatistics(oldProgress).opened >= 2);
   for (let attempt = 0; attempt < 40 && typeof window.HocCungBeCloudSync?.cloudPath !== "function"; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 50));
   test("W", window.HocCungBeCloudSync?.cloudPath?.("uid", "child", english.id) === "users/uid/children/child/progress/english-grade-1");
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v31"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v32"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
   test("Y", new Set(allQuestions.map((item) => item.type)).size >= 8 && ["choice", "image-choice", "listen-choice", "word-to-image", "match", "letter-order", "true-false", "animation-choice"].every((type) => allQuestions.some((item) => item.type === type)));
   const mediaPaths = english.levels.flatMap((item) => [item.media?.learn?.[0]?.src, item.media?.featured?.poster, item.media?.featured?.fallback]).filter(Boolean);
   try { const responses = await Promise.all([...new Set(mediaPaths)].map((path) => fetch(path, { cache: "no-store" }))); test("Z", responses.every((response) => response.ok)); } catch (error) { test("Z", false, String(error)); }
@@ -754,7 +756,7 @@ async function runEnglishGrade1Tests() {
   const videoQuestions = allQuestions.filter((item) => item.type === "video-choice");
   test("AF", videoQuestions.length === 5 && videoQuestions.every((item) => item.video?.webm.endsWith(".webm") && !item.video.ariaLabel.toLowerCase().includes(item.answer.toLowerCase())));
   try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.version === 2 && manifest.videoAssetsRequired === true && manifest.clips.length === 7 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v31" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange")); } catch (error) { test("AH", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v32" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
   if (previousCourse !== activeCourseId) setActiveCourse(previousCourse);
   return { passed: results.every((item) => item.passed), results };
 }

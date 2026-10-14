@@ -49,9 +49,12 @@ frame.addEventListener("load", async () => {
     check(!document.querySelector("#quiz-screen").hidden && answers.length === 4, "Practice did not render");
     check(answers.every((node) => node.getBoundingClientRect().height >= 44), "Practice touch target invalid");
     const listening = win.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.flatMap((level) => level.questions.map((question) => ({ level, question }))).find((item) => item.question.type === "listen-choice");
-    const dashboardProgress = { history: Array.from({ length: 8 }, (_, index) => ({ questionId: listening.question.id, levelId: listening.level.id, correct: index > 1, timestamp: `2026-10-${String(index + 1).padStart(2, "0")}T00:00:00Z` })), levels: { [listening.level.id]: { completed: true, attempts: 1, unlocked: true } }, studyTime: { studyTimeByDate: { "2026-10-09": 420 } } };
+    const dashboardProgress = { history: Array.from({ length: 8 }, (_, index) => ({ questionId: listening.question.id, levelId: listening.level.id, topic: listening.level.topic, correct: index > 1, score: index > 1 ? 100 : 0, questionCount: 1, stars: index > 1 ? 3 : 0, completedAt: `2026-10-${String(12 + (index % 3)).padStart(2, "0")}T0${index + 1}:00:00` })), levels: { [listening.level.id]: { completed: true, attempts: 1, unlocked: true } }, studyTime: { studyTimeByDate: { "2026-10-12": 420, "2026-10-14": 900 } } };
     document.querySelectorAll(".screen").forEach((node) => { node.hidden = node.id !== "parent-dashboard-screen"; });
     win.HocCungBeLearningAnalytics.renderEnglishSkillDashboard({ courseId: "english-grade-1", progress: dashboardProgress, curriculum: win.HOC_CUNG_BE_ENGLISH_GRADE_1 });
+    const progresses = { "math-grade-1": { levels: { [win.HocCungBeLearning.COURSES["math-grade-1"].levels[0].id]: { unlocked: true } }, history: [], studyTime: { studyTimeByDate: { "2026-10-12": 600 } } }, "vietnamese-grade-1": { levels: { [win.HocCungBeLearning.COURSES["vietnamese-grade-1"].levels[0].id]: { unlocked: true } }, history: [], studyTime: { studyTimeByDate: {} } }, "english-grade-1": dashboardProgress };
+    const weekly = win.HocCungBeWeeklyReport.buildWeeklyReport({ child: { id: "responsive-child", name: "Minh" }, progresses, courses: win.HocCungBeLearning.COURSES, now: new Date(2026, 9, 14, 10) });
+    win.HocCungBeWeeklyReport.renderWeeklyReport(weekly);
     const skillSection = document.querySelector("#english-skill-analytics"), skillCards = [...document.querySelectorAll(".english-skill-card")], skillGrid = document.querySelector(".english-skill-grid");
     check(skillSection && !skillSection.hidden && skillCards.length === 4, "English skill dashboard did not render four cards");
     check(skillCards.every((node) => { const rect = node.getBoundingClientRect(); return rect.left >= 0 && rect.right <= win.innerWidth; }), "Skill card horizontal overflow");
@@ -59,6 +62,11 @@ frame.addEventListener("load", async () => {
     const rows = new Set(skillCards.map((node) => Math.round(node.getBoundingClientRect().top))).size;
     const gridStyle = win.getComputedStyle(skillGrid), gridRect = skillGrid.getBoundingClientRect(), cardRects = skillCards.map((node) => node.getBoundingClientRect());
     check(requestedWidth <= 480 ? rows === 4 : rows === 2, `Unexpected skill grid rows ${rows}; display=${gridStyle.display}; columns=${gridStyle.gridTemplateColumns}; grid=${Math.round(gridRect.width)}x${Math.round(gridRect.height)}; cards=${cardRects.map((rect) => `${Math.round(rect.left)},${Math.round(rect.top)},${Math.round(rect.width)}x${Math.round(rect.height)}`).join("|")}`);
+    const weeklySection = document.querySelector("#weekly-report"), weeklyRect = weeklySection?.getBoundingClientRect(), weeklyButtons = [...weeklySection?.querySelectorAll("button") || []];
+    check(weeklySection && !weeklySection.hidden && weeklyRect.height > 0, "Weekly Report is hidden or not ready");
+    check(weeklyRect.left >= 0 && weeklyRect.right <= win.innerWidth, "Weekly Report horizontal overflow");
+    check(weeklySection.querySelectorAll('.weekly-chart [role="img"][aria-label]').length === 7, "Weekly chart accessibility missing");
+    check(weeklyButtons.every((node) => node.getBoundingClientRect().height >= 44), "Weekly Report touch target invalid");
     check(document.documentElement.scrollWidth <= win.innerWidth && document.body.scrollWidth <= win.innerWidth, `Horizontal overflow ${document.documentElement.scrollWidth}/${document.body.scrollWidth}`);
   } catch (error) { failures.push(String(error?.stack || error)); }
   const actualWidth = win.innerWidth, actualHeight = win.innerHeight;
