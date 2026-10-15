@@ -48,6 +48,7 @@ const VISUAL_SETS = { counting: OBJECT_LIBRARY, addition: OBJECT_LIBRARY.filter(
 
 const level = (id, topic, title, type, min, max, extra = {}) => ({ id, topic, title, type, min, max, questionCount: DEFAULT_QUESTION_COUNT, unlockScore: DEFAULT_UNLOCK_SCORE, rewardStars: [60, 80, 100], imageMode: "none", visualSet: null, hint: "", ...extra });
 const pilotQuestion = (prompt, answer, answerOptions, key, speechText, metadata = {}) => ({ prompt, answer: String(answer), options: answerOptions.map(String), key, helper: "Quan sát kỹ rồi chọn đáp án nhé!", tip: "Làm chậm rãi từng bước nhé.", speechText, ...metadata });
+const originalQuestion = (prompt, answer, answerOptions, key, speechText, metadata = {}) => pilotQuestion(prompt, answer, answerOptions, key, speechText, { contentPilot: true, contentRelease: "v34", ...metadata });
 const MATH_LEVELS = [
   level("counting-1", "counting", "Đếm đồ vật đến 5", "count", 1, 5, { order: 1, imageMode: "count", visualSet: "counting" }), level("counting-2", "counting", "Đếm đồ vật đến 10", "count", 1, 10, { order: 2, imageMode: "count", visualSet: "counting" }), level("counting-3", "counting", "Số liền trước - liền sau", "near", 1, 9, { order: 3 }), level("counting-4", "counting", "Sắp xếp số", "sort", 0, 6, { order: 4 }), level("counting-5", "counting", "Chọn nhóm có nhiều hơn", "groupCompare", 1, 10, { order: 5, imageMode: "groups", visualSet: "counting" }), level("counting-6", "counting", "Ôn tập số và đếm", "count", 1, 10, { order: 6, imageMode: "count", visualSet: "counting" }), level("counting-7", "counting", "Chọn số đúng đến 5", "count", 1, 5, { order: 7, imageMode: "count", visualSet: "counting" }), level("counting-8", "counting", "Đếm nhóm đồ vật đến 10", "count", 4, 10, { order: 8, imageMode: "count", visualSet: "counting" }), level("counting-9", "counting", "Số liền trước", "near", 2, 10, { order: 9, mode: "before" }), level("counting-10", "counting", "Số liền sau", "near", 0, 9, { order: 10, mode: "after" }), level("counting-11", "counting", "Nhóm ít hơn", "groupCompare", 1, 10, { order: 11, imageMode: "groups", visualSet: "counting", compareMode: "less" }), level("counting-12", "counting", "Ôn tập đếm đến 20", "numberTo20", 1, 20, { order: 12, imageMode: "count", visualSet: "counting" }),
   level("compare-1", "compare", "So sánh trong phạm vi 5", "compare", 0, 5, { order: 1 }), level("compare-2", "compare", "So sánh trong phạm vi 10", "compare", 0, 10, { order: 2 }), level("compare-3", "compare", "Chọn số lớn hơn", "larger", 0, 10, { order: 3 }), level("compare-4", "compare", "Chọn số bé hơn", "smaller", 0, 10, { order: 4 }), level("compare-5", "compare", "So sánh số đến 20", "compare", 0, 20, { order: 5 }), level("compare-6", "compare", "Số lớn hơn đến 20", "larger", 0, 20, { order: 6 }), level("compare-7", "compare", "Số bé hơn đến 20", "smaller", 0, 20, { order: 7 }), level("compare-8", "compare", "Ôn tập so sánh", "compare", 0, 20, { order: 8 }),
@@ -133,8 +134,113 @@ const MATH_PILOT_QUESTIONS = {
     pilotQuestion("Đây là hình gì?<br><span class=\"big-shape\">▬</span>", "hình chữ nhật", ["hình tròn", "hình vuông", "hình tam giác", "hình chữ nhật"], "pilot-shape-1d", "Quan sát hình có bốn cạnh, hai cạnh dài hơn."),
     pilotQuestion("Bánh xe giống hình nào?", "hình tròn", ["hình tròn", "hình vuông", "hình tam giác", "hình chữ nhật"], "pilot-shape-1e", "Hãy nghĩ đến bánh xe quay tròn."),
   ],
+  "counting-2": [
+    originalQuestion("Đếm số bóng bay.<br><span class=\"visual-count\">🎈 🎈 🎈 🎈 🎈 🎈</span>", 6, [5, 6, 7, 8], "v34-counting-2a", "Đếm từng quả bóng bay.", { visualQuantity: 6, quantity: 6 }),
+    originalQuestion("Đếm số chú vịt.<br><span class=\"visual-count\">🐥 🐥 🐥 🐥 🐥 🐥 🐥</span>", 7, [7, 5, 8, 6], "v34-counting-2b", "Hãy đếm các chú vịt.", { visualQuantity: 7, quantity: 7 }),
+    originalQuestion("Đếm số xe ô tô.<br><span class=\"visual-count\">🚗 🚗 🚗 🚗 🚗 🚗 🚗 🚗</span>", 8, [6, 7, 8, 9], "v34-counting-2c", "Đếm lần lượt từ trái sang phải.", { visualQuantity: 8, quantity: 8 }),
+    originalQuestion("Đếm số chú gấu bông.<br><span class=\"visual-count\">🧸 🧸 🧸 🧸 🧸 🧸 🧸 🧸 🧸</span>", 9, [8, 10, 7, 9], "v34-counting-2d", "Hãy đếm từng chú gấu bông.", { visualQuantity: 9, quantity: 9 }),
+    originalQuestion("Đếm số ngôi sao.<br><span class=\"visual-count\">⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐</span>", 10, [10, 8, 9, 7], "v34-counting-2e", "Đếm đủ mười ngôi sao nhé.", { visualQuantity: 10, quantity: 10 }),
+  ],
+  "counting-9": [
+    originalQuestion("Số nào đứng ngay trước số <b>4</b>?", 3, [2, 3, 5, 4], "v34-before-1a", "Tìm số ở bên trái của số bốn.", { sequenceStart: 2, sequenceStep: 1, result: 3 }),
+    originalQuestion("Số nào đứng ngay trước số <b>7</b>?", 6, [6, 8, 5, 7], "v34-before-1b", "Đếm lùi một bước từ số bảy.", { sequenceStart: 5, sequenceStep: 1, result: 6 }),
+    originalQuestion("Điền số còn thiếu: <b>5, 6, ?, 8</b>", 7, [6, 7, 8, 9], "v34-before-1c", "Đọc dãy số theo thứ tự tăng dần.", { sequenceStart: 5, sequenceStep: 1, result: 7 }),
+    originalQuestion("Số nào đứng ngay trước số <b>10</b>?", 9, [8, 10, 7, 9], "v34-before-1d", "Đếm lùi một bước từ số mười.", { sequenceStart: 8, sequenceStep: 1, result: 9 }),
+    originalQuestion("Điền số còn thiếu: <b>1, ?, 3, 4</b>", 2, [2, 1, 3, 4], "v34-before-1e", "Đọc dãy số từ một đến bốn.", { sequenceStart: 1, sequenceStep: 1, result: 2 }),
+  ],
+  "counting-11": [
+    originalQuestion("Nhóm nào ít hơn?<br><span class=\"visual-groups\">🍎 🍎 <b>và</b> 🍎 🍎 🍎 🍎</span>", "Nhóm bên trái", ["Nhóm bên phải", "Hai nhóm bằng nhau", "Nhóm bên trái", "Không biết"], "v34-less-1a", "So sánh số quả táo ở hai nhóm.", { leftCount: 2, rightCount: 4, comparison: "less" }),
+    originalQuestion("Nhóm nào ít hơn?<br><span class=\"visual-groups\">🐟 🐟 🐟 🐟 🐟 <b>và</b> 🐟 🐟 🐟</span>", "Nhóm bên phải", ["Nhóm bên trái", "Nhóm bên phải", "Hai nhóm bằng nhau", "Không biết"], "v34-less-1b", "Đếm số cá ở mỗi nhóm.", { leftCount: 5, rightCount: 3, comparison: "less" }),
+    originalQuestion("Nhóm nào ít hơn?<br><span class=\"visual-groups\">🌼 🌼 🌼 <b>và</b> 🌼 🌼 🌼 🌼 🌼</span>", "Nhóm bên trái", ["Hai nhóm bằng nhau", "Nhóm bên trái", "Không biết", "Nhóm bên phải"], "v34-less-1c", "Hãy đếm hoa ở từng nhóm.", { leftCount: 3, rightCount: 5, comparison: "less" }),
+    originalQuestion("Nhóm nào ít hơn?<br><span class=\"visual-groups\">🎈 🎈 🎈 🎈 🎈 🎈 <b>và</b> 🎈 🎈 🎈 🎈</span>", "Nhóm bên phải", ["Không biết", "Nhóm bên trái", "Nhóm bên phải", "Hai nhóm bằng nhau"], "v34-less-1d", "So sánh hai nhóm bóng bay.", { leftCount: 6, rightCount: 4, comparison: "less" }),
+    originalQuestion("Nhóm nào ít hơn?<br><span class=\"visual-groups\">⭐ ⭐ ⭐ ⭐ <b>và</b> ⭐ ⭐</span>", "Nhóm bên phải", ["Nhóm bên phải", "Hai nhóm bằng nhau", "Nhóm bên trái", "Không biết"], "v34-less-1e", "Đếm số ngôi sao ở mỗi bên.", { leftCount: 4, rightCount: 2, comparison: "less" }),
+  ],
+  "compare-3": [
+    originalQuestion("Số nào lớn hơn: <b>4 hay 7</b>?", 7, [4, 7, 5, 6], "v34-larger-1a", "So sánh hai số rồi chọn số lớn hơn.", { leftOperand: 4, rightOperand: 7, comparison: "larger" }),
+    originalQuestion("Số nào lớn hơn: <b>9 hay 3</b>?", 9, [8, 3, 9, 7], "v34-larger-1b", "Số ở xa hơn bên phải trên dãy số là số lớn hơn.", { leftOperand: 9, rightOperand: 3, comparison: "larger" }),
+    originalQuestion("Số nào lớn hơn: <b>6 hay 8</b>?", 8, [6, 7, 8, 5], "v34-larger-1c", "Hãy chọn số có giá trị lớn hơn.", { leftOperand: 6, rightOperand: 8, comparison: "larger" }),
+    originalQuestion("Số nào lớn hơn: <b>2 hay 5</b>?", 5, [2, 5, 4, 3], "v34-larger-1d", "Đếm thêm để biết số nào lớn hơn.", { leftOperand: 2, rightOperand: 5, comparison: "larger" }),
+    originalQuestion("Số nào lớn hơn: <b>10 hay 1</b>?", 10, [1, 9, 8, 10], "v34-larger-1e", "So sánh số mười với số một.", { leftOperand: 10, rightOperand: 1, comparison: "larger" }),
+  ],
+  "addition-1": [
+    originalQuestion("Tính: <b>2 + 1 = ?</b>", 3, [2, 3, 4, 1], "v34-add-1a", "Gộp hai và một lại.", { operator: "+", operands: [2, 1], result: 3 }),
+    originalQuestion("Tính: <b>1 + 3 = ?</b>", 4, [4, 3, 2, 5], "v34-add-1b", "Đếm tiếp ba bước từ số một.", { operator: "+", operands: [1, 3], result: 4 }),
+    originalQuestion("Tính: <b>2 + 2 = ?</b>", 4, [3, 5, 4, 2], "v34-add-1c", "Gộp hai nhóm, mỗi nhóm có hai.", { operator: "+", operands: [2, 2], result: 4 }),
+    originalQuestion("Tính: <b>4 + 1 = ?</b>", 5, [4, 5, 3, 2], "v34-add-1d", "Đếm thêm một từ số bốn.", { operator: "+", operands: [4, 1], result: 5 }),
+    originalQuestion("Tính: <b>3 + 1 = ?</b>", 4, [1, 2, 3, 4], "v34-add-1e", "Đếm thêm một từ số ba.", { operator: "+", operands: [3, 1], result: 4 }),
+  ],
+  "addition-5": [
+    originalQuestion("Tính: <b>5 + 0 = ?</b>", 5, [0, 4, 5, 6], "v34-add-zero-1a", "Cộng thêm không thì số không đổi.", { operator: "+", operands: [5, 0], result: 5 }),
+    originalQuestion("Tính: <b>0 + 3 = ?</b>", 3, [3, 0, 2, 4], "v34-add-zero-1b", "Không có gì để gộp thêm.", { operator: "+", operands: [0, 3], result: 3 }),
+    originalQuestion("Tính: <b>7 + 0 = ?</b>", 7, [6, 8, 7, 0], "v34-add-zero-1c", "Số bảy vẫn giữ nguyên.", { operator: "+", operands: [7, 0], result: 7 }),
+    originalQuestion("Tính: <b>0 + 9 = ?</b>", 9, [8, 9, 0, 10], "v34-add-zero-1d", "Hãy nhớ quy tắc cộng với không.", { operator: "+", operands: [0, 9], result: 9 }),
+    originalQuestion("Tính: <b>4 + 0 = ?</b>", 4, [1, 2, 3, 4], "v34-add-zero-1e", "Cộng thêm không không làm đổi số bốn.", { operator: "+", operands: [4, 0], result: 4 }),
+  ],
+  "addition-7": [
+    originalQuestion("Tính: <b>8 + 4 = ?</b>", 12, [11, 12, 13, 10], "v34-add-cross-1a", "Tám thêm bốn bằng mười hai.", { operator: "+", operands: [8, 4], result: 12 }),
+    originalQuestion("Tính: <b>7 + 5 = ?</b>", 12, [12, 11, 13, 10], "v34-add-cross-1b", "Gộp bảy và năm.", { operator: "+", operands: [7, 5], result: 12 }),
+    originalQuestion("Tính: <b>9 + 3 = ?</b>", 12, [10, 11, 12, 13], "v34-add-cross-1c", "Đếm tiếp ba bước từ số chín.", { operator: "+", operands: [9, 3], result: 12 }),
+    originalQuestion("Tính: <b>6 + 6 = ?</b>", 12, [13, 12, 11, 10], "v34-add-cross-1d", "Hai nhóm đều có sáu.", { operator: "+", operands: [6, 6], result: 12 }),
+    originalQuestion("Tính: <b>8 + 5 = ?</b>", 13, [13, 12, 14, 11], "v34-add-cross-1e", "Đếm tiếp năm bước từ số tám.", { operator: "+", operands: [8, 5], result: 13 }),
+  ],
+  "subtraction-1": [
+    originalQuestion("Tính: <b>5 − 2 = ?</b>", 3, [2, 3, 4, 1], "v34-sub-1a", "Bớt hai từ số năm.", { operator: "-", operands: [5, 2], result: 3 }),
+    originalQuestion("Tính: <b>4 − 1 = ?</b>", 3, [3, 2, 4, 1], "v34-sub-1b", "Lùi một bước từ số bốn.", { operator: "-", operands: [4, 1], result: 3 }),
+    originalQuestion("Tính: <b>5 − 4 = ?</b>", 1, [0, 2, 3, 1], "v34-sub-1c", "Bớt bốn từ số năm.", { operator: "-", operands: [5, 4], result: 1 }),
+    originalQuestion("Tính: <b>3 − 2 = ?</b>", 1, [1, 2, 0, 3], "v34-sub-1d", "Lùi hai bước từ số ba.", { operator: "-", operands: [3, 2], result: 1 }),
+    originalQuestion("Tính: <b>4 − 3 = ?</b>", 1, [2, 3, 1, 0], "v34-sub-1e", "Bớt ba từ số bốn.", { operator: "-", operands: [4, 3], result: 1 }),
+  ],
+  "subtraction-5": [
+    originalQuestion("Tính: <b>6 − 0 = ?</b>", 6, [5, 6, 0, 7], "v34-sub-zero-1a", "Trừ không thì số không đổi.", { operator: "-", operands: [6, 0], result: 6 }),
+    originalQuestion("Tính: <b>9 − 0 = ?</b>", 9, [9, 8, 10, 0], "v34-sub-zero-1b", "Không lấy đi vật nào cả.", { operator: "-", operands: [9, 0], result: 9 }),
+    originalQuestion("Tính: <b>3 − 0 = ?</b>", 3, [2, 1, 3, 0], "v34-sub-zero-1c", "Số ba vẫn giữ nguyên.", { operator: "-", operands: [3, 0], result: 3 }),
+    originalQuestion("Tính: <b>10 − 0 = ?</b>", 10, [9, 10, 8, 0], "v34-sub-zero-1d", "Trừ không không làm đổi số mười.", { operator: "-", operands: [10, 0], result: 10 }),
+    originalQuestion("Tính: <b>4 − 0 = ?</b>", 4, [4, 0, 3, 5], "v34-sub-zero-1e", "Không có số nào bị bớt đi.", { operator: "-", operands: [4, 0], result: 4 }),
+  ],
+  "missing-1": [
+    originalQuestion("Điền số còn thiếu: <b>0, 1, ?, 3</b>", 2, [1, 2, 3, 4], "v34-sequence-1a", "Dãy số tăng thêm một.", { sequenceStart: 0, sequenceStep: 1, result: 2 }),
+    originalQuestion("Điền số còn thiếu: <b>2, ?, 4, 5</b>", 3, [3, 2, 4, 1], "v34-sequence-1b", "Đọc dãy số từ hai đến năm.", { sequenceStart: 2, sequenceStep: 1, result: 3 }),
+    originalQuestion("Điền số còn thiếu: <b>?, 2, 3, 4</b>", 1, [0, 2, 1, 3], "v34-sequence-1c", "Số đứng trước hai là số nào?", { sequenceStart: 1, sequenceStep: 1, result: 1 }),
+    originalQuestion("Điền số còn thiếu: <b>3, 4, 5, ?</b>", 6, [7, 6, 5, 4], "v34-sequence-1d", "Đếm tiếp sau số năm.", { sequenceStart: 3, sequenceStep: 1, result: 6 }),
+    originalQuestion("Điền số còn thiếu: <b>1, ?, 3, 4</b>", 2, [2, 1, 4, 3], "v34-sequence-1e", "Số ở giữa một và ba là số nào?", { sequenceStart: 1, sequenceStep: 1, result: 2 }),
+  ],
+  "geometry-2": [
+    originalQuestion("Chọn hình có ba cạnh.<br><span class=\"big-shape\">▲</span>", "hình tam giác", ["hình tròn", "hình vuông", "hình tam giác", "hình chữ nhật"], "v34-geometry-2a", "Quan sát hình có ba cạnh.", { shapeType: "triangle" }),
+    originalQuestion("Chọn hình có bốn cạnh bằng nhau.<br><span class=\"big-shape\">■</span>", "hình vuông", ["hình tam giác", "hình vuông", "hình chữ nhật", "hình tròn"], "v34-geometry-2b", "Tìm hình vuông.", { shapeType: "square" }),
+    originalQuestion("Chọn hình tròn.<br><span class=\"big-shape\">●</span>", "hình tròn", ["hình chữ nhật", "hình tam giác", "hình tròn", "hình vuông"], "v34-geometry-2c", "Hình tròn không có cạnh thẳng.", { shapeType: "circle" }),
+    originalQuestion("Chọn hình có hai cạnh dài và hai cạnh ngắn.<br><span class=\"big-shape\">▬</span>", "hình chữ nhật", ["hình tròn", "hình chữ nhật", "hình vuông", "hình tam giác"], "v34-geometry-2d", "Quan sát hình chữ nhật.", { shapeType: "rectangle" }),
+    originalQuestion("Mái nhà thường giống hình nào?", "hình tam giác", ["hình tam giác", "hình tròn", "hình chữ nhật", "hình vuông"], "v34-geometry-2e", "Nghĩ đến phần mái nhọn của ngôi nhà.", { shapeType: "triangle" }),
+  ],
+  "word-problems-1": [
+    originalQuestion("Lan có 3 quả táo, mẹ cho thêm 2 quả. Lan có tất cả bao nhiêu quả?<br><span class=\"visual-groups\">🍎 🍎 🍎 <b>+</b> 🍎 🍎</span>", 5, [4, 5, 6, 3], "v34-word-1a", "Gộp số táo Lan có với số táo được cho.", { operator: "+", operands: [3, 2], result: 5, firstCount: 3, secondCount: 2, visualQuantity: 5 }),
+    originalQuestion("Có 4 chú cá trong bể, 3 chú cá bơi đến. Có tất cả bao nhiêu chú cá?<br><span class=\"visual-groups\">🐟 🐟 🐟 🐟 <b>+</b> 🐟 🐟 🐟</span>", 7, [7, 6, 8, 5], "v34-word-1b", "Đếm tất cả các chú cá sau khi bơi đến.", { operator: "+", operands: [4, 3], result: 7, firstCount: 4, secondCount: 3, visualQuantity: 7 }),
+    originalQuestion("Minh có 2 bóng bay, được tặng thêm 4 quả. Minh có tất cả bao nhiêu quả bóng?<br><span class=\"visual-groups\">🎈 🎈 <b>+</b> 🎈 🎈 🎈 🎈</span>", 6, [5, 6, 4, 7], "v34-word-1c", "Hãy gộp hai nhóm bóng bay.", { operator: "+", operands: [2, 4], result: 6, firstCount: 2, secondCount: 4, visualQuantity: 6 }),
+    originalQuestion("Trên bàn có 5 ngôi sao giấy, cô đặt thêm 1 ngôi sao. Có tất cả bao nhiêu ngôi sao?<br><span class=\"visual-groups\">⭐ ⭐ ⭐ ⭐ ⭐ <b>+</b> ⭐</span>", 6, [7, 5, 6, 4], "v34-word-1d", "Đếm thêm một ngôi sao.", { operator: "+", operands: [5, 1], result: 6, firstCount: 5, secondCount: 1, visualQuantity: 6 }),
+    originalQuestion("Bé có 1 chú gấu bông, được cho thêm 3 chú. Bé có tất cả bao nhiêu chú gấu?<br><span class=\"visual-groups\">🧸 <b>+</b> 🧸 🧸 🧸</span>", 4, [4, 3, 2, 5], "v34-word-1e", "Gộp một và ba chú gấu bông.", { operator: "+", operands: [1, 3], result: 4, firstCount: 1, secondCount: 3, visualQuantity: 4 }),
+  ],
+  "clock-1": [
+    originalQuestion("Kim nào chỉ giờ?", "Kim ngắn", ["Kim dài", "Kim ngắn", "Cả hai kim", "Không có kim"], "v34-clock-1a", "Quan sát hai kim trên đồng hồ.", { clockPart: "hourHand" }),
+    originalQuestion("Kim nào chỉ phút?", "Kim dài", ["Kim ngắn", "Kim dài", "Cả hai kim", "Không có kim"], "v34-clock-1b", "Kim phút thường dài hơn kim giờ.", { clockPart: "minuteHand" }),
+    originalQuestion("Khi xem giờ, em nhìn kim nào trước?", "Kim ngắn", ["Kim dài", "Kim ngắn", "Kim giây", "Không cần nhìn kim"], "v34-clock-1c", "Hãy nhớ kim giờ là kim ngắn.", { clockPart: "hourHand" }),
+    originalQuestion("Kim dài trên đồng hồ giúp em biết điều gì?", "Phút", ["Giờ", "Ngày", "Phút", "Tháng"], "v34-clock-1d", "Kim dài là kim phút.", { clockPart: "minuteHand" }),
+    originalQuestion("Kim ngắn trên đồng hồ giúp em biết điều gì?", "Giờ", ["Phút", "Giờ", "Ngày", "Tháng"], "v34-clock-1e", "Kim ngắn là kim giờ.", { clockPart: "hourHand" }),
+  ],
+  "length-1": [
+    originalQuestion("Bạn nào có dải ruy băng dài hơn?<br><span class=\"visual-count\">🔴 🔴 🔴 🔴 🔴 🔴 &nbsp; | &nbsp; 🔵 🔵 🔵</span>", "Dải đỏ", ["Dải xanh", "Dải đỏ", "Hai dải bằng nhau", "Không biết"], "v34-length-1a", "So sánh số đoạn màu của hai dải.", { leftLength: 6, rightLength: 3, comparison: "longer" }),
+    originalQuestion("Bút chì nào dài hơn?<br><span class=\"visual-count\">✏️ ✏️ ✏️ ✏️ ✏️ &nbsp; | &nbsp; 🖍️ 🖍️ 🖍️</span>", "Bút chì", ["Bút sáp", "Bút chì", "Hai bút bằng nhau", "Không biết"], "v34-length-1b", "So sánh độ dài hai hàng hình.", { leftLength: 5, rightLength: 3, comparison: "longer" }),
+    originalQuestion("Dây nào dài hơn?<br><span class=\"visual-count\">🟡 🟡 🟡 🟡 &nbsp; | &nbsp; 🟢 🟢 🟢 🟢 🟢 🟢</span>", "Dây xanh lá", ["Dây vàng", "Hai dây bằng nhau", "Dây xanh lá", "Không biết"], "v34-length-1c", "Dây có nhiều đoạn hơn thì dài hơn.", { leftLength: 4, rightLength: 6, comparison: "longer" }),
+    originalQuestion("Đoạn đường nào dài hơn?<br><span class=\"visual-count\">🟦 🟦 🟦 🟦 🟦 🟦 🟦 &nbsp; | &nbsp; 🟪 🟪 🟪 🟪</span>", "Đường xanh", ["Đường tím", "Đường xanh", "Hai đường bằng nhau", "Không biết"], "v34-length-1d", "Hãy đếm các ô trên mỗi đoạn đường.", { leftLength: 7, rightLength: 4, comparison: "longer" }),
+    originalQuestion("Que nào dài hơn?<br><span class=\"visual-count\">🟠 🟠 🟠 &nbsp; | &nbsp; 🟣 🟣 🟣 🟣 🟣</span>", "Que tím", ["Que tím", "Que cam", "Hai que bằng nhau", "Không biết"], "v34-length-1e", "Quan sát số đoạn màu của mỗi que.", { leftLength: 3, rightLength: 5, comparison: "longer" }),
+  ],
+  "money-1": [
+    originalQuestion("Tờ tiền nào có giá trị lớn hơn?", "10.000đ", ["1.000đ", "2.000đ", "5.000đ", "10.000đ"], "v34-money-1a", "So sánh các số tiền.", { moneyValue: 10000 }),
+    originalQuestion("Chọn số tiền một nghìn đồng.", "1.000đ", ["2.000đ", "1.000đ", "5.000đ", "10.000đ"], "v34-money-1b", "Đọc kỹ số trên mệnh giá tiền.", { moneyValue: 1000 }),
+    originalQuestion("Chọn số tiền năm nghìn đồng.", "5.000đ", ["1.000đ", "2.000đ", "5.000đ", "10.000đ"], "v34-money-1c", "Tìm mệnh giá có số năm nghìn.", { moneyValue: 5000 }),
+    originalQuestion("Tờ tiền nào có giá trị hai nghìn đồng?", "2.000đ", ["2.000đ", "5.000đ", "10.000đ", "1.000đ"], "v34-money-1d", "Quan sát số 2.000 trên đáp án.", { moneyValue: 2000 }),
+    originalQuestion("Tờ tiền nào có giá trị nhỏ nhất?", "1.000đ", ["5.000đ", "10.000đ", "2.000đ", "1.000đ"], "v34-money-1e", "So sánh các số tiền để tìm số nhỏ nhất.", { moneyValue: 1000 }),
+  ],
 };
-Object.entries(MATH_PILOT_QUESTIONS).forEach(([id, questions]) => { const item = MATH_LEVELS.find((levelItem) => levelItem.id === id); if (item) item.pilotQuestions = questions; });
+Object.entries(MATH_PILOT_QUESTIONS).forEach(([id, questions]) => { questions.forEach((question) => { question.contentPilot = true; question.contentRelease ||= "v33"; }); const item = MATH_LEVELS.find((levelItem) => levelItem.id === id); if (item) item.pilotQuestions = questions; });
 let TOPICS = MATH_TOPICS;
 let LEVELS = MATH_LEVELS;
 let LEVEL_BY_ID = Object.fromEntries(LEVELS.map((item) => [item.id, item]));
@@ -670,26 +776,45 @@ function runCountingQuestionTests() {
 }
 window.__hocCungBeCountingQuestionTests = runCountingQuestionTests();
 
-// ==================== V33 original-content pilot validation ====================
+// ==================== V34 original-content audit ====================
 function runContentPilotTests() {
   const results = []; const test = (id, name, passed, detail = "") => results.push({ id, name, passed: Boolean(passed), detail: passed ? undefined : detail });
-  const mathIds = ["counting-1", "counting-3", "counting-4", "counting-5", "compare-1", "addition-3", "addition-4", "subtraction-3", "subtraction-4", "geometry-1"];
-  const vietnameseIds = ["TV-01", "TV-09", "TV-11", "TV-18", "TV-21", "TV-26", "TV-27", "TV-31", "TV-34", "TV-37"];
+  const v33MathIds = ["counting-1", "counting-3", "counting-4", "counting-5", "compare-1", "addition-3", "addition-4", "subtraction-3", "subtraction-4", "geometry-1"];
+  const v33VietnameseIds = ["TV-01", "TV-09", "TV-11", "TV-18", "TV-21", "TV-26", "TV-27", "TV-31", "TV-34", "TV-37"];
+  const v34MathIds = ["counting-2", "counting-9", "counting-11", "compare-3", "addition-1", "addition-5", "addition-7", "subtraction-1", "subtraction-5", "missing-1", "geometry-2", "word-problems-1", "clock-1", "length-1", "money-1"];
+  const v34VietnameseIds = ["TV-03", "TV-06", "TV-10", "TV-12", "TV-14", "TV-16", "TV-20", "TV-23", "TV-28", "TV-30", "TV-32", "TV-35", "TV-38", "TV-39", "TV-40"];
   const math = COURSES["math-grade-1"], vietnamese = COURSES["vietnamese-grade-1"];
-  const pilotLevels = [...mathIds.map((id) => math.levels.find((item) => item.id === id)), ...vietnameseIds.map((id) => vietnamese.levels.find((item) => item.id === id))];
-  const pilotQuestions = pilotLevels.flatMap((item) => item?.questions || item?.pilotQuestions || []);
-  test("A", "Pilot giữ đúng 10 level Toán và 10 level Tiếng Việt", pilotLevels.length === 20 && pilotLevels.every(Boolean));
-  test("B", "Pilot giữ nguyên đúng 5 câu mỗi level", pilotLevels.every((item) => (item.pilotQuestions || item.questions).length === 5 && item.questionCount === 5));
-  test("B2", "Mười level Tiếng Việt thay thế dùng đúng authored pilot questions", vietnameseIds.every((id) => vietnamese.levels.find((item) => item.id === id).questions.every((item) => item.contentPilot === true)));
-  test("C", "Mọi đáp án pilot thuộc bốn lựa chọn unique", pilotQuestions.every((item) => item.answer !== "" && item.options.length === 4 && item.options.includes(String(item.answer)) && new Set(item.options).size === 4));
-  test("D", "Prompt, hướng dẫn và TTS pilot đều có nội dung", pilotQuestions.every((item) => String(item.prompt || item.displayText || "").trim() && String(item.helper || "").trim() && String(item.speechText || "").trim()));
-  test("E", "Pilot không dùng remote asset hoặc hotlink", pilotQuestions.every((item) => !/(?:https?:)?\/\//i.test(`${item.prompt || ""}${item.displayText || ""}${item.speechText || ""}`)));
-  const leakedVietnameseSpeech = vietnameseIds.flatMap((id) => vietnamese.levels.find((item) => item.id === id).questions.map((item, index) => ({ id, index, item }))).filter(({ item }) => item.contentPilot === true).filter(({ item }) => { const speech = String(item.speechText).toLocaleLowerCase("vi-VN"), answer = String(item.answer).toLocaleLowerCase("vi-VN"); return speech === answer || (answer.length >= 3 && speech.includes(answer)); });
-  test("F", "TTS Tiếng Việt pilot không đọc nguyên đáp án trước khi trả lời", leakedVietnameseSpeech.length === 0, leakedVietnameseSpeech.map(({ id, index, item }) => `${id}[${index}]: ${item.answer}`).join(", "));
-  const mathQuestions = mathIds.flatMap((id) => math.levels.find((item) => item.id === id).pilotQuestions);
-  test("G", "Visual số lượng pilot khớp đáp án hoặc dữ liệu phép tính", mathQuestions.filter((item) => Number.isInteger(item.visualQuantity)).every((item) => Number(item.answer) === item.visualQuantity) && mathQuestions.filter((item) => Number.isInteger(item.leftCount)).every((item) => item.answer === (item.leftCount > item.rightCount ? "Nhóm bên trái" : "Nhóm bên phải")) && mathQuestions.filter((item) => Number.isInteger(item.firstCount)).every((item) => Number(item.answer) === item.firstCount + item.secondCount) && mathQuestions.filter((item) => Number.isInteger(item.initialCount)).every((item) => Number(item.answer) === item.initialCount - item.removedCount));
-  test("H", "Pilot giữ nguyên IDs, level count và Progress V2", math.levels.length === 109 && vietnamese.levels.length === 40 && PROGRESS_VERSION === 2 && mathIds.every((id) => math.levels.some((item) => item.id === id)) && vietnameseIds.every((id) => vietnamese.levels.some((item) => item.id === id)));
-  return { passed: results.every((item) => item.passed), results, mathLevelIds: mathIds, vietnameseLevelIds: vietnameseIds, questionCount: pilotQuestions.length };
+  const levelFor = (course, id) => course.levels.find((item) => item.id === id);
+  const authoredMathLevels = [...v33MathIds, ...v34MathIds].map((id) => levelFor(math, id));
+  const authoredVietnameseLevels = [...v33VietnameseIds, ...v34VietnameseIds].map((id) => levelFor(vietnamese, id));
+  const authoredLevels = [...authoredMathLevels, ...authoredVietnameseLevels];
+  const questionsFor = (item) => item?.pilotQuestions || item?.questions || [];
+  const authoredQuestions = authoredLevels.flatMap((item) => questionsFor(item));
+  const authoredQuestionKeys = authoredLevels.flatMap((levelItem) => questionsFor(levelItem).map((question, index) => question.key || `${levelItem.id}-${index}`));
+  const textFor = (item) => `${item.prompt || ""} ${item.displayText || ""} ${item.helper || ""} ${item.tip || ""} ${item.speechText || ""} ${item.illustration || ""}`;
+  const normalized = (value) => String(value || "").normalize("NFC").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().toLocaleLowerCase("vi-VN");
+  const v34AuthoredLevels = [...v34MathIds.map((id) => levelFor(math, id)), ...v34VietnameseIds.map((id) => levelFor(vietnamese, id))];
+  const v34AnswerIndexRuns = v34AuthoredLevels.map((levelItem) => questionsFor(levelItem).map((question) => question.options.indexOf(String(question.answer))));
+  const v34Questions = authoredQuestions.filter((item) => item.contentRelease === "v34");
+  const exactSignatures = v34Questions.map((item) => `${normalized(item.displayText || item.prompt)}|${item.answer}|${item.options.join("|")}`);
+  const leakedVietnamese = authoredVietnameseLevels.flatMap((levelItem) => questionsFor(levelItem).map((item, index) => ({ id: levelItem.id, index, item }))).filter(({ item }) => { const answer = normalized(item.answer), visible = normalized(`${item.helper} ${item.tip} ${item.speechText}`); return answer.length >= 2 && (visible === answer || visible.includes(` ${answer} `)); });
+  const mathQuestions = authoredMathLevels.flatMap((item) => questionsFor(item));
+  const validArithmetic = mathQuestions.filter((item) => Array.isArray(item.operands)).every((item) => Number(item.answer) === (item.operator === "+" ? item.operands[0] + item.operands[1] : item.operands[0] - item.operands[1]) && item.result === Number(item.answer));
+  const validVisuals = mathQuestions.filter((item) => Number.isInteger(item.visualQuantity)).every((item) => Number(item.answer) === item.visualQuantity) && mathQuestions.filter((item) => Number.isInteger(item.firstCount)).every((item) => Number(item.answer) === item.firstCount + item.secondCount) && mathQuestions.filter((item) => Number.isInteger(item.initialCount)).every((item) => Number(item.answer) === item.initialCount - item.removedCount) && mathQuestions.filter((item) => Number.isInteger(item.leftCount)).every((item) => item.answer === (item.comparison === "less" ? (item.leftCount < item.rightCount ? "Nhóm bên trái" : "Nhóm bên phải") : (item.leftCount > item.rightCount ? "Nhóm bên trái" : "Nhóm bên phải"))) && mathQuestions.filter((item) => item.shapeType).every((item) => ({ circle: "hình tròn", square: "hình vuông", triangle: "hình tam giác", rectangle: "hình chữ nhật" })[item.shapeType] === item.answer) && mathQuestions.filter((item) => item.moneyValue).every((item) => Number(String(item.answer).replace(/[^0-9]/g, "")) === item.moneyValue);
+  test("A", "Giữ nguyên đúng 10 level V33 mỗi môn", v33MathIds.length === 10 && v33VietnameseIds.length === 10 && [...v33MathIds.map((id) => levelFor(math, id)), ...v33VietnameseIds.map((id) => levelFor(vietnamese, id))].every(Boolean));
+  test("B", "V34 thêm đúng 15 level authored mỗi môn, không trùng V33", v34MathIds.length === 15 && v34VietnameseIds.length === 15 && new Set([...v33MathIds, ...v34MathIds]).size === 25 && new Set([...v33VietnameseIds, ...v34VietnameseIds]).size === 25 && [...authoredMathLevels, ...authoredVietnameseLevels].every(Boolean));
+  test("C", "Toàn bộ 50 level authored giữ đúng 5 câu", authoredLevels.length === 50 && authoredLevels.every((item) => item.questionCount === 5 && questionsFor(item).length === 5));
+  test("D", "250 câu authored có bốn đáp án unique và đáp án hợp lệ", authoredQuestions.length === 250 && authoredQuestions.every((item) => item.answer !== "" && item.options.length === 4 && item.options.includes(String(item.answer)) && new Set(item.options).size === 4));
+  test("E", "Prompt, hướng dẫn và TTS authored đều có nội dung", authoredQuestions.every((item) => String(item.prompt || item.displayText || "").trim() && String(item.helper || "").trim() && String(item.speechText || "").trim()));
+  test("F", "Marker V33/V34 nhất quán, không hiển thị cho trẻ", authoredQuestions.every((item) => item.contentPilot === true && ["v33", "v34"].includes(item.contentRelease)) && v33MathIds.concat(v33VietnameseIds).every((id) => questionsFor(levelFor(id.startsWith("TV-") ? vietnamese : math, id)).every((item) => item.contentRelease === "v33")) && v34MathIds.concat(v34VietnameseIds).every((id) => questionsFor(levelFor(id.startsWith("TV-") ? vietnamese : math, id)).every((item) => item.contentRelease === "v34")));
+  test("G", "Authored content không dùng remote asset hoặc hotlink", authoredQuestions.every((item) => !/(?:https?:)?\/\//i.test(textFor(item))));
+  test("H", "Tiếng Việt authored dùng Unicode NFC, TTS vi-VN-safe và không đọc đáp án", authoredVietnameseLevels.flatMap((item) => questionsFor(item)).every((item) => textFor(item) === textFor(item).normalize("NFC") && /[A-Za-zÀ-ỹĐđ]/.test(item.speechText)) && leakedVietnamese.length === 0, leakedVietnamese.map(({ id, index, item }) => `${id}[${index}]: ${item.answer}`).join(", "));
+  test("I", "Metadata toán về phép tính, số lượng, so sánh, hình và tiền là đúng", validArithmetic && validVisuals && mathQuestions.filter((item) => item.clockPart).every((item) => ["hourHand", "minuteHand"].includes(item.clockPart)) && mathQuestions.filter((item) => item.sequenceStart !== undefined).every((item) => Number(item.answer) === item.result));
+  test("J", "V34 không có duplicate exact mới; review V33 có chủ đích được giữ", new Set(exactSignatures).size === exactSignatures.length && new Set(authoredQuestionKeys).size === authoredQuestions.length);
+  const answerPositionCounts = [0, 1, 2, 3].map((position) => v34AnswerIndexRuns.flat().filter((index) => index === position).length);
+  test("K", "V34 phủ đủ A/B/C/D; không level V34 nào cùng vị trí hoặc theo mẫu cố định", answerPositionCounts.every((count) => count > 0) && v34AnswerIndexRuns.every((indices) => new Set(indices).size >= 2) && !v34AnswerIndexRuns.some((indices) => indices.join("") === "01230"));
+  test("L", "Giữ nguyên IDs, level count và Progress V2", math.levels.length === 109 && vietnamese.levels.length === 40 && PROGRESS_VERSION === 2);
+  return { passed: results.every((item) => item.passed), results, v33MathIds, v33VietnameseIds, v34MathIds, v34VietnameseIds, questionCount: authoredQuestions.length };
 }
 window.__hocCungBeContentPilotTests = runContentPilotTests();
 
@@ -839,7 +964,7 @@ async function runEnglishGrade1Tests() {
   test("V", english.levels.length === 40 && parentStatistics(blank).totalLevels === 40 && parentStatistics(oldProgress).opened >= 2);
   for (let attempt = 0; attempt < 40 && typeof window.HocCungBeCloudSync?.cloudPath !== "function"; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 50));
   test("W", window.HocCungBeCloudSync?.cloudPath?.("uid", "child", english.id) === "users/uid/children/child/progress/english-grade-1");
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v33"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v34"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
   test("Y", new Set(allQuestions.map((item) => item.type)).size >= 8 && ["choice", "image-choice", "listen-choice", "word-to-image", "match", "letter-order", "true-false", "animation-choice"].every((type) => allQuestions.some((item) => item.type === type)));
   const mediaPaths = english.levels.flatMap((item) => [item.media?.learn?.[0]?.src, item.media?.featured?.poster, item.media?.featured?.fallback]).filter(Boolean);
   try { const responses = await Promise.all([...new Set(mediaPaths)].map((path) => fetch(path, { cache: "no-store" }))); test("Z", responses.every((response) => response.ok)); } catch (error) { test("Z", false, String(error)); }
@@ -853,7 +978,7 @@ async function runEnglishGrade1Tests() {
   const videoQuestions = allQuestions.filter((item) => item.type === "video-choice");
   test("AF", videoQuestions.length === 5 && videoQuestions.every((item) => item.video?.webm.endsWith(".webm") && !item.video.ariaLabel.toLowerCase().includes(item.answer.toLowerCase())));
   try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.version === 2 && manifest.videoAssetsRequired === true && manifest.clips.length === 7 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v33" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v34" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
   if (previousCourse !== activeCourseId) setActiveCourse(previousCourse);
   return { passed: results.every((item) => item.passed), results };
 }

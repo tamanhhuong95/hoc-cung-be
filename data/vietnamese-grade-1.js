@@ -5,6 +5,8 @@
 (() => {
   const choice = (displayText, answer, choices, speechText, illustration = "") => ({ type: "choose", displayText, prompt: illustration ? `<span class="vietnamese-illustration">${illustration}</span><span>${displayText}</span>` : displayText, answer, options: choices, speechText, helper: "Nghe hoặc nhìn thật kỹ rồi chọn nhé!", tip: "Bình tĩnh quan sát từng đáp án.", illustration });
   const blend = (left, right, answer, choices, speechText) => ({ type: "blend", displayText: `${left} + ${right} = ?`, prompt: `<span class="vietnamese-blend"><b>${left}</b><i>+</i><b>${right}</b><i>=</i><strong>?</strong></span>`, answer, options: choices, speechText, helper: "Ghép hai phần lại thành một tiếng.", tip: "Đọc chậm từng phần rồi ghép lại nhé!" });
+  const originalChoice = (...args) => ({ ...choice(...args), contentPilot: true, contentRelease: "v34" });
+  const originalBlend = (...args) => ({ ...blend(...args), contentPilot: true, contentRelease: "v34" });
   const alphabet = [
     ["TV-01", "Nhận biết a, ă, â", "letters-a", "🔤", [["Đâu là chữ ă?", "ă", ["a", "ă", "â", "o"], "Hãy chọn chữ a ngắn có dấu râu: ă."], ["Đâu là chữ â?", "â", ["a", "ă", "â", "e"], "Hãy chọn chữ a có mũ: â."], ["Đâu là chữ a?", "a", ["ă", "â", "a", "o"], "Hãy chọn chữ a."], ["Chữ nào có dấu râu?", "ă", ["â", "ă", "a", "ê"], "Hãy chọn chữ a ngắn có dấu râu."], ["Chữ nào có mũ?", "â", ["ă", "a", "â", "ơ"], "Hãy chọn chữ a có mũ."]]],
     ["TV-02", "Nhận biết b, c, d, đ", "letters-bcd", "🔤", [["Đâu là chữ đ?", "đ", ["d", "đ", "b", "c"], "Hãy chọn chữ đờ."], ["Đâu là chữ b?", "b", ["d", "c", "b", "đ"], "Hãy chọn chữ bê."], ["Đâu là chữ c?", "c", ["b", "đ", "c", "d"], "Hãy chọn chữ xê."], ["Đâu là chữ d?", "d", ["đ", "b", "d", "c"], "Hãy chọn chữ dê."], ["Chữ nào có nét ngang ở giữa?", "đ", ["d", "b", "c", "đ"], "Hãy chọn chữ đờ."]]],
@@ -128,8 +130,113 @@
       choice("Chọn từ đúng cho hình.", "chó", ["cá", "gà", "mèo", "chó"], "Nhìn hình rồi chọn từ đúng.", "🐶"),
       choice("Con vật nào kêu meo meo?", "mèo", ["cá", "gà", "mèo", "chó"], "Hãy chọn từ chỉ con vật kêu meo meo.", "🐾"),
     ],
+    "TV-03": [
+      originalChoice("Chọn chữ e có mũ.", "ê", ["e", "ê", "g", "h"], "Hãy tìm chữ e có mũ.", "🎩"),
+      originalChoice("Chữ nào có nét thẳng đứng cao?", "h", ["e", "g", "h", "ê"], "Quan sát nét cao của các chữ.", "📏"),
+      originalChoice("Tìm chữ có nét cong đi xuống dưới dòng.", "g", ["h", "ê", "e", "g"], "Hãy nhìn chữ có nét kéo xuống.", "🔎"),
+      originalChoice("Chọn chữ e thường.", "e", ["ê", "g", "e", "h"], "Hãy chọn chữ e không có mũ.", "🔤"),
+      originalChoice("Chữ nào khác với e, ê và g?", "h", ["e", "ê", "g", "h"], "Quan sát từng nét chữ.", "🧩"),
+    ],
+    "TV-06": [
+      originalChoice("Chọn chữ có nét kéo xuống dưới dòng ở bên trái.", "p", ["q", "p", "r", "s"], "Hãy tìm chữ có nét dài ở bên trái.", "⬇️"),
+      originalChoice("Chọn chữ có nét kéo xuống dưới dòng ở bên phải.", "q", ["p", "r", "q", "s"], "Hãy quan sát vị trí nét dài.", "🔎"),
+      originalChoice("Chữ nào giống một vòng tròn có nét đi xuống?", "q", ["p", "q", "r", "s"], "Nhìn kỹ nét kéo xuống của chữ.", "⭕"),
+      originalChoice("Chọn chữ có nét cong nhỏ ở trên.", "r", ["s", "p", "q", "r"], "Hãy tìm chữ r.", "🌈"),
+      originalChoice("Chữ nào uốn cong như con rắn?", "s", ["p", "r", "s", "q"], "Hãy chọn chữ có nét uốn cong.", "🐍"),
+    ],
+    "TV-10": [
+      originalChoice("Chọn chữ a có dấu râu.", "ă", ["ă", "a", "â", "e"], "Hãy tìm chữ a có dấu râu.", "🌿"),
+      originalChoice("Chọn chữ o có mũ.", "ô", ["o", "ơ", "u", "ô"], "Hãy tìm chữ o có mũ.", "🎩"),
+      originalChoice("Chọn chữ có nét ngang ở giữa.", "đ", ["d", "b", "p", "đ"], "Quan sát chữ có một nét ngang.", "➖"),
+      originalChoice("Chọn chữ u có dấu râu.", "ư", ["ư", "u", "v", "y"], "Hãy tìm chữ u có dấu râu.", "🌿"),
+      originalChoice("Chọn chữ e có mũ.", "ê", ["e", "ê", "i", "y"], "Hãy quan sát chiếc mũ nhỏ.", "🎓"),
+    ],
+    "TV-12": [
+      originalBlend("c", "a", "ca", ["ca", "ba", "ma", "na"], "Ghép âm cờ với a."),
+      originalBlend("c", "á", "cá", ["cà", "cá", "ca", "cả"], "Ghép âm cờ với a sắc."),
+      originalBlend("c", "à", "cà", ["ca", "cà", "cá", "cạ"], "Ghép âm cờ với a huyền."),
+      originalBlend("c", "ả", "cả", ["cạ", "cả", "cá", "cà"], "Ghép âm cờ với a hỏi."),
+      originalBlend("c", "ạ", "cạ", ["cả", "cạ", "cã", "cà"], "Ghép âm cờ với a nặng."),
+    ],
+    "TV-14": [
+      originalBlend("n", "o", "no", ["no", "bo", "mo", "co"], "Ghép âm nờ với o."),
+      originalBlend("n", "ó", "nó", ["nò", "nó", "no", "nỏ"], "Ghép âm nờ với o sắc."),
+      originalBlend("n", "ò", "nò", ["no", "nò", "nó", "nọ"], "Ghép âm nờ với o huyền."),
+      originalBlend("n", "ỏ", "nỏ", ["nỏ", "nọ", "nò", "nó"], "Ghép âm nờ với o hỏi."),
+      originalBlend("n", "ọ", "nọ", ["nò", "nọ", "nỏ", "nó"], "Ghép âm nờ với o nặng."),
+    ],
+    "TV-16": [
+      originalChoice("Chọn tiếng có thanh ngang.", "ba", ["bà", "bá", "ba", "bạ"], "Hãy chọn tiếng không có dấu thanh.", "🎵"),
+      originalChoice("Chọn tiếng có thanh huyền.", "mà", ["ma", "má", "mà", "mạ"], "Hãy chọn tiếng có dấu huyền.", "〰️"),
+      originalChoice("Tìm tiếng mang dấu sắc.", "bé", ["be", "bé", "bè", "bẹ"], "Hãy chọn tiếng có dấu sắc.", "✨"),
+      originalChoice("Chọn tiếng có thanh hỏi.", "cỏ", ["co", "có", "cỏ", "cọ"], "Hãy chọn tiếng có dấu hỏi.", "❔"),
+      originalChoice("Chọn tiếng có thanh nặng.", "mẹ", ["me", "mé", "mè", "mẹ"], "Hãy chọn tiếng có dấu nặng.", "⚫"),
+    ],
+    "TV-20": [
+      originalChoice("Chọn tiếng có thanh sắc.", "lá", ["la", "lá", "là", "lạ"], "Hãy tìm tiếng có dấu sắc.", "🍃"),
+      originalChoice("Chọn tiếng có thanh huyền.", "cò", ["co", "có", "cò", "cọ"], "Hãy tìm tiếng có dấu huyền.", "🕊️"),
+      originalChoice("Chọn tiếng có thanh hỏi.", "bẻ", ["be", "bé", "bẻ", "bẹ"], "Hãy tìm tiếng có dấu hỏi.", "🌿"),
+      originalChoice("Chọn tiếng có thanh nặng.", "ngựa", ["ngưa", "ngứa", "ngựa", "ngừa"], "Hãy tìm tiếng có dấu nặng.", "🐴"),
+      originalChoice("Chọn tiếng không có dấu thanh.", "ca", ["cá", "cà", "ca", "cạ"], "Hãy chọn tiếng thanh ngang.", "🎶"),
+    ],
+    "TV-23": [
+      originalChoice("Tìm tiếng có dấu hỏi.", "kẻ", ["kẻ", "ke", "ké", "kẹ"], "Hãy chọn tiếng có dấu hỏi.", "🧍"),
+      originalChoice("Chọn tiếng có thanh hỏi.", "nghỉ", ["nghí", "nghì", "nghị", "nghỉ"], "Hãy tìm dấu hỏi trên tiếng.", "🛌"),
+      originalChoice("Chọn tiếng có thanh hỏi.", "mở", ["mơ", "mở", "mớ", "mợ"], "Hãy tìm tiếng có dấu hỏi.", "🚪"),
+      originalChoice("Tìm tiếng có dấu hỏi.", "sẻ", ["se", "sé", "sẻ", "sẹ"], "Hãy chọn tiếng có dấu hỏi.", "🐦"),
+      originalChoice("Chọn tiếng có thanh hỏi.", "vở", ["vơ", "vớ", "vợ", "vở"], "Hãy quan sát dấu hỏi.", "📒"),
+    ],
+    "TV-28": [
+      originalChoice("Điền âm đầu còn thiếu: ?ẻ", "s", ["s", "x", "ch", "tr"], "Chọn âm đầu để tạo từ chỉ đồ vật.", "📖"),
+      originalChoice("Điền âm đầu còn thiếu: ?e", "x", ["s", "x", "ch", "tr"], "Chọn âm đầu để tạo tên một phương tiện.", "🚗"),
+      originalChoice("Từ nào bắt đầu bằng s?", "sáo", ["xáo", "sáo", "cháo", "tráo"], "Hãy chọn từ bắt đầu bằng s.", "🐦"),
+      originalChoice("Từ nào bắt đầu bằng x?", "xe", ["se", "xe", "che", "tre"], "Hãy chọn từ bắt đầu bằng x.", "🚙"),
+      originalChoice("Chọn từ đúng cho hình.", "sư tử", ["xư tử", "sư tử", "chư tử", "trư tử"], "Nhìn hình con vật rồi chọn từ đúng.", "🦁"),
+    ],
+    "TV-30": [
+      originalChoice("Điền chữ còn thiếu: ?à", "g", ["g", "gh", "ng", "ngh"], "Chọn chữ đầu để tạo tên con vật.", "🐔"),
+      originalChoice("Điền chữ còn thiếu: ?ế", "gh", ["g", "gh", "ng", "ngh"], "Chọn chữ đầu để tạo tên đồ vật.", "🪑"),
+      originalChoice("Từ nào bắt đầu bằng g?", "gà", ["ghà", "gà", "ngà", "nghà"], "Hãy chọn từ bắt đầu bằng g.", "🐔"),
+      originalChoice("Từ nào bắt đầu bằng gh?", "ghế", ["gế", "ghế", "ngế", "nghế"], "Hãy chọn từ bắt đầu bằng gh.", "🪑"),
+      originalChoice("Chọn từ đúng cho hình.", "gấu", ["ghấu", "gấu", "ngấu", "nghấu"], "Nhìn hình con vật rồi chọn từ đúng.", "🐻"),
+    ],
+    "TV-32": [
+      originalChoice("Điền chữ còn thiếu: ?à", "c", ["c", "k", "q", "ch"], "Chọn chữ đầu để tạo từ chỉ con vật.", "🐟"),
+      originalChoice("Điền chữ còn thiếu: ?ẹo", "k", ["c", "k", "q", "ch"], "Chọn chữ đầu để tạo tên đồ ăn.", "🍬"),
+      originalChoice("Điền chữ còn thiếu: ?uả", "q", ["c", "k", "q", "ch"], "Chọn chữ đầu để tạo từ chỉ trái cây.", "🍎"),
+      originalChoice("Từ nào viết đúng?", "cá", ["ká", "qá", "cá", "chá"], "Hãy chọn từ chỉ con cá.", "🐟"),
+      originalChoice("Từ nào viết đúng?", "kẹo", ["cẹo", "kẹo", "qẹo", "chẹo"], "Hãy chọn từ chỉ món ngọt.", "🍬"),
+    ],
+    "TV-35": [
+      originalChoice("Điền âm đầu còn thiếu: ?ó", "ch", ["ph", "th", "ch", "tr"], "Chọn âm đầu để tạo tên con vật.", "🐶"),
+      originalChoice("Điền âm đầu còn thiếu: ?e", "tr", ["ph", "th", "ch", "tr"], "Chọn âm đầu để tạo tên một loại cây.", "🌳"),
+      originalChoice("Từ nào bắt đầu bằng ph?", "phở", ["thở", "phở", "chở", "trở"], "Hãy chọn từ bắt đầu bằng ph.", "🍜"),
+      originalChoice("Chọn từ bắt đầu bằng th.", "thuyền", ["chuyền", "truyền", "phuyền", "thuyền"], "Hãy chọn từ bắt đầu bằng th.", "⛵"),
+      originalChoice("Chọn từ bắt đầu bằng tr.", "trống", ["chống", "thống", "phống", "trống"], "Hãy chọn từ bắt đầu bằng tr.", "🥁"),
+    ],
+    "TV-38": [
+      originalChoice("Chọn từ đúng cho hình.", "bút", ["bàn", "bút", "cặp", "ghế"], "Nhìn hình đồ dùng học tập rồi chọn từ đúng.", "✏️"),
+      originalChoice("Chọn từ đúng cho hình.", "bàn", ["ghế", "cặp", "bàn", "bút"], "Nhìn hình đồ vật rồi chọn từ đúng.", "🪑"),
+      originalChoice("Đồ vật nào dùng để đựng sách?", "cặp", ["bút", "ghế", "cặp", "bàn"], "Hãy chọn đồ vật đựng sách vở.", "🎒"),
+      originalChoice("Đồ vật nào dùng để ngồi?", "ghế", ["ghế", "bàn", "bút", "cặp"], "Hãy chọn đồ vật dùng để ngồi.", "🪑"),
+      originalChoice("Đồ vật nào dùng để viết?", "bút", ["cặp", "bàn", "bút", "ghế"], "Hãy chọn đồ vật dùng để viết.", "✏️"),
+    ],
+    "TV-39": [
+      originalChoice("Bạn nhỏ đang làm gì?", "đọc", ["ăn", "ngủ", "đọc", "đi"], "Nhìn hình và chọn hoạt động phù hợp.", "📖"),
+      originalChoice("Bạn nhỏ đang làm gì?", "chạy", ["ngủ", "chạy", "ăn", "học"], "Nhìn hình và chọn hoạt động phù hợp.", "🏃"),
+      originalChoice("Buổi tối bé thường làm gì để nghỉ ngơi?", "ngủ", ["đi", "ăn", "học", "ngủ"], "Hãy chọn hoạt động phù hợp vào buổi tối.", "🌙"),
+      originalChoice("Đến trường, bé làm gì?", "học", ["học", "ngủ", "ăn", "chạy"], "Hãy chọn hoạt động phù hợp ở trường.", "🏫"),
+      originalChoice("Khi đói, bé làm gì?", "ăn", ["ngủ", "đọc", "ăn", "đi"], "Hãy chọn hoạt động phù hợp khi đói.", "🍚"),
+    ],
+    "TV-40": [
+      originalChoice("Tiếng nào gọi đúng con vật trong hình?", "cá", ["ca", "cà", "cạ", "cá"], "Nhìn hình rồi chọn tiếng đúng.", "🐟"),
+      originalChoice("Chọn chữ có mũ.", "ê", ["e", "ê", "ă", "ơ"], "Hãy chọn chữ có chiếc mũ nhỏ.", "🎓"),
+      originalChoice("Chọn tiếng có thanh huyền.", "bà", ["ba", "bá", "bà", "bạ"], "Hãy tìm tiếng có dấu huyền.", "👵"),
+      originalChoice("Chọn từ đúng cho hình.", "ghế", ["gế", "ghế", "khế", "ngế"], "Nhìn hình đồ vật rồi chọn từ đúng.", "🪑"),
+      originalChoice("Chọn từ chỉ một người trong gia đình.", "mẹ", ["mẹ", "mèo", "mé", "mẻ"], "Hãy chọn từ chỉ người thân trong gia đình.", "👩"),
+    ],
   };
-  Object.entries(pilotQuestions).forEach(([id, questions]) => { questions.forEach((question) => { question.contentPilot = true; }); const item = levels.find((level) => level.id === id); if (item) item.questions = questions; });
+  Object.entries(pilotQuestions).forEach(([id, questions]) => { questions.forEach((question) => { question.contentPilot = true; question.contentRelease ||= "v33"; }); const item = levels.find((level) => level.id === id); if (item) item.questions = questions; });
   const topicTitles = [
     ["letters-a", "Làm quen chữ cái", "🔤", "Nhận biết chữ cái, mũ và dấu râu."], ["letters-bcd", "Làm quen chữ cái", "🔤", "Nhận biết các chữ cái cơ bản."], ["letters-egh", "Làm quen chữ cái", "🔤", "Quan sát nét chữ và dấu mũ."], ["letters-iklmn", "Làm quen chữ cái", "🔤", "Làm quen thêm các chữ cái."], ["letters-ooo", "Làm quen chữ cái", "🔤", "Phân biệt o, ô và ơ."],
     ["letters-pqrs", "Âm và chữ", "🔊", "Nhận biết chữ và âm đọc."], ["letters-tuuv", "Âm và chữ", "🔊", "Phân biệt u và ư."], ["letters-xy", "Âm và chữ", "🔊", "Nhận biết x và y."], ["confusing", "Âm và chữ", "🔎", "Phân biệt các chữ dễ nhầm."], ["review", "Âm và chữ", "🌟", "Ôn bảng chữ cái cơ bản."],
