@@ -219,11 +219,11 @@ const MATH_PILOT_QUESTIONS = {
     originalQuestion("Bé có 1 chú gấu bông, được cho thêm 3 chú. Bé có tất cả bao nhiêu chú gấu?<br><span class=\"visual-groups\">🧸 <b>+</b> 🧸 🧸 🧸</span>", 4, [4, 3, 2, 5], "v34-word-1e", "Gộp một và ba chú gấu bông.", { operator: "+", operands: [1, 3], result: 4, firstCount: 1, secondCount: 3, visualQuantity: 4 }),
   ],
   "clock-1": [
-    originalQuestion("Kim nào chỉ giờ?", "Kim ngắn", ["Kim dài", "Kim ngắn", "Cả hai kim", "Không có kim"], "v34-clock-1a", "Quan sát hai kim trên đồng hồ.", { clockPart: "hourHand" }),
-    originalQuestion("Kim nào chỉ phút?", "Kim dài", ["Kim ngắn", "Kim dài", "Cả hai kim", "Không có kim"], "v34-clock-1b", "Kim phút thường dài hơn kim giờ.", { clockPart: "minuteHand" }),
-    originalQuestion("Khi xem giờ, em nhìn kim nào trước?", "Kim ngắn", ["Kim dài", "Kim ngắn", "Kim giây", "Không cần nhìn kim"], "v34-clock-1c", "Hãy nhớ kim giờ là kim ngắn.", { clockPart: "hourHand" }),
-    originalQuestion("Kim dài trên đồng hồ giúp em biết điều gì?", "Phút", ["Giờ", "Ngày", "Phút", "Tháng"], "v34-clock-1d", "Kim dài là kim phút.", { clockPart: "minuteHand" }),
-    originalQuestion("Kim ngắn trên đồng hồ giúp em biết điều gì?", "Giờ", ["Phút", "Giờ", "Ngày", "Tháng"], "v34-clock-1e", "Kim ngắn là kim giờ.", { clockPart: "hourHand" }),
+    originalQuestion(`Kim nào chỉ giờ?<br>${clockHandsMarkup()}`, "Kim ngắn", ["Kim dài", "Kim ngắn", "Cả hai kim", "Không có kim"], "v34-clock-1a", "Quan sát độ dài của hai kim trên mặt đồng hồ.", { clockPart: "hourHand", clockVisual: true }),
+    originalQuestion(`Kim nào chỉ phút?<br>${clockHandsMarkup()}`, "Kim dài", ["Kim ngắn", "Kim dài", "Cả hai kim", "Không có kim"], "v34-clock-1b", "Quan sát độ dài của hai kim trên mặt đồng hồ.", { clockPart: "minuteHand", clockVisual: true }),
+    originalQuestion(`Khi xem giờ, em nhìn kim nào trước?<br>${clockHandsMarkup()}`, "Kim ngắn", ["Kim dài", "Kim ngắn", "Kim giây", "Không cần nhìn kim"], "v34-clock-1c", "Quan sát hai kim trên mặt đồng hồ.", { clockPart: "hourHand", clockVisual: true }),
+    originalQuestion(`Kim dài trên đồng hồ giúp em biết điều gì?<br>${clockHandsMarkup()}`, "Phút", ["Giờ", "Ngày", "Phút", "Tháng"], "v34-clock-1d", "Quan sát kim dài trên mặt đồng hồ.", { clockPart: "minuteHand", clockVisual: true }),
+    originalQuestion(`Kim ngắn trên đồng hồ giúp em biết điều gì?<br>${clockHandsMarkup()}`, "Giờ", ["Phút", "Giờ", "Ngày", "Tháng"], "v34-clock-1e", "Quan sát kim ngắn trên mặt đồng hồ.", { clockPart: "hourHand", clockVisual: true }),
   ],
   "length-1": [
     originalQuestion("Bạn nào có dải ruy băng dài hơn?<br><span class=\"visual-count\">🔴 🔴 🔴 🔴 🔴 🔴 &nbsp; | &nbsp; 🔵 🔵 🔵</span>", "Dải đỏ", ["Dải xanh", "Dải đỏ", "Hai dải bằng nhau", "Không biết"], "v34-length-1a", "So sánh số đoạn màu của hai dải.", { leftLength: 6, rightLength: 3, comparison: "longer" }),
@@ -444,8 +444,9 @@ function clockMarkup(value, settings = {}) {
   const time = normalizeClockTime(value); const angles = clockAngles(time); const showSeconds = Boolean(settings.showSeconds); const compact = Boolean(settings.compact); const labels = Boolean(settings.labels);
   const marks = Array.from({ length: 12 }, (_, index) => { const number = index + 1; return `<span class="clock-mark" style="--mark:${number * 30}deg"><b>${number}</b></span>`; }).join("");
   const legend = labels ? `<span class="clock-legend"><b><i class="legend-hand legend-hand--hour"></i>Kim ngắn: kim giờ</b><b><i class="legend-hand legend-hand--minute"></i>Kim dài: kim phút</b></span>` : "";
-  return `<span class="learning-clock${compact ? " learning-clock--compact" : ""}" aria-label="Đồng hồ ${formatClockTime(time, showSeconds)}"><span class="clock-face">${marks}<i class="clock-hand clock-hand--hour" style="--angle:${angles.hourAngle}deg"></i><i class="clock-hand clock-hand--minute" style="--angle:${angles.minuteAngle}deg"></i>${showSeconds ? `<i class="clock-hand clock-hand--second" style="--angle:${angles.secondAngle}deg"></i>` : ""}<b class="clock-pin"></b></span>${legend}</span>`;
+  return `<span class="learning-clock${compact ? " learning-clock--compact" : ""}" aria-label="${settings.ariaLabel || `Đồng hồ ${formatClockTime(time, showSeconds)}`}"><span class="clock-face">${marks}<i class="clock-hand clock-hand--hour" style="--angle:${angles.hourAngle}deg"></i><i class="clock-hand clock-hand--minute" style="--angle:${angles.minuteAngle}deg"></i>${showSeconds ? `<i class="clock-hand clock-hand--second" style="--angle:${angles.secondAngle}deg"></i>` : ""}<b class="clock-pin"></b></span>${legend}</span>`;
 }
+function clockHandsMarkup() { return clockMarkup({ hour: 10, minute: 10, second: 0 }, { ariaLabel: "Mặt đồng hồ có hai kim" }); }
 function clockTimeKey(value, includeSeconds = false) { const time = normalizeClockTime(value); return `${time.hour}:${String(time.minute).padStart(2, "0")}${includeSeconds ? `:${String(time.second).padStart(2, "0")}` : ""}`; }
 function clockAnswerOptions(value, includeSeconds = false) {
   const time = normalizeClockTime(value); const variants = [time, { ...time, minute: (time.minute + 5) % 60 }, { ...time, hour: time.hour === 12 ? 1 : time.hour + 1 }, { ...time, minute: (time.minute + 55) % 60 }];
@@ -818,6 +819,48 @@ function runContentPilotTests() {
 }
 window.__hocCungBeContentPilotTests = runContentPilotTests();
 
+// ==================== V35 quality-fix audit ====================
+function runV35QualityFixTests() {
+  const results = []; const test = (id, name, passed, detail = "") => results.push({ id, name, passed: Boolean(passed), detail: passed ? undefined : detail });
+  const math = COURSES["math-grade-1"], vietnamese = COURSES["vietnamese-grade-1"];
+  const level = (course, id) => course.levels.find((item) => item.id === id);
+  const questionsFor = (item) => item?.pilotQuestions || item?.questions || [];
+  const normalizeText = (value) => String(value || "").normalize("NFC").replace(/<[^>]*>/g, " ").replace(/[.,;:!?()[\]{}“”"'/-]/g, " ").replace(/\s+/g, " ").trim().toLocaleLowerCase("vi-VN");
+  const containsAnswerToken = (text, answer) => {
+    const normalizedText = ` ${normalizeText(text)} `, normalizedAnswer = normalizeText(answer);
+    if (!normalizedAnswer) return false;
+    return normalizedAnswer.length === 1 ? normalizedText.split(" ").includes(normalizedAnswer) : normalizedText.includes(` ${normalizedAnswer} `);
+  };
+  const v33MathIds = ["counting-1", "counting-3", "counting-4", "counting-5", "compare-1", "addition-3", "addition-4", "subtraction-3", "subtraction-4", "geometry-1"];
+  const v33VietnameseIds = ["TV-01", "TV-09", "TV-11", "TV-18", "TV-21", "TV-26", "TV-27", "TV-31", "TV-34", "TV-37"];
+  const v34MathIds = ["counting-2", "counting-9", "counting-11", "compare-3", "addition-1", "addition-5", "addition-7", "subtraction-1", "subtraction-5", "missing-1", "geometry-2", "word-problems-1", "clock-1", "length-1", "money-1"];
+  const v34VietnameseIds = ["TV-03", "TV-06", "TV-10", "TV-12", "TV-14", "TV-16", "TV-20", "TV-23", "TV-28", "TV-30", "TV-32", "TV-35", "TV-38", "TV-39", "TV-40"];
+  const authoredLevels = [...v33MathIds.map((id) => level(math, id)), ...v34MathIds.map((id) => level(math, id)), ...v33VietnameseIds.map((id) => level(vietnamese, id)), ...v34VietnameseIds.map((id) => level(vietnamese, id))];
+  const authoredQuestions = authoredLevels.flatMap(questionsFor);
+  const ttsTargets = [["TV-01", 2], ["TV-03", 3], ["TV-06", 2], ["TV-32", 3]].map(([id, index]) => ({ id, index, question: questionsFor(level(vietnamese, id))[index] }));
+  const ttsLeaks = ttsTargets.filter(({ question }) => !question || [question.speechText, question.helper, question.tip].some((value) => containsAnswerToken(value, question.answer)));
+  test("A", "Bốn câu TTS đã sửa không đọc token đáp án trong speechText, helper hoặc tip", ttsLeaks.length === 0, ttsLeaks.map((item) => `${item.id}[${item.index + 1}]`).join(", "));
+  test("B", "TTS bốn câu đã sửa vẫn tự nhiên và không rỗng", ttsTargets.every(({ question }) => question && normalizeText(question.speechText).split(" ").length >= 4));
+  const clockQuestions = questionsFor(level(math, "clock-1"));
+  const clockVisuals = clockQuestions.map((question) => { const host = document.createElement("div"); host.innerHTML = question.prompt; return { question, clock: host.querySelector(".learning-clock"), hour: host.querySelector(".clock-hand--hour"), minute: host.querySelector(".clock-hand--minute"), face: host.querySelector(".clock-face") }; });
+  test("C", "clock-1 có mặt đồng hồ render cho cả năm câu", clockVisuals.length === 5 && clockVisuals.every(({ question, clock, face, hour, minute }) => question.clockVisual === true && ["hourHand", "minuteHand"].includes(question.clockPart) && Boolean(clock && face && hour && minute)));
+  test("D", "clock-1 dùng trạng thái visual và accessibility trung tính", clockVisuals.every(({ clock, hour, minute }) => clock?.getAttribute("aria-label") === "Mặt đồng hồ có hai kim" && hour.style.getPropertyValue("--angle") && minute.style.getPropertyValue("--angle")));
+  test("E", "clock-1 không ghi đáp án trong aria-label visual", clockVisuals.every(({ clock }) => !/kim giờ|kim phút/i.test(clock?.getAttribute("aria-label") || "")));
+  const positions = (id) => questionsFor(level(vietnamese, id)).map((question) => question.options.indexOf(String(question.answer)) + 1);
+  const tv21 = positions("TV-21"), tv26 = positions("TV-26");
+  test("F", "TV-21 dùng ít nhất ba vị trí đáp án và không theo mẫu tuần hoàn đơn giản", new Set(tv21).size >= 3 && new Set(tv21).size === 4 && tv21.join(",") !== "1,2,3,4,1" && tv21.join(",") !== "2,3,4,1,2", tv21.join(","));
+  test("G", "TV-26 dùng ít nhất ba vị trí đáp án và không theo mẫu tuần hoàn đơn giản", new Set(tv26).size >= 3 && new Set(tv26).size === 4 && tv26.join(",") !== "1,2,3,4,1" && tv26.join(",") !== "2,3,4,1,2", tv26.join(","));
+  const counts = [1, 2, 3, 4].map((position) => authoredQuestions.filter((question) => question.options.indexOf(String(question.answer)) + 1 === position).length);
+  const fixedLevels = authoredLevels.filter((item) => new Set(questionsFor(item).map((question) => question.options.indexOf(String(question.answer)))).size === 1).map((item) => item.id);
+  test("H", "Corpus 250 câu cân bằng hơn: mọi vị trí đáng kể, không vị trí nào vượt 40%", authoredQuestions.length === 250 && counts.every((count) => count >= 30) && Math.max(...counts) / authoredQuestions.length < .4 && fixedLevels.length === 0, `${counts.join("/")}; fixed=${fixedLevels.join(",")}`);
+  const tv32 = questionsFor(level(vietnamese, "TV-32"));
+  const obviousNonwords = new Set(["gế", "gé", "ghà", "ngế"]);
+  test("I", "TV-32 giữ một đáp án đúng duy nhất và thay distractor nonword rõ ràng", tv32.length === 5 && tv32.every((question) => question.options.filter((option) => option === question.answer).length === 1 && new Set(question.options).size === 4 && question.options.filter((option) => option !== question.answer).every((option) => !obviousNonwords.has(option))));
+  test("J", "V35 giữ nguyên level, số câu và Progress V2", math.levels.length === 109 && vietnamese.levels.length === 40 && authoredLevels.length === 50 && authoredLevels.every((item) => item.questionCount === 5 && questionsFor(item).length === 5) && PROGRESS_VERSION === 2);
+  return { passed: results.every((item) => item.passed), results, answerPositionBefore: [48, 105, 72, 25], answerPositionAfter: counts, tv21Before: [2, 2, 2, 2, 2], tv21After: tv21, tv26Before: [2, 2, 2, 2, 2], tv26After: tv26 };
+}
+window.__hocCungBeV35QualityFixTests = runV35QualityFixTests();
+
 // ==================== Non-destructive geometry and sequence checks ====================
 function runGeometryAndSequenceTests() {
   const geometryLevels = getLevelsByTopic("geometry");
@@ -964,7 +1007,7 @@ async function runEnglishGrade1Tests() {
   test("V", english.levels.length === 40 && parentStatistics(blank).totalLevels === 40 && parentStatistics(oldProgress).opened >= 2);
   for (let attempt = 0; attempt < 40 && typeof window.HocCungBeCloudSync?.cloudPath !== "function"; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 50));
   test("W", window.HocCungBeCloudSync?.cloudPath?.("uid", "child", english.id) === "users/uid/children/child/progress/english-grade-1");
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v34"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v35"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
   test("Y", new Set(allQuestions.map((item) => item.type)).size >= 8 && ["choice", "image-choice", "listen-choice", "word-to-image", "match", "letter-order", "true-false", "animation-choice"].every((type) => allQuestions.some((item) => item.type === type)));
   const mediaPaths = english.levels.flatMap((item) => [item.media?.learn?.[0]?.src, item.media?.featured?.poster, item.media?.featured?.fallback]).filter(Boolean);
   try { const responses = await Promise.all([...new Set(mediaPaths)].map((path) => fetch(path, { cache: "no-store" }))); test("Z", responses.every((response) => response.ok)); } catch (error) { test("Z", false, String(error)); }
@@ -978,7 +1021,7 @@ async function runEnglishGrade1Tests() {
   const videoQuestions = allQuestions.filter((item) => item.type === "video-choice");
   test("AF", videoQuestions.length === 5 && videoQuestions.every((item) => item.video?.webm.endsWith(".webm") && !item.video.ariaLabel.toLowerCase().includes(item.answer.toLowerCase())));
   try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.version === 2 && manifest.videoAssetsRequired === true && manifest.clips.length === 7 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v34" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v35" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
   if (previousCourse !== activeCourseId) setActiveCourse(previousCourse);
   return { passed: results.every((item) => item.passed), results };
 }

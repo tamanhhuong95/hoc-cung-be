@@ -67,6 +67,13 @@ frame.addEventListener("load", async () => {
     check(weeklyRect.left >= 0 && weeklyRect.right <= win.innerWidth, "Weekly Report horizontal overflow");
     check(weeklySection.querySelectorAll('.weekly-chart [role="img"][aria-label]').length === 7, "Weekly chart accessibility missing");
     check(weeklyButtons.every((node) => node.getBoundingClientRect().height >= 44), "Weekly Report touch target invalid");
+    const clockHost = document.createElement("div"); clockHost.className = "clock-v35-responsive-check"; clockHost.innerHTML = win.clockHandsMarkup(); document.body.append(clockHost);
+    const clock = clockHost.querySelector(".learning-clock"), clockFace = clockHost.querySelector(".clock-face"), hourHand = clockHost.querySelector(".clock-hand--hour"), minuteHand = clockHost.querySelector(".clock-hand--minute"), clockRect = clockFace?.getBoundingClientRect();
+    check(clock && clockFace && hourHand && minuteHand, "clock-1 visual is missing required face or hands");
+    check(clock?.getAttribute("aria-label") === "Mặt đồng hồ có hai kim", "clock-1 accessibility label is not neutral");
+    check(clockRect && clockRect.left >= 0 && clockRect.right <= win.innerWidth && clockRect.width >= 120 && clockRect.height >= 120, "clock-1 visual overflow or unreadable size");
+    check(hourHand?.getBoundingClientRect().height > 0 && minuteHand?.getBoundingClientRect().height > 0, "clock-1 hands are not visible");
+    clockHost.remove();
     check(document.documentElement.scrollWidth <= win.innerWidth && document.body.scrollWidth <= win.innerWidth, `Horizontal overflow ${document.documentElement.scrollWidth}/${document.body.scrollWidth}`);
   } catch (error) { failures.push(String(error?.stack || error)); }
   const actualWidth = win.innerWidth, actualHeight = win.innerHeight;
