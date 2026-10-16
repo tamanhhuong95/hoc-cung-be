@@ -1,0 +1,260 @@
+{
+  "date": "2026-10-16",
+  "documentVersion": "VAL37-1.0",
+  "software": "V37 local prototype; production remains V36",
+  "branch": "codex/thinking-match-pilot",
+  "baselineHead": "f600cbfb2a1adc5bdf3d28264830bd657c13b7fd",
+  "regression": {
+    "realExitCode": 0,
+    "suiteCount": 30,
+    "suiteNames": [
+      "Math clock",
+      "Math five-question lessons",
+      "Math progress compatibility",
+      "Math counting",
+      "V34 original-content audit",
+      "V35 quality fixes",
+      "V36 small UX and retention",
+      "Math geometry and sequences",
+      "Audio and speech",
+      "Mascot and results",
+      "Parent dashboard",
+      "Dynamic curriculum",
+      "Guest Trial",
+      "Multi-course and Vietnamese",
+      "English Grade 1 EN-01 to EN-40",
+      "English skill analytics",
+      "Parent Weekly Report",
+      "PWA and offline",
+      "Branding and icons",
+      "Parent Auth, verification, recovery, password and phone",
+      "Child Profiles",
+      "Cloud Sync",
+      "Parent PIN and feedback",
+      "Child Settings and cross-course limits",
+      "V36 interaction and recommendation",
+      "Thinking game memory pairs",
+      "Can Enter Quiz",
+      "English Learn and interaction flow",
+      "Auth, function menu, shared background and required navigation",
+      "English real video media"
+    ],
+    "total": 497,
+    "failedCount": 0,
+    "failed": [],
+    "runtimeErrorCount": 0,
+    "runtimeErrors": [],
+    "missingSuites": []
+  },
+  "physicalUpgradeOffline": {
+    "baselineSha": "f600cbfb2a1adc5bdf3d28264830bd657c13b7fd",
+    "totalChecks": 24,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "runtimeErrors": [],
+    "checks": [
+      {
+        "name": "Upgrade fixture starts with actual V36 worker",
+        "passed": true
+      },
+      {
+        "name": "Worker upgrade replaces V36 cache with V37",
+        "passed": true
+      },
+      {
+        "name": "V36 legacy /10 progress and quota survive upgrade",
+        "passed": true
+      },
+      {
+        "name": "Both game files are present in precache",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "375x812 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "375x812 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "Native Enter flips focused card",
+        "passed": true
+      },
+      {
+        "name": "Native repeat Enter does not count a self-pair",
+        "passed": true
+      },
+      {
+        "name": "Physical full game reaches four pairs and result",
+        "passed": true
+      },
+      {
+        "name": "Game leaves existing lesson progress and quota intact",
+        "passed": true
+      },
+      {
+        "name": "375 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "768x1024 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "768x1024 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "768 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "1280x900 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "1280x900 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "1280 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "Offline cold reload opens game and flips a card",
+        "passed": true
+      },
+      {
+        "name": "Offline play retains V36 data",
+        "passed": true
+      },
+      {
+        "name": "No page or resource runtime errors",
+        "passed": true
+      }
+    ],
+    "realExitCode": 0
+  },
+  "pwaSmoke": {
+    "checks": [
+      {
+        "name": "Physical click enters quiz",
+        "passed": true
+      },
+      {
+        "name": "Physical Back opens leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Tab cycles inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Shift Tab cycles backwards inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Escape retains quiz and restores opener focus",
+        "passed": true
+      },
+      {
+        "name": "Physical Stay retains quiz and closes dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Leave reaches level list",
+        "passed": true
+      },
+      {
+        "name": "Service worker controls GitHub Pages-style subpath",
+        "passed": true
+      },
+      {
+        "name": "V37 cache exists",
+        "passed": true
+      },
+      {
+        "name": "No recorded online interaction runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Offline reload loads app at subpath",
+        "passed": true
+      },
+      {
+        "name": "Offline reload preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline Vietnamese lesson opens with physical clicks",
+        "passed": true
+      }
+    ],
+    "totalChecks": 13,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "audit": {
+    "totalChecks": 85,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "sha256": {
+    "index.html": "1517b8df3bb2bc22d73832c60eaab58a1ad34b8062dde3b605cc433eb6ee75ff",
+    "script.js": "9ab2f4006fc7451ffd9324a4806bc6a59324d96a36465b91a59297fbb4c02a0a",
+    "styles.css": "cecdd88db05ef5bd12766da9b335ca1e694cd3edd878296742c71482620aa158",
+    "thinking-games.js": "cc3e36a4aeeea27184eb202a92d16f5032304a4335f1c37dc889ccf8983635c0",
+    "thinking-games.css": "dde39732c12032c4f7a8f9e0f655123b2cf933701caf7182822576ee1721527a",
+    "service-worker.js": "754526b71f4ab16c016eccddec24366689d5b993707a8dded4bed145575c485d",
+    "parent-tools.js": "0ce06e54cfc8b665fc00fdd467428f4313c4c80642fc69d774c55484591a3c04",
+    "child-settings.js": "1897f7ea7bfe6c68f60faaffc2a8653530ff66961ee02db041e4ff4042db194c",
+    "__run_browser_tests.py": "61a4a51b37cecf4c032d334ae6712b9d124ebaaf9018ebcba47688d7f503993c",
+    "__run_thinking_game_browser.py": "963c04a9ca02e526d08740923c2ad63f847c955f87914448be12b41dbf33d19c",
+    "__run_pwa_smoke.py": "ad0f7f2db68e24dac1066275b1ab7112d3f623b82e4159b31f6587a3ae73067e",
+    "__run_english_responsive.py": "d9f30c70bc77bb721d611b9c874fb4e7911cfee0e5ec825cb0ea49bc165382f2",
+    "__audit_english_videos.py": "5acb4a90f71414289056492596be0df643c722419144390244790a25a9dfa341"
+  }
+}

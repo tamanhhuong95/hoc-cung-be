@@ -1,20 +1,38 @@
 # Project Memory hiện hành — Học Cùng Bé
 
-Tài liệu PM-2.2, cập nhật 16/10/2026 UTC+7. Phần mềm: V36 RC local; chưa phát hành.
+Tài liệu PM-3.0, ngày 16/10/2026 UTC+7. Production: V36 đã phát hành; phần mềm local: nguyên mẫu V37.
 
-Nguồn: kiểm tra trực tiếp checkout ổ D, diff và báo cáo kiểm thử trong phiên này; xem __v36_validation_2026-10-16.md. Bản PM-1.0 ngày 14/10 trong sources/ là tham chiếu lịch sử, không sửa.
+## Quyết định và trạng thái xác minh
 
-- main; HEAD/origin/main lưu tại máy = f5fbebe5aa035522eb69bfbb45b41459805e95dd. Không fetch, commit, push, deploy trong phiên. Production V35 là thông tin bàn giao, chưa xác minh production trực tiếp.
-- Worktree tiếp tục V36 có sẵn: Home Học tiếp theo bé, marker bài tiếp, CTA kết quả và xác nhận rời quiz, entry Báo cáo tuần, lời giải thích quota guest.
-- Đã sửa blocker thực tế: selector data-course nhận body; vòng course-changed/refresh tự phát sinh khi đọc ba môn; mất context topic/level; phân loại bài chưa học là đã học gần đây; xung đột đích Home với level handler; ghi đè CTA đăng nhập khi guest hết lượt.
-- Final local regression: 29 suites/466 checks/0 failures/0 runtime errors/missingSuites=[]/exit=0. Responsive 3 kích thước đạt; audit 85 checks đạt; smoke click vật lý mobile/offline 13 checks đạt. Báo cáo timeout/tách nhóm trước fix không phải final gate.
-- Giữ progressVersion=2; không đổi rules/schema/cloud-sync/merge/scoring/unlock/nội dung học. Không EN-41+, ads/tracking/framework/dependency mới. Test dùng profile/fixture riêng, không reset dữ liệu thật.
-- README và báo cáo validation chứa chi tiết file, kết quả, giới hạn và lệnh chạy lại. JSON full regression được lưu ở __full_regression_report.json; báo cáo smoke/audit/responsive lưu riêng.
-- Điểm dừng: local đã kiểm thử, cần review trước mọi commit/push/deploy theo yêu cầu chủ dự án. Không tự mở hạng mục mới hoặc coi V36 đã phát hành.
-- Chưa xác minh Firebase E2E thực, thiết bị mobile thật, nâng cấp profile V35 thật, in trực quan mới hoặc production SHA/cache. Sau khi được phép phát hành, phải xác minh production và cập nhật Memory theo bằng chứng.
+Chủ dự án đã đồng ý đề xuất phát hành V36, xác minh production rồi triển khai một trò chơi mẫu “Tìm cặp giống nhau”. Quyết định mới thay điểm dừng trước commit của V36. Không suy rộng thành quyền phát hành trò chơi mẫu.
 
-- Review tiếp ngày 16/10: thêm 4 check (tổng 466); đã tái hiện 3 lỗi auth/sync rồi sửa listener trong script.js, và tái hiện lỗi Tab của dialog rồi thêm focus trap, Escape/ở lại trả focus. Auth event ẩn ngay thẻ cũ trước khi render lại. parent-auth.js, child-profiles.js, rules và cloud-sync vẫn không đổi. Smoke có thêm 3 check phím thật (tổng 13). Kết quả mới được chạy trong lần tiếp tục này, không lấy PASS cũ thay thế. Điểm dừng trước commit/push/deploy giữ nguyên.
+- V36 đã commit/push bình thường lên main: f600cbfb2a1adc5bdf3d28264830bd657c13b7fd. GitHub Pages run 38924257691 completed/success. index.html, script.js, styles.css và service-worker.js production HTTP 200, bytes khớp commit. Production smoke 13/13, exit 0, worker/cache v36 và offline đạt. Chi tiết __v36_production_evidence.json.
+- Gate V36 trước phát hành: 29 suites/466 checks, failure/runtime/missing đều 0, exit 0; responsive 3 kích thước, audit 85, smoke 13 đạt. __v36_validation_evidence.json là bằng chứng lịch sử V36, không thay bằng số liệu V37.
+- Checkout tiếp tục tại D:\anh hương\o 1\saoluu3012\Desktop\Học Cùng Bé. Branch local codex/thinking-match-pilot từ SHA V36 trên; HEAD/main/origin/main đều SHA V36 tại lần kiểm tra cuối. Game chưa commit/push/deploy. Các file untracked cũ được giữ.
 
-## Quyết định tiếp theo — 16/10/2026
+## Nguyên mẫu V37 local
 
-Chủ dự án đã đồng ý đề xuất: chốt và phát hành V36, xác minh production, sau đó triển khai một trò chơi tư duy mẫu “Tìm cặp giống nhau” cho lớp 1. Phạm vi này cho phép commit/push/deploy V36; điểm dừng trước commit của giai đoạn review đã được thay bằng quyết định mới. Tại thời điểm ghi mục này mới chuẩn bị phát hành, chưa có SHA/deployment V36 được xác minh. Trò chơi mẫu sẽ giữ nguyên scoring/unlock các môn, schema/rules/merge; không mở thêm thư viện trò chơi, ads hoặc tracking.
+- Lớp 1 → Trò chơi tư duy → Tìm cặp giống nhau. Bốn cặp/tám thẻ, trộn mỗi ván, đếm lượt ghép, phản hồi nhẹ nhàng, chơi lại. Không đếm ngược, không xếp hạng hoặc suy ra năng lực của trẻ.
+- Module thinking-games.js và CSS riêng, UI trong index.html; script.js chỉ thêm điều hướng và cầu nối kiểm tra giới hạn hiện có. Đổi màn hình/bé/tài khoản xóa ván đang chơi; sự kiện guest lặp cùng ngữ cảnh không làm mất ván.
+- Ván chỉ ở RAM. Không lưu kết quả, thêm course, history, quota, schema hay cloud payload. Không tính thời gian trò chơi vào thời gian học của môn cũ. Giới hạn phụ huynh được kiểm tra khi bắt đầu ván; nguyên mẫu chưa có đo thời gian hoặc cơ chế hết giờ riêng trong ván.
+- Cache candidate hoc-cung-be-v37 precache hai asset mới. Production vẫn hoc-cung-be-v36.
+- Giữ progressVersion=2, scoring/unlock và dữ liệu trẻ; Auth/Firestore rules/schema/cloud-sync/merge, nội dung ba môn không đổi. Không ads/tracking/dependency/framework mới hoặc EN-41+.
+
+## Kiểm chứng mới của nguyên mẫu
+
+- Regression 30 suites/497 checks; failures=0, runtimeErrors=0, missingSuites=[], realExitCode=0.
+- Trình duyệt thao tác thật 24/24, exit 0: chuột, Enter, hoàn thành ván, ba viewport 375x812/768x1024/1280x900, nâng cấp actual V36 worker→V37 và legacy 8/10/history/thời gian/quota còn nguyên, cold reload offline và lật thẻ offline; runtime 0.
+- Smoke luồng học/PWA 13/13 exit 0; responsive bài học 3/3 exit 0; audit media/PWA/security 85/85 exit 0. Tất cả dùng profile/fixture riêng, không xóa dữ liệu người dùng.
+- Lỗi thực tế sự kiện auth guest lặp làm mất ván đã tái hiện và sửa; bằng chứng trước sửa __v37_auth_failure_before_fix.json. Hai lỗi công cụ (Enter thiếu ký tự và giới hạn ảnh CDP 1MB) đã lưu riêng và sửa runner, không hạ gate.
+- Chi tiết file/hash/kết quả: __v37_validation_2026-10-16.md và __v37_validation_evidence.json. Báo cáo chung __full_regression_report.json hiện là V37.
+
+## Giới hạn và bước tiếp theo
+
+Chưa kiểm tra Firebase đăng nhập/sync thực bằng tài khoản test, thiết bị mobile vật lý, Safari/iOS hoặc trẻ dùng thử. Bài test auth/sync dùng fixture; mobile dùng Chrome emulation. Chưa phát hành V37. Review trực quan và cho thử một ván trước khi quyết định mở rộng/phát hành. Không thêm game, ads hay persistence mới nếu chưa nằm trong nhiệm vụ.
+
+Bản PM-1.0 trong sources/ và báo cáo V36 cũ là tài liệu lịch sử, không chỉnh sửa nguồn đồng bộ.
+
+
+## Phê duyệt phát hành V37 — 16/10/2026
+
+Chủ dự án yêu cầu “phát hành luôn” sau bàn giao nguyên mẫu. Đã đối chiếu hash tất cả source/runner với bằng chứng 30 suites/497 checks đạt; không có thay đổi source sau gate. Cho phép commit/push/deploy V37. Các mục “chưa phát hành” phía trên mô tả thời điểm bàn giao; kết quả production sau phát hành được ghi trong __v37_production_evidence.json. Chưa có bằng chứng production V37 tại thời điểm tạo commit này. Giữ giới hạn nguyên mẫu: không lưu kết quả/thời gian game vào báo cáo môn học, chưa Firebase E2E hoặc thiết bị thật.

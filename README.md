@@ -13,7 +13,7 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 ## Phần đã triển khai
 
 - Trang chủ chọn lớp 1 đến lớp 5; lớp 2–5 thông báo sắp ra mắt.
-- Lớp 1 hiện có ba môn hoạt động: **Toán lớp 1**, **Tiếng Việt lớp 1** và **Tiếng Anh lớp 1**. Trò chơi tư duy vẫn ở trạng thái sắp ra mắt.
+- Lớp 1 hiện có ba môn hoạt động: **Toán lớp 1**, **Tiếng Việt lớp 1** và **Tiếng Anh lớp 1**. Production V36 còn hiển thị trò chơi tư duy sắp ra mắt; branch local V37 có nguyên mẫu **Tìm cặp giống nhau**, chưa phát hành.
 - Toán lớp 1 hiện có 12 chuyên đề và 109 level: Số và đếm, So sánh số, Phép cộng, Phép trừ, Điền số, Hình học, Số đến 20, Số đến 100, Bài toán có lời văn, Xem đồng hồ, Đo độ dài và Tiền Việt Nam.
 - Tiếng Việt lớp 1 có nền tảng chữ, âm, ghép tiếng, thanh điệu và từ quen thuộc theo dữ liệu riêng `data/vietnamese-grade-1.js`.
 - Tiếng Anh lớp 1 hiện có **EN-01 → EN-40, tổng 200 task** trong `data/english-grade-1.js`: nền tảng chữ cái/từ vựng ở EN-01→EN-20 và phần mở rộng giao tiếp ở EN-21→EN-40 về lớp học, nhà ở, thức ăn, nơi chốn, phương tiện, thời tiết, quần áo, cảm xúc, khả năng, thói quen, lời lịch sự, trình tự, story ngắn và Review 2. Đây là nội dung tự viết theo định hướng làm quen, không phải toàn bộ chương trình chính thức.
@@ -41,7 +41,7 @@ Trong VS Code, có thể nhấp đúp vào `index.html` trong Explorer rồi ch�
 - **V33 Parent Weekly Report** hiển thị báo cáo tuần Thứ Hai–Chủ Nhật theo giờ địa phương của browser: thời gian/ngày học, hoạt động theo ba môn, kết quả gần đây, bốn kỹ năng Tiếng Anh, điểm nổi bật, nội dung nên luyện, tối đa ba bài gợi ý và so sánh tuần trước khi dữ liệu dated thật sự đủ. Báo cáo có empty/partial state, biểu đồ 7 ngày accessible, CTA không bỏ qua khóa level và layout in bằng browser.
 - Báo cáo tuần được tính tại thời điểm render từ `progress`, tối đa 50 record `history`, `studyTimeByDate`, curriculum metadata và bé đang được chọn. Ứng dụng không lưu/sync report object, không tạo Firestore analytics/report collection, không gọi AI API, không dùng cloud analytics riêng và không thêm tracking bên thứ ba.
 - Thời gian học chỉ được ghi nhận khi bé ở màn hình làm bài và tab đang hiển thị. `studyTime` và `history` được bổ sung tương thích ngược trong cùng dữ liệu tiến độ `localStorage`, không thay đổi `progressVersion: 2`.
-- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, dữ liệu Toán/Tiếng Việt/Tiếng Anh lớp 1, artwork English quan trọng, mã nguồn, manifest, logo, nền Văn Miếu – Quốc Tử Giám và icon nội bộ được cache để tiếp tục học và xem tiến độ khi offline; cache hiện là `hoc-cung-be-v36` và có `weekly-report.js` cùng `learning-analytics.js` trong app shell.
+- Website hoạt động như một **Progressive Web App (PWA)**: sau lần truy cập online đầu tiên, giao diện chính, dữ liệu Toán/Tiếng Việt/Tiếng Anh lớp 1, artwork English quan trọng, mã nguồn, manifest, logo, nền Văn Miếu – Quốc Tử Giám và icon nội bộ được cache để tiếp tục học và xem tiến độ khi offline; cache production là `hoc-cung-be-v36`; branch nguyên mẫu local dùng `hoc-cung-be-v37` và có `weekly-report.js` cùng `learning-analytics.js` trong app shell.
 - Artwork English là WebP local tự tạo trong `assets/english-grade-1/images/` và poster trong `assets/english-grade-1/posters/`; EN-08, EN-12, EN-19, EN-25, EN-27, EN-29 và EN-37 có video WebM local thật, không audio, kèm poster/image và CSS micro-animation fallback. Video không được precache toàn bộ mà dùng runtime cache; khi video chưa có cache hoặc không tải được, lesson vẫn hoạt động bằng ảnh + TTS + text + animation fallback.
 - Bộ nhận diện dùng master logo đầy đủ tại `assets/branding/logo-hoc-cung-be.png`, master app icon không chữ tại `assets/branding/app-icon-hoc-cung-be.png` và bản logo web tối ưu tại `assets/branding/logo-hoc-cung-be-web.png`. Icon PWA/favicons/Apple touch/maskable được sinh từ app icon không chữ trong `assets/icons/`.
 - Guest Home chỉ giữ một cụm Đăng nhập/Đăng ký trong Hero **Học vui mỗi ngày**; Header chỉ còn Home/Học thử và hai khối phụ huynh/tài khoản phía dưới luôn được ẩn hoàn toàn. Firebase `onAuthStateChanged()` là nguồn sự thật; guest actions chỉ hiện sau khi auth đã xác định trạng thái để tránh flash kéo dài khi refresh. Sau đăng nhập, mọi `data-guest-only` được ẩn, phần chọn lớp đổi thành **CHỌN LỚP – Bé muốn học lớp nào?**, hai khối phụ huynh/tài khoản dư thừa trên Home được ẩn hoàn toàn, và header hiện nút **Chức năng** gồm Thông tin cá nhân, Phân tích kết quả học tập, Hồ sơ của bé, Cài đặt, Đồng bộ dữ liệu, Tài khoản của tôi và Đăng xuất; trạng thái auth được áp lại sau mỗi lần render/navigation Home.
@@ -287,9 +287,9 @@ Màn hình **Chính sách quyền riêng tư** trong app là placeholder cần c
 - Khi đã mở ở chế độ ứng dụng độc lập (standalone), nút cài và hướng dẫn iOS sẽ tự ẩn.
 - V35 là bản **quality fixes**: sửa TTS không đọc lộ đáp án ở các câu Tiếng Việt, bổ sung mặt đồng hồ trực quan cho bài nhận biết kim, cân lại vị trí đáp án theo nội dung authored và cải thiện distractor chính tả. Không mở rộng level/câu, không đổi scoring, unlock, progressVersion hay Firestore schema/rules.
 - PWA luôn dùng `localStorage` làm nguồn làm việc trực tiếp. Khi phụ huynh đăng nhập và Firestore đã bật, progress/history/study time được hợp nhất lên cloud; cài đặt học và âm thanh được lưu/sync riêng theo đúng child; Parent PIN và guest trial vẫn chỉ nằm local.
-## Kiểm chứng V36 local — 16/10/2026
+## Kiểm chứng V36 local — lịch sử trước phát hành 16/10/2026
 
-V36 đang ở điểm dừng review, chưa commit/push/deploy. Full regression đạt **29 suites / 466 checks**, 0 failure, 0 runtime error, không thiếu suite, exit code 0. Responsive 375x812, 768x1024 và 1280x900 đạt; audit media/PWA/security 85 checks đạt; smoke click vật lý và offline 13 checks đạt.
+Tại thời điểm review, V36 chưa commit/push/deploy. Sau quyết định mới, V36 đã phát hành; xem trạng thái hiện hành dưới đây. Full regression đạt **29 suites / 466 checks**, 0 failure, 0 runtime error, không thiếu suite, exit code 0. Responsive 375x812, 768x1024 và 1280x900 đạt; audit media/PWA/security 85 checks đạt; smoke click vật lý và offline 13 checks đạt.
 
 Đã sửa vòng course-changed/refresh của Home, giữ context topic/level khi đọc gợi ý, nút xác nhận rời quiz và CTA đăng nhập của guest hết lượt. Kiến trúc, progressVersion=2, schema/rules, scoring/unlock và dữ liệu học được giữ nguyên.
 
@@ -298,3 +298,17 @@ Chi tiết, giới hạn và bước tiếp theo: [báo cáo validation](__v36_v
 Review tiếp V36 ngày 16/10/2026 đã sửa việc cập nhật thẻ Học tiếp theo auth, phục hồi marker sau đồng bộ và điều khiển Tab/Shift+Tab/Escape của dialog rời bài. Không đổi Auth/Firestore hoặc dữ liệu học; xem mục review trong báo cáo validation.
 
 Quyết định tiếp theo ngày 16/10/2026: phát hành V36 sau gate local đã đạt, xác minh production rồi triển khai một trò chơi mẫu “Tìm cặp giống nhau”. Các số liệu và điểm dừng trong mục kiểm chứng ở trên mô tả thời điểm review; trạng thái phát hành sẽ được ghi theo SHA/deployment thực tế.
+
+
+## Trạng thái hiện hành — 16/10/2026
+
+**Production V36 đã phát hành**: `f600cbfb2a1adc5bdf3d28264830bd657c13b7fd`, [Pages thành công](https://github.com/tamanhhuong95/hoc-cung-be/actions/runs/38924257691). Bốn asset production khớp commit; smoke production 13/13, exit 0. Bằng chứng: [production V36](__v36_production_evidence.json).
+
+**Nguyên mẫu V37 chỉ local** trên `codex/thinking-match-pilot`: Lớp 1 → Trò chơi tư duy → Tìm cặp giống nhau. Bốn cặp, tám thẻ, chơi lại, chuột/bàn phím và offline. Ván chỉ lưu trong bộ nhớ, không tạo điểm học/history/quota hoặc dữ liệu sync. Settings kiểm tra khi bắt đầu; thời gian game chưa được ghi hoặc tính vào thời gian học ba môn.
+
+Gate V37: **30 suites/497 checks, fail=0, runtime=0, missing=[], exit=0**. Thao tác game/cập nhật V36/offline 24/24; PWA smoke 13/13; responsive 3 kích thước; audit 85/85. Chưa commit/push/deploy game. [Báo cáo và giới hạn](__v37_validation_2026-10-16.md), [Memory hiện hành](PROJECT_MEMORY_CURRENT.md). Chạy các runner hiện hành tuần tự theo báo cáo; runner V36 là bằng chứng lịch sử, không chạy lên candidate V37.
+
+
+## Phê duyệt phát hành V37 — 16/10/2026
+
+Chủ dự án yêu cầu “phát hành luôn” sau bàn giao nguyên mẫu. Đã đối chiếu hash tất cả source/runner với bằng chứng 30 suites/497 checks đạt; không có thay đổi source sau gate. Cho phép commit/push/deploy V37. Các mục “chưa phát hành” phía trên mô tả thời điểm bàn giao; kết quả production sau phát hành được ghi trong __v37_production_evidence.json. Chưa có bằng chứng production V37 tại thời điểm tạo commit này. Giữ giới hạn nguyên mẫu: không lưu kết quả/thời gian game vào báo cáo môn học, chưa Firebase E2E hoặc thiết bị thật.

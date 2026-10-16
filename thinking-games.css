@@ -1,0 +1,34 @@
+.thinking-games-screen { max-width: 840px; margin-inline: auto; }
+.thinking-games-screen .page-intro { align-items: start; }
+.thinking-games-screen h1 { font-size: clamp(27px, 5vw, 40px); }
+.thinking-panel { padding: clamp(18px, 4vw, 32px); border: 1px solid var(--line); border-radius: 26px; background: rgba(255,255,255,.96); box-shadow: var(--shadow); }
+.memory-intro { text-align: center; }
+.memory-example { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 10px 0 22px; }
+.memory-example span { display: grid; place-items: center; width: 82px; height: 100px; border-radius: 18px; border: 2px solid #b8dfd0; background: var(--mint); font-size: 45px; }
+.memory-example b { color: #368365; font-size: 28px; }
+.memory-intro h2 { font-size: 25px; margin-bottom: 12px; }
+.memory-intro p { color: var(--muted); line-height: 1.6; }
+.memory-intro .primary-button { margin-top: 20px; min-height: 52px; }
+.memory-counters { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.memory-counters p { border-radius: 14px; padding: 10px 14px; margin: 0; background: var(--lavender); color: var(--ink); }
+.memory-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, 2vw, 14px); max-width: 540px; margin: auto; }
+.memory-card { aspect-ratio: .85; width: 100%; min-width: 0; min-height: 72px; display: grid; place-items: center; border: 2px solid #c9c1fb; border-radius: 18px; background: #ece7ff; color: #6553ba; font: inherit; font-size: clamp(32px, 6vw, 55px); font-weight: 800; cursor: pointer; box-shadow: 0 5px 0 #d4ccf5; transition: transform .15s, background .15s; }
+.memory-card:hover:not(:disabled) { transform: translateY(-2px); }
+.memory-card:active:not(:disabled) { transform: translateY(2px); }
+.memory-card.is-open { background: #fff7df; border-color: #eac86c; box-shadow: 0 5px 0 #f3e3b4; }
+.memory-card.is-matched, .memory-card.is-matched:disabled { opacity: 1; background: #def5e9; border-color: #7ac5a2; box-shadow: 0 5px 0 #bfe6d2; cursor: default; }
+.memory-card:focus-visible, .thinking-games-screen button:focus-visible { outline: 3px solid #5648bf; outline-offset: 4px; }
+.memory-status { min-height: 3em; margin: 22px 0 8px; text-align: center; line-height: 1.5; color: var(--ink); font-size: 18px; }
+.memory-result { text-align: center; padding: 18px 12px; background: var(--mint); border-radius: 18px; margin-bottom: 18px; }
+.memory-result h2 { font-size: 25px; margin: 6px 0; }
+.memory-result p { margin: 8px 0; }
+.memory-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+.memory-actions button { min-height: 48px; }
+@media (max-width: 480px) {
+  .thinking-panel { border-radius: 20px; }
+  .memory-card { border-radius: 12px; }
+  .memory-counters { font-size: 14px; }
+  .memory-counters p { padding: 9px 10px; }
+  .memory-actions button, .memory-intro .primary-button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .memory-card { transition: none; } .memory-card:hover:not(:disabled), .memory-card:active:not(:disabled) { transform: none; } }

@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "name": "Physical click enters quiz",
+      "passed": true
+    },
+    {
+      "name": "Physical Back opens leave dialog",
+      "passed": true
+    },
+    {
+      "name": "Physical Tab cycles inside leave dialog",
+      "passed": true
+    },
+    {
+      "name": "Physical Shift Tab cycles backwards inside leave dialog",
+      "passed": true
+    },
+    {
+      "name": "Physical Escape retains quiz and restores opener focus",
+      "passed": true
+    },
+    {
+      "name": "Physical Stay retains quiz and closes dialog",
+      "passed": true
+    },
+    {
+      "name": "Physical Leave reaches level list",
+      "passed": true
+    },
+    {
+      "name": "Service worker controls GitHub Pages-style subpath",
+      "passed": true
+    },
+    {
+      "name": "V36 cache exists",
+      "passed": true
+    },
+    {
+      "name": "No recorded online interaction runtime errors",
+      "passed": true
+    },
+    {
+      "name": "Offline reload loads app at subpath",
+      "passed": true
+    },
+    {
+      "name": "Offline reload preserves local data",
+      "passed": true
+    },
+    {
+      "name": "Offline Vietnamese lesson opens with physical clicks",
+      "passed": true
+    }
+  ],
+  "totalChecks": 13,
+  "failedCount": 0,
+  "realExitCode": 0
+}
