@@ -1,0 +1,666 @@
+{
+  "date": "2026-10-16",
+  "software": "V38 local candidate; production V37",
+  "documentVersion": "VAL38-1.0",
+  "branch": "codex/thinking-playground",
+  "baselineHead": "3087c529d41fe90461449c5e62943eb143c67e9a",
+  "regression": {
+    "realExitCode": 0,
+    "suiteCount": 31,
+    "suiteNames": [
+      "Math clock",
+      "Math five-question lessons",
+      "Math progress compatibility",
+      "Math counting",
+      "V34 original-content audit",
+      "V35 quality fixes",
+      "V36 small UX and retention",
+      "Math geometry and sequences",
+      "Audio and speech",
+      "Mascot and results",
+      "Parent dashboard",
+      "Dynamic curriculum",
+      "Guest Trial",
+      "Multi-course and Vietnamese",
+      "English Grade 1 EN-01 to EN-40",
+      "English skill analytics",
+      "Parent Weekly Report",
+      "PWA and offline",
+      "Branding and icons",
+      "Parent Auth, verification, recovery, password and phone",
+      "Child Profiles",
+      "Cloud Sync",
+      "Parent PIN and feedback",
+      "Child Settings and cross-course limits",
+      "V36 interaction and recommendation",
+      "Thinking game memory pairs",
+      "Thinking playground variety",
+      "Can Enter Quiz",
+      "English Learn and interaction flow",
+      "Auth, function menu, shared background and required navigation",
+      "English real video media"
+    ],
+    "total": 527,
+    "failedCount": 0,
+    "failed": [],
+    "runtimeErrorCount": 0,
+    "runtimeErrors": [],
+    "missingSuites": []
+  },
+  "physicalGamesUpgradeOffline": {
+    "baselineSha": "3087c529d41fe90461449c5e62943eb143c67e9a",
+    "totalChecks": 124,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "runtimeErrors": [],
+    "checks": [
+      {
+        "name": "Upgrade fixture starts with actual V37 worker",
+        "passed": true
+      },
+      {
+        "name": "Worker upgrade replaces V37 cache with V38",
+        "passed": true
+      },
+      {
+        "name": "V37 legacy /10 progress and quota survive upgrade",
+        "passed": true
+      },
+      {
+        "name": "Both game files are present in precache",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "375 pattern controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 pattern replay resets",
+        "passed": true
+      },
+      {
+        "name": "375 odd controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 odd replay resets",
+        "passed": true
+      },
+      {
+        "name": "375 count controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 count replay resets",
+        "passed": true
+      },
+      {
+        "name": "375 order controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 order replay resets",
+        "passed": true
+      },
+      {
+        "name": "375x812 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "375x812 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "Native Enter flips focused card",
+        "passed": true
+      },
+      {
+        "name": "Native repeat Enter does not count a self-pair",
+        "passed": true
+      },
+      {
+        "name": "Physical full game reaches four pairs and result",
+        "passed": true
+      },
+      {
+        "name": "Game leaves existing lesson progress and quota intact",
+        "passed": true
+      },
+      {
+        "name": "375 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "768 pattern controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 pattern replay resets",
+        "passed": true
+      },
+      {
+        "name": "768 odd controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 odd replay resets",
+        "passed": true
+      },
+      {
+        "name": "768 count controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 count replay resets",
+        "passed": true
+      },
+      {
+        "name": "768 order controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 order replay resets",
+        "passed": true
+      },
+      {
+        "name": "768x1024 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "768x1024 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "768 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280 odd controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 odd replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280 count controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 count replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280 order controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 order replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280x900 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "1280x900 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "1280 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "Offline cold reload opens game and flips a card",
+        "passed": true
+      },
+      {
+        "name": "Offline pattern renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline odd renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline count renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline order renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline play retains V37 data",
+        "passed": true
+      },
+      {
+        "name": "No page or resource runtime errors",
+        "passed": true
+      }
+    ],
+    "realExitCode": 0
+  },
+  "pwaSmoke": {
+    "checks": [
+      {
+        "name": "Physical click enters quiz",
+        "passed": true
+      },
+      {
+        "name": "Physical Back opens leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Tab cycles inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Shift Tab cycles backwards inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Escape retains quiz and restores opener focus",
+        "passed": true
+      },
+      {
+        "name": "Physical Stay retains quiz and closes dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Leave reaches level list",
+        "passed": true
+      },
+      {
+        "name": "Service worker controls GitHub Pages-style subpath",
+        "passed": true
+      },
+      {
+        "name": "V38 cache exists",
+        "passed": true
+      },
+      {
+        "name": "No recorded online interaction runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Offline reload loads app at subpath",
+        "passed": true
+      },
+      {
+        "name": "Offline reload preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline Vietnamese lesson opens with physical clicks",
+        "passed": true
+      }
+    ],
+    "totalChecks": 13,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "audit": {
+    "totalChecks": 85,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "static": {
+    "diffCheckExitCode": 0,
+    "pythonCompileExitCode": 0
+  },
+  "sha256": {
+    "index.html": "942d6e185e4cd5ad2ae94a6967821aadadc534cc51bbb235051975e9c36736d5",
+    "thinking-playground.js": "6cc1df17e0033369f91307ef21a46909eae03e183339be964397837942410e1a",
+    "playground.css": "d4ca716ce54b806bf92b11ff20ae78aa6f7abafbe33ee7f562a9638aea3291fb",
+    "thinking-games.js": "cc3e36a4aeeea27184eb202a92d16f5032304a4335f1c37dc889ccf8983635c0",
+    "thinking-games.css": "920b4c0cb7f2b38366f76f28338674d090c5f81ce0c81823b50209e7271b4e75",
+    "script.js": "ab13af98b44122a2988edf705e85166f8abdc0b241b6539bc108ef704b482e9c",
+    "service-worker.js": "427da5abc0557d103d8a9ea8c1f1e39fb9262774c83cec177ffd8ee3d8ff99c5",
+    "parent-tools.js": "c978d60d0f1011a46fceda37868b4db3718740de40d43025f735bd317d6ccc4f",
+    "child-settings.js": "1386073f892085b0ba974a14a9cab9315ae951c30e58a3e251c7bb288ac5aa59",
+    "__run_browser_tests.py": "60a37e3a8332d3191649085f70025fefb2a562898ddd09290abf315cfd35a3f8",
+    "__run_playground_browser.py": "e22d4bc0e0892df02e1a4f1225c176e9be249bd8c634556f7afd123427411a01",
+    "__run_v38_pwa_smoke.py": "61b92e4ccd9163bf33de148d43fa94a0b4c88764c0819546ae086323cdfa87f2",
+    "__audit_english_videos.py": "910360e321affe9922bd19586b33c047ea2f947f842482cfe87597e27fef36be",
+    "__run_english_responsive.py": "d9f30c70bc77bb721d611b9c874fb4e7911cfee0e5ec825cb0ea49bc165382f2"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "date": "2026-10-16",
+  "releaseSha": "3087c529d41fe90461449c5e62943eb143c67e9a",
+  "workflow": {
+    "id": 38927546608,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/tamanhhuong95/hoc-cung-be/actions/runs/38927546608"
+  },
+  "assets": [
+    {
+      "file": "index.html",
+      "status": 200,
+      "sha256": "59c154cf8da5a616d3320c7fc514d2dab79549f2a32c5a5a8c6908a4299f8845",
+      "matchesRelease": true
+    },
+    {
+      "file": "script.js",
+      "status": 200,
+      "sha256": "127e751db43aa72fdc6f436db1e0d110f962473a8267daf038dd11d54e9a42b6",
+      "matchesRelease": true
+    },
+    {
+      "file": "styles.css",
+      "status": 200,
+      "sha256": "cecdd88db05ef5bd12766da9b335ca1e694cd3edd878296742c71482620aa158",
+      "matchesRelease": true
+    },
+    {
+      "file": "thinking-games.js",
+      "status": 200,
+      "sha256": "3161b05e0331f4059dc57285978d6fc81d4a89524de71d9f8f83c38b7a2743ed",
+      "matchesRelease": true
+    },
+    {
+      "file": "thinking-games.css",
+      "status": 200,
+      "sha256": "dde39732c12032c4f7a8f9e0f655123b2cf933701caf7182822576ee1721527a",
+      "matchesRelease": true
+    },
+    {
+      "file": "service-worker.js",
+      "status": 200,
+      "sha256": "5876248c724aeae99dcf2be0d1538f1aa57a3a9f7e8ca49d759942bcec2e42ee",
+      "matchesRelease": true
+    },
+    {
+      "file": "parent-tools.js",
+      "status": 200,
+      "sha256": "739d3b2829b290e57c949195781f58a72477a17c64023cfa4a46813becaf7e82",
+      "matchesRelease": true
+    },
+    {
+      "file": "child-settings.js",
+      "status": 200,
+      "sha256": "463699957c1383d291ea812b23d7a0d801aa0c985fbb30a74ceb1c70c060f188",
+      "matchesRelease": true
+    }
+  ],
+  "smoke": {
+    "checks": [
+      {
+        "name": "Physical click enters quiz",
+        "passed": true
+      },
+      {
+        "name": "Physical Back opens leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Tab cycles inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Shift Tab cycles backwards inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Escape retains quiz and restores opener focus",
+        "passed": true
+      },
+      {
+        "name": "Physical Stay retains quiz and closes dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Leave reaches level list",
+        "passed": true
+      },
+      {
+        "name": "Service worker controls GitHub Pages-style subpath",
+        "passed": true
+      },
+      {
+        "name": "V37 cache exists",
+        "passed": true
+      },
+      {
+        "name": "No recorded online interaction runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Production thinking game entry is visible",
+        "passed": true
+      },
+      {
+        "name": "Production physical click opens one of eight cards",
+        "passed": true
+      },
+      {
+        "name": "Offline reload loads app at subpath",
+        "passed": true
+      },
+      {
+        "name": "Offline reload preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline Vietnamese lesson opens with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "Production game works after offline cold reload",
+        "passed": true
+      },
+      {
+        "name": "Production offline game preserves local data",
+        "passed": true
+      },
+      {
+        "name": "No recorded production offline runtime errors",
+        "passed": true
+      }
+    ],
+    "totalChecks": 18,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "limits": [
+    "Chrome mobile emulation; not physical phone",
+    "No real Firebase-account E2E",
+    "Game round has no persisted result or time tracking"
+  ]
+}

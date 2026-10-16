@@ -1,0 +1,32 @@
+.art-screen { max-width:1100px;margin-inline:auto; }
+.art-screen [hidden] { display:none!important; }
+.art-screen button { min-height:48px; }
+.art-screen > .page-intro { background:linear-gradient(120deg,#ffebdd,#fff4d9 50%,#e6e9ff); border:1px solid #fff; }
+.art-screen h1 { font-size:clamp(30px,5vw,44px); }
+.art-intro-art { font-size:75px; }
+.art-lead { display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap; padding:24px;border-radius:22px;background:#fffcf5; margin-bottom:22px; }
+.art-lead h2 { margin:0 0 8px; }
+.art-lead p { margin:0;color:var(--muted);line-height:1.6; }
+.art-filters { display:flex;flex-wrap:wrap;gap:10px;margin:18px 0; }
+.art-filters button { padding:10px 16px;font:inherit;font-weight:750;background:#fff;border:1px solid #ded7eb;border-radius:30px;color:var(--ink);cursor:pointer; }
+.art-filters button[aria-pressed=true] { background:#7561b8;color:#fff;border-color:#7561b8; }
+.art-cards { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px; }
+.art-card { display:flex;flex-direction:column;gap:12px;padding:16px;min-width:0;text-align:left;border:1px solid #e6d9db;border-radius:24px;background:#fffaf5;color:var(--ink);font:inherit;cursor:pointer;box-shadow:0 5px 0 #e4d9e6;transition:transform .18s; }
+.art-card--fold { background:#f2f0ff; }.art-card--craft { background:#edf9f2; }
+.art-card:hover { transform:translateY(-3px); }
+.art-card small { font-size:13px;font-weight:750;color:#6a5c7b; }.art-card strong { font-size:23px; }.art-card > span { font-size:16px;line-height:1.5;color:var(--muted); }.art-card b { margin-top:auto;font-size:15px;color:#6d54aa; }
+.art-diagram { width:100%;max-width:540px;margin-inline:auto; }.art-diagram svg { display:block;width:100%;height:auto;border-radius:18px; }
+.art-lesson { max-width:860px;margin:auto;padding:clamp(18px,4vw,32px);background:#ffffffed;border-radius:28px;border:1px solid #fff; }
+.art-lesson h2 { font-size:clamp(26px,4vw,36px);margin:18px 0 12px; }.art-lesson > p { line-height:1.65;color:var(--muted); }
+.art-preparation { display:grid;grid-template-columns:1fr 1fr;gap:20px;background:#f6f1ff;padding:20px;border-radius:20px;margin:20px 0; }.art-preparation h3 { margin-top:0; }.art-preparation li,.art-preparation p { line-height:1.7; }
+.art-step-heading { display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:24px 0 16px; }.art-step-heading strong { background:#eee8ff;border-radius:24px;padding:10px 16px; }
+.art-step-heading progress { flex:1;min-width:120px;height:12px;accent-color:#8b72c8; }
+.art-step-text { background:#fff4dc;padding:20px;border-radius:20px;line-height:1.7;font-size:21px;color:var(--ink)!important; }
+.art-step-actions { display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin:24px 0; }
+.art-result { background:#e3f3e8;border-radius:22px;padding:24px; }.art-result p { line-height:1.65; }.art-checks { display:grid;gap:12px;margin:18px 0; }.art-checks label { display:flex;gap:12px;align-items:center;min-height:44px;line-height:1.5; }.art-checks input { width:22px;height:22px;flex-shrink:0;accent-color:#6d9a80; }
+.art-notes { margin-top:28px;padding:20px;background:#fffdf5;border-radius:20px;line-height:1.7; }.art-notes summary { cursor:pointer;font-weight:750;min-height:44px; }.art-notes a { color:#614d94;text-decoration:underline; }.art-notes li { margin-bottom:16px; }
+.art-screen button:focus-visible,.art-screen a:focus-visible,.art-screen summary:focus-visible { outline:3px solid #7559ad;outline-offset:4px; }
+.subject-card--art { background:linear-gradient(130deg,#fff0d5,#f5dbea); }
+@media(max-width:850px){.art-cards{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:480px){.art-cards{grid-template-columns:1fr;gap:16px;}.art-card{display:grid;grid-template-columns:100px minmax(0,1fr);gap:8px 14px;align-items:center;}.art-card .art-diagram{grid-row:1/5;}.art-card strong{font-size:20px;}.art-card > span{font-size:15px;}.art-preparation{grid-template-columns:1fr;gap:6px;}.art-intro-art{display:none;}.art-step-actions button{width:100%;}.art-step-text{font-size:19px;padding:16px;}}
+@media(prefers-reduced-motion:reduce){.art-card{transition:none;}.art-card:hover{transform:none;}}

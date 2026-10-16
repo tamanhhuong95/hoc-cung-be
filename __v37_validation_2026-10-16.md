@@ -37,3 +37,8 @@ HEAD/main/origin/main: f600cbfb2a1adc5bdf3d28264830bd657c13b7fd. V37 là thay đ
 Chưa Firebase E2E tài khoản thật, mobile vật lý, Safari/iOS hay trẻ dùng thử. Giới hạn thời gian không được theo dõi trong ván prototype. Review và thử một ván trước quyết định phát hành/mở rộng. Bằng chứng/hash tại __v37_validation_evidence.json; giữ nguyên bằng chứng V36 lịch sử.
 
 Chạy lại tuần tự: py __run_browser_tests.py; py __run_thinking_game_browser.py; py __run_pwa_smoke.py; py __run_english_responsive.py; py __audit_english_videos.py. Không chạy nhiều Chrome suite cùng lúc.
+
+
+## Production V37 xác minh sau phát hành — 16/10/2026
+
+V37 đã commit/push/deploy: 3087c529d41fe90461449c5e62943eb143c67e9a. Pages run 38927546608 completed/success. Tám asset production HTTP 200 và bytes khớp release; cache hoc-cung-be-v37. Smoke production 18/18, failure 0, exit 0; thao tác mở game/lật thẻ online và sau cold reload offline, bài học/leave-dialog, dữ liệu sentinel giữ nguyên, không ghi nhận runtime error. Bằng chứng __v37_production_evidence.json. Các đoạn “chỉ local/chưa phát hành” ở trên là trạng thái lịch sử trước yêu cầu “phát hành luôn”, được thay bằng mục này. Game hiện có tại Lớp 1 → Trò chơi tư duy. Giới hạn chưa test thiết bị thật/Firebase E2E vẫn còn; ván không lưu kết quả/thời gian vào báo cáo môn học. Tài liệu và bằng chứng sau deployment được cập nhật local, không sửa source đã phát hành.
