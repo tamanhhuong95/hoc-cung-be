@@ -6,7 +6,11 @@ Website giáo dục tĩnh bằng HTML, CSS và JavaScript thuần cho học sinh
 
 ## Trạng thái mới nhất
 
-Production V37; branch local `codex/thinking-playground` có **V39 Xưởng Mỹ thuật** (12 bài/48 hình hướng dẫn) và **V38 Xứ sở tư duy** (5 trò), chưa phát hành. Mỹ thuật chưa lưu/sync tiến độ. Xem [báo cáo V39](__v39_validation_2026-10-16.md) và [đối chiếu nội dung](__v39_art_curriculum_review.md). Chạy qua máy chủ HTTP local để dùng đầy đủ PWA/offline.
+Local **V40** đang review:14 bài Mỹ thuật/94 bước, thêm hạc và sao, hình trước-sau/zoom/chọn bước. Chưa phát hành; production vẫnV39. Xem [báo cáo V40](__v40_validation_2026-10-17.md).
+
+### Bản production đã xác minh
+
+**Production V39 đã phát hành**, SHA `0c61952`: Xưởng Mỹ thuật (12 bài/48 hình) và Xứ sở tư duy (5 trò). Smoke production43/43 đạt; xem `__v39_production_evidence.json`. Mỹ thuật chưa lưu/sync tiến độ. Xem [báo cáo V39](__v39_validation_2026-10-16.md) và [đối chiếu nội dung](__v39_art_curriculum_review.md). Chạy qua máy chủ HTTP local để dùng đầy đủ PWA/offline.
 
 ## Cách chạy
 
@@ -350,3 +354,28 @@ Production vẫn V37 SHA3087c529d41fe90461449c5e62943eb143c67e9a. Branch codex/t
 ## Phê duyệt phát hành V39 — 16/10/2026
 
 Chủ dự án yêu cầu “phát hành đi” sau bàn giao. Đã xác nhận hash source/runner khớp gate 32 suites/551 checks và browser237 checks đạt. Cho phép commit/push/deploy V39 (gồm cả năm trò V38). Các mục chưa phát hành phía trên là lịch sử. Kết quả production sau triển khai được ghi riêng tại __v39_production_evidence.json; chưa có bằng chứng production tại thời điểm tạo commit này. Giữ giới hạn nội dung SGK tham khảo theo chủ đề và Mỹ thuật chưa lưu/sync tiến độ.
+
+
+## Production V39 đã xác minh — 16/10/2026
+
+V39 đã commit/push/deploy tại SHA 0c619526f247d34c712092a58c5a418c84102679. Pages run 38934671717 completed/success. Cả13 asset production HTTP200 và bytes khớp commit; cache hoc-cung-be-v39. Smoke production cuối43/43, fail0/runtime0/exit0: bài học cũ/dialog, cả5 trò,3 nhóm Mỹ thuật (ART-03/05/09), cold reload offline và dữ liệu sentinel giữ nguyên. Bằng chứng __v39_production_evidence.json; script tái hiện __run_v39_production_smoke.py dùng profile test riêng và URL production, không dùng profile của người dùng.
+
+Run đầu chưa đầy đủ, lỗi runtime startup và solver dừng, không đủ chẩn đoán để quy nguyên nhân; giữ __v39_production_initial_failure.json. Run chẩn đoán sau đó qua các kiểm tra UI nhưng ghi báo cáo sau đóng Chrome gây lỗi runner; đã sửa thứ tự và chạy lại đầy đủ đạt. Không sửa source hoặc hạ gate để bỏ lỗi. Gate trước phát hành32 suites/551 checks và browser237 vẫn là bằng chứng local, không thay số liệu production.
+
+Các đoạn chưa phát hành V38/V39 phía trên là lịch sử và được thay bằng trạng thái này. Mỹ thuật và5 trò đã online tại Lớp1; Mỹ thuật vẫn chỉ phiên RAM, chưa lưu/sync tiến độ. Nội dung SGK mới tham khảo ở mức chủ đề, chưa đối chiếu toàn bộ từng bài; chưa kiểm tra thiết bị thật, Firebase tài khoản thật hoặc sư phạm thực hành. Source phát hành giữ nguyên; tài liệu và bằng chứng sau deployment được cập nhật local chưa commit.
+
+
+## V40 local — hướng dẫn trực quan,17/10/2026
+
+Yêu cầu: làm các bước dễ hiểu hơn, thêm hạc giấy và ngôi sao. Đã thêm trước/sau, mũi tên/nếp gấp có ngữ nghĩa, hint/checkpoint, phóng to native dialog, chọn bước. Mobile hình xếp dọc; Escape trả focus. Có14 bài/94 bước; hạc28, sao10, cún/quạt8 bước mỗi bài. Giữ12 lesson ID gốc. Module art-folds.js, candidate cacheV40.
+
+Final regression33 suites/563 checks,fail/runtime0,missing=[],exit0; browser277 checks/0fail/0runtime/exit0; PWA13/13; responsive3; audit85/85. Đã sửa toggle làm mất tự nhận xét và hai fixture số bước/biến runner; có bằng chứng trước sửa. Các kiểm tra dùng profile riêng, nâng cấp actualV39 và giữ dữ liệu đạt.
+
+Đã đối chiếu quy trình gấp truyền thống và tự vẽ sơ đồ; chưa gấp sản phẩm vật lý cùng trẻ/giáo viên. Cần người lớn review nếp mở túi/lộn trước phát hành; không nhận kiểm thử browser là xác nhận hướng dẫn làm thật. Không thay schema/rules/merge/progressVersion2/scoring/unlock hoặc ghi thời gian Mỹ thuật vào ba môn.
+
+Production vẫnV39 SHA0c619526f247d34c712092a58c5a418c84102679; branch codex/art-visual-folds, V40 chưa commit/push/deploy. Bằng chứng __v40_validation_evidence.json; bàn giao/nguồn/giới hạn __v40_validation_2026-10-17.md. Yêu cầu phát hànhV39 trước không tự cấp quyền phát hànhV40. Giữ các phần V39 dưới/trước làm lịch sử.
+
+
+## Phê duyệt phát hành V40 — 17/10/2026
+
+Chủ dự án yêu cầu “Phát hành đi” sau bàn giao V40 và ghi nhận giới hạn chưa làm thử sản phẩm vật lý. Đã đối chiếu hash source/runner với gate33 suites/563 checks và browser277 checks đạt. Cho phép commit/push/deploy V40. Các đoạn chưa phát hành phía trên là lịch sử. Kết quả production ghi sau triển khai tại __v40_production_evidence.json; chưa có bằng chứng production tại thời điểm tạo commit. Giữ giới hạn cần người lớn hỗ trợ, chưa thử gấp vật lý, Mỹ thuật chưa lưu/sync tiến độ.

@@ -30,3 +30,22 @@
 @media(max-width:850px){.art-cards{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:480px){.art-cards{grid-template-columns:1fr;gap:16px;}.art-card{display:grid;grid-template-columns:100px minmax(0,1fr);gap:8px 14px;align-items:center;}.art-card .art-diagram{grid-row:1/5;}.art-card strong{font-size:20px;}.art-card > span{font-size:15px;}.art-preparation{grid-template-columns:1fr;gap:6px;}.art-intro-art{display:none;}.art-step-actions button{width:100%;}.art-step-text{font-size:19px;padding:16px;}}
 @media(prefers-reduced-motion:reduce){.art-card{transition:none;}.art-card:hover{transform:none;}}
+
+.art-card em { font-style:normal;font-size:13px;color:#655577;line-height:1.5; }
+.art-helper { font-size:17px;padding:0 6px;line-height:1.6; }
+.art-compare { display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start; }
+.art-compare figure { margin:0;min-width:0;padding:12px;background:#f3f0fb;border-radius:20px;border:1px solid #d9d0ec; }
+.art-compare figure:last-child { background:#eaf7ef;border-color:#b6d7c2; }
+.art-compare figcaption { font-weight:800;font-size:18px;padding:4px 4px 12px; }
+.art-visual-tools { display:flex;flex-wrap:wrap;gap:12px;margin:18px 0; }
+.art-checkpoint { padding:16px;background:#e8f5eb;border-left:5px solid #7aaa88;border-radius:12px;color:#294f38;line-height:1.6; }
+.art-legend { font-size:15px!important;line-height:1.6; }
+.art-step-jump { display:grid;gap:8px;font-weight:750;margin-top:20px; }
+.art-step-jump select { font:inherit;font-size:16px;color:var(--ink);min-height:48px;width:100%;max-width:100%;padding:10px;border:1px solid #cbc1e0;border-radius:12px;background:#fff;text-overflow:ellipsis; }
+#art-zoom-dialog { border:0;border-radius:22px;padding:clamp(16px,3vw,28px);width:min(1060px,94vw);max-height:92vh;overflow:auto;color:var(--ink); }
+#art-zoom-dialog::backdrop { background:#24334cbb; }
+.art-zoom-head { display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;background:#fff;z-index:1;padding-bottom:12px; }
+.art-zoom-head h2 { font-size:22px;line-height:1.5; }
+@media(max-width:600px){.art-compare{gap:10px;}.art-compare figure{padding:7px;border-radius:14px;}.art-compare figcaption{font-size:15px;padding:4px 0 8px;}.art-visual-tools button{flex:1;}.art-card em{grid-column:2;}.art-card .art-diagram{grid-row:1/6;}#art-zoom-dialog .art-compare{grid-template-columns:1fr;}.art-zoom-head{align-items:flex-start;}.art-zoom-head button{flex-shrink:0;}}
+
+@media(max-width:480px){.art-compare{grid-template-columns:1fr;}.art-compare .art-diagram{max-width:380px;}}

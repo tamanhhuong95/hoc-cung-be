@@ -1,0 +1,284 @@
+{
+  "date": "2026-10-16",
+  "releaseSha": "0c619526f247d34c712092a58c5a418c84102679",
+  "previousStableSha": "3087c529d41fe90461449c5e62943eb143c67e9a",
+  "workflow": {
+    "id": 38934671717,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/tamanhhuong95/hoc-cung-be/actions/runs/38934671717"
+  },
+  "assets": [
+    {
+      "file": "index.html",
+      "status": 200,
+      "sha256": "66295fba1c5c902af73977708e2b97fc0e35c89c119aa2e865c84a1613dc7833",
+      "matchesRelease": true
+    },
+    {
+      "file": "script.js",
+      "status": 200,
+      "sha256": "2491a5390d7181e7d615fe589f4c83b81b56c931a4fc7dad2264e66002da166f",
+      "matchesRelease": true
+    },
+    {
+      "file": "styles.css",
+      "status": 200,
+      "sha256": "cecdd88db05ef5bd12766da9b335ca1e694cd3edd878296742c71482620aa158",
+      "matchesRelease": true
+    },
+    {
+      "file": "thinking-games.js",
+      "status": 200,
+      "sha256": "3161b05e0331f4059dc57285978d6fc81d4a89524de71d9f8f83c38b7a2743ed",
+      "matchesRelease": true
+    },
+    {
+      "file": "thinking-games.css",
+      "status": 200,
+      "sha256": "dde39732c12032c4f7a8f9e0f655123b2cf933701caf7182822576ee1721527a",
+      "matchesRelease": true
+    },
+    {
+      "file": "thinking-playground.js",
+      "status": 200,
+      "sha256": "c3e920fcc069953595ff19821a4b95858143c602154ad220f03fb532fdc187f5",
+      "matchesRelease": true
+    },
+    {
+      "file": "playground.css",
+      "status": 200,
+      "sha256": "05f656b8e8cf600ec03d8630156185afc0de1dd0bb5a9c077eda4debef54c5c0",
+      "matchesRelease": true
+    },
+    {
+      "file": "art-grade1-data.js",
+      "status": 200,
+      "sha256": "b6a2c2b7250cf7a79e8f727c5f8f0d91f6ab91f40751e471fa01a9804e3bb74c",
+      "matchesRelease": true
+    },
+    {
+      "file": "art-studio.js",
+      "status": 200,
+      "sha256": "a36b69ddf073274aebfc9da2fe6fa54a7a06e12418b272ae897413a468fdcf12",
+      "matchesRelease": true
+    },
+    {
+      "file": "art-studio.css",
+      "status": 200,
+      "sha256": "85a05175fd61a6d4e52ad903fedbf30ef9af5a337a2e229c8e5b34afcc5a15c1",
+      "matchesRelease": true
+    },
+    {
+      "file": "service-worker.js",
+      "status": 200,
+      "sha256": "19c99650fb5fc2cbdb8def459154c31b6f8b5b46d6859aef471de4dcdd21f9ab",
+      "matchesRelease": true
+    },
+    {
+      "file": "parent-tools.js",
+      "status": 200,
+      "sha256": "b8f4d11442e7df5d1f893ed1e860faf10547b2c576e762a652f4e07355367848",
+      "matchesRelease": true
+    },
+    {
+      "file": "child-settings.js",
+      "status": 200,
+      "sha256": "0063fff25b6a8f3cdca6511e4c205de9fd5e8254d7d47ebd022c2062842809f2",
+      "matchesRelease": true
+    }
+  ],
+  "smoke": {
+    "runtimeErrors": [],
+    "gameDiagnostic": {
+      "kind": null,
+      "art": null
+    },
+    "checks": [
+      {
+        "name": "Physical click enters quiz",
+        "passed": true
+      },
+      {
+        "name": "Physical Back opens leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Tab cycles inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Shift Tab cycles backwards inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Escape retains quiz and restores opener focus",
+        "passed": true
+      },
+      {
+        "name": "Physical Stay retains quiz and closes dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Leave reaches level list",
+        "passed": true
+      },
+      {
+        "name": "Service worker controls GitHub Pages-style subpath",
+        "passed": true
+      },
+      {
+        "name": "V39 cache exists",
+        "passed": true
+      },
+      {
+        "name": "No recorded online interaction runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Production thinking game entry is visible",
+        "passed": true
+      },
+      {
+        "name": "Production physical click opens one of eight cards",
+        "passed": true
+      },
+      {
+        "name": "Online production pattern accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Online production odd accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Online production count accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Online production order accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Online production art lists twelve lessons",
+        "passed": true
+      },
+      {
+        "name": "Online ART-03 shows materials and SVG",
+        "passed": true
+      },
+      {
+        "name": "Online ART-03 reaches reflection",
+        "passed": true
+      },
+      {
+        "name": "Online ART-05 shows materials and SVG",
+        "passed": true
+      },
+      {
+        "name": "Online ART-05 reaches reflection",
+        "passed": true
+      },
+      {
+        "name": "Online ART-09 shows materials and SVG",
+        "passed": true
+      },
+      {
+        "name": "Online ART-09 reaches reflection",
+        "passed": true
+      },
+      {
+        "name": "Online art does not create a fourth progress course",
+        "passed": true
+      },
+      {
+        "name": "No runtime errors in online art and new games",
+        "passed": true
+      },
+      {
+        "name": "Offline reload loads app at subpath",
+        "passed": true
+      },
+      {
+        "name": "Offline reload preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline Vietnamese lesson opens with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "Production game works after offline cold reload",
+        "passed": true
+      },
+      {
+        "name": "Production offline game preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline production pattern accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline production odd accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline production count accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline production order accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline production art lists twelve lessons",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-03 shows materials and SVG",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-03 reaches reflection",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-05 shows materials and SVG",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-05 reaches reflection",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-09 shows materials and SVG",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-09 reaches reflection",
+        "passed": true
+      },
+      {
+        "name": "Offline art does not create a fourth progress course",
+        "passed": true
+      },
+      {
+        "name": "No recorded production offline runtime errors",
+        "passed": true
+      }
+    ],
+    "totalChecks": 43,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "earlierRuns": {
+    "initial": "Incomplete production run: 12 checks, one startup runtime check failed, pattern solver StopIteration; insufficient diagnostics to determine cause. Saved initial evidence; no source fix or attribution to cache.",
+    "diagnostic": "UI checks subsequently passed in fresh profile; runner failed reading diagnostics after closing Chrome. Fixed diagnostic capture order and reran all checks successfully."
+  },
+  "limits": [
+    "Art is an original introductory thematic compilation; not a full textbook-by-textbook mapping",
+    "No persisted/synced art progress, score, photos or study time",
+    "Chrome emulation; no physical-device or real-account Firebase E2E validation"
+  ]
+}

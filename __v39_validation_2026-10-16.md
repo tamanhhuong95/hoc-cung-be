@@ -39,3 +39,12 @@ Chưa có thử nghiệm sư phạm/làm sản phẩm thật với trẻ hoặc 
 Branch codex/thinking-playground; HEAD và main/origin/main lần kiểm tra: 3087c529d41fe90461449c5e62943eb143c67e9a (production V37). V38 và V39 chỉ local, chưa commit/push/deploy. File untracked ban đầu và tài liệu sau V37 giữ nguyên. Không reset dữ liệu, force push, thêm tracking/ads/dependency/framework hoặc EN-41+.
 
 Chi tiết __v39_validation_evidence.json; trạng thái git __v39_git_status.txt. Chạy tuần tự: py __run_browser_tests.py; py __run_art_browser.py; py __run_v39_pwa_smoke.py; py __run_english_responsive.py; py __audit_english_videos.py. Các runner version trước là lịch sử.
+
+
+## Production V39 đã xác minh — 16/10/2026
+
+V39 đã commit/push/deploy tại SHA 0c619526f247d34c712092a58c5a418c84102679. Pages run 38934671717 completed/success. Cả13 asset production HTTP200 và bytes khớp commit; cache hoc-cung-be-v39. Smoke production cuối43/43, fail0/runtime0/exit0: bài học cũ/dialog, cả5 trò,3 nhóm Mỹ thuật (ART-03/05/09), cold reload offline và dữ liệu sentinel giữ nguyên. Bằng chứng __v39_production_evidence.json; script tái hiện __run_v39_production_smoke.py dùng profile test riêng và URL production, không dùng profile của người dùng.
+
+Run đầu chưa đầy đủ, lỗi runtime startup và solver dừng, không đủ chẩn đoán để quy nguyên nhân; giữ __v39_production_initial_failure.json. Run chẩn đoán sau đó qua các kiểm tra UI nhưng ghi báo cáo sau đóng Chrome gây lỗi runner; đã sửa thứ tự và chạy lại đầy đủ đạt. Không sửa source hoặc hạ gate để bỏ lỗi. Gate trước phát hành32 suites/551 checks và browser237 vẫn là bằng chứng local, không thay số liệu production.
+
+Các đoạn chưa phát hành V38/V39 phía trên là lịch sử và được thay bằng trạng thái này. Mỹ thuật và5 trò đã online tại Lớp1; Mỹ thuật vẫn chỉ phiên RAM, chưa lưu/sync tiến độ. Nội dung SGK mới tham khảo ở mức chủ đề, chưa đối chiếu toàn bộ từng bài; chưa kiểm tra thiết bị thật, Firebase tài khoản thật hoặc sư phạm thực hành. Source phát hành giữ nguyên; tài liệu và bằng chứng sau deployment được cập nhật local chưa commit.
