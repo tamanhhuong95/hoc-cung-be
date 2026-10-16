@@ -1007,7 +1007,7 @@ async function runEnglishGrade1Tests() {
   test("V", english.levels.length === 40 && parentStatistics(blank).totalLevels === 40 && parentStatistics(oldProgress).opened >= 2);
   for (let attempt = 0; attempt < 40 && typeof window.HocCungBeCloudSync?.cloudPath !== "function"; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 50));
   test("W", window.HocCungBeCloudSync?.cloudPath?.("uid", "child", english.id) === "users/uid/children/child/progress/english-grade-1");
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v35"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v36"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
   test("Y", new Set(allQuestions.map((item) => item.type)).size >= 8 && ["choice", "image-choice", "listen-choice", "word-to-image", "match", "letter-order", "true-false", "animation-choice"].every((type) => allQuestions.some((item) => item.type === type)));
   const mediaPaths = english.levels.flatMap((item) => [item.media?.learn?.[0]?.src, item.media?.featured?.poster, item.media?.featured?.fallback]).filter(Boolean);
   try { const responses = await Promise.all([...new Set(mediaPaths)].map((path) => fetch(path, { cache: "no-store" }))); test("Z", responses.every((response) => response.ok)); } catch (error) { test("Z", false, String(error)); }
@@ -1021,7 +1021,7 @@ async function runEnglishGrade1Tests() {
   const videoQuestions = allQuestions.filter((item) => item.type === "video-choice");
   test("AF", videoQuestions.length === 5 && videoQuestions.every((item) => item.video?.webm.endsWith(".webm") && !item.video.ariaLabel.toLowerCase().includes(item.answer.toLowerCase())));
   try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.version === 2 && manifest.videoAssetsRequired === true && manifest.clips.length === 7 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v35" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v36" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
   if (previousCourse !== activeCourseId) setActiveCourse(previousCourse);
   return { passed: results.every((item) => item.passed), results };
 }
@@ -1086,3 +1086,163 @@ async function runBrandingTests() {
   return { passed: results.every((item) => item.passed), results };
 }
 window.__hocCungBeBrandingTests = runBrandingTests();
+
+// ==================== V36 Small UX / Retention ====================
+// Recommendations are derived from existing per-child, per-course progress only.
+(() => {
+  const $v36 = (selector, root = document) => root.querySelector(selector);
+  let pendingNavigation = null;
+  let allowingNavigation = false;
+  let refreshing = false;
+  let refreshTimer = null;
+
+  function recommendationForCourse(child, course, progress) {
+    if (!child?.id || !course?.id || !Array.isArray(course.levels)) return null;
+    const levels = course.levels;
+    const levelProgress = (level) => progress?.levels?.[level.id] || {};
+    const unlocked = levels.filter((level) => Boolean(levelProgress(level).unlocked));
+    if (!unlocked.length) return null;
+    const incomplete = unlocked.filter((level) => !levelProgress(level).completed && levelProgress(level).lastPlayedAt);
+    const recentIncomplete = incomplete.slice().sort((left, right) => String(levelProgress(right).lastPlayedAt || "").localeCompare(String(levelProgress(left).lastPlayedAt || "")))[0];
+    const completed = unlocked.filter((level) => levelProgress(level).completed).slice().sort((left, right) => String(levelProgress(right).lastPlayedAt || "").localeCompare(String(levelProgress(left).lastPlayedAt || "")))[0];
+    const nextAfterCompleted = completed ? (() => {
+      const index = levels.findIndex((level) => level.id === completed.id);
+      const next = levels[index + 1];
+      return next && levelProgress(next).unlocked ? next : null;
+    })() : null;
+    const level = recentIncomplete || nextAfterCompleted || unlocked[0];
+    if (!level || !levelProgress(level).unlocked) return null;
+    const reason = recentIncomplete ? "continue" : nextAfterCompleted ? "next" : "start";
+    return { courseId: course.id, topicId: level.topic, levelId: level.id, title: level.title, reason };
+  }
+
+  function getRecommendedNextLevel(child = activeChild(), course = activeCourse(), progress = loadProgress(localStorage, course?.id)) {
+    return recommendationForCourse(child, course, progress);
+  }
+
+  function getHomeRecommendation(child = activeChild()) {
+    if (!child?.id) return null;
+    const courses = window.HocCungBeLearning?.COURSES || COURSES;
+    const context = { topicId: selectedTopic, levelId: selectedLevelId };
+    try {
+    const candidates = Object.values(courses).map((course) => {
+      const progress = window.HocCungBeLearning?.loadProgressByCourse?.(course.id) || loadProgress(localStorage, course.id);
+      const recommendation = recommendationForCourse(child, course, progress);
+      const lastPlayedAt = Object.values(progress?.levels || {}).map((state) => state.lastPlayedAt || "").sort().at(-1) || "";
+      return recommendation ? { ...recommendation, courseName: course.name, lastPlayedAt } : null;
+    }).filter(Boolean);
+    return candidates.sort((left, right) => String(right.lastPlayedAt).localeCompare(String(left.lastPlayedAt)) || Number(right.courseId === activeCourseId) - Number(left.courseId === activeCourseId))[0] || null;
+    } finally { selectedTopic = context.topicId; selectedLevelId = context.levelId; }
+  }
+
+  function ensureV36Markup() {
+    const homeContent = $v36("#home-screen .hero__content");
+    if (homeContent && !$v36("#home-continue-card")) {
+      const card = document.createElement("section"); card.id = "home-continue-card"; card.className = "home-continue-card"; card.hidden = true; card.setAttribute("aria-labelledby", "home-continue-title");
+      card.innerHTML = '<p class="eyebrow">Hành trình của bé</p><h2 id="home-continue-title">Học tiếp</h2><p class="home-continue-card__context" id="home-continue-context"></p><p class="home-continue-card__lesson" id="home-continue-lesson"></p><button class="primary-button" id="home-continue-button" type="button">Học tiếp →</button>';
+      $v36("#home-auth-status")?.insertAdjacentElement("afterend", card);
+    }
+    const dashboard = $v36("#parent-dashboard-screen .parent-dashboard");
+    if (dashboard && !$v36("#parent-weekly-entry")) {
+      const entry = document.createElement("section"); entry.id = "parent-weekly-entry"; entry.className = "parent-section parent-weekly-entry";
+      entry.innerHTML = '<div><p class="eyebrow">Tổng quan tuần</p><h2>📅 Báo cáo tuần</h2><p>Xem thời gian học, bài đã hoàn thành và gợi ý luyện tập của bé trong tuần này.</p></div><button class="secondary-button" id="parent-weekly-entry-button" type="button" aria-controls="weekly-report">Xem Báo cáo tuần</button>';
+      $v36("#parent-summary")?.insertAdjacentElement("beforebegin", entry);
+    }
+    if (!$v36("#quiz-leave-dialog")) {
+      const dialog = document.createElement("div"); dialog.id = "quiz-leave-dialog"; dialog.className = "quiz-leave-dialog"; dialog.hidden = true;
+      dialog.innerHTML = '<section role="dialog" aria-modal="true" aria-labelledby="quiz-leave-title" aria-describedby="quiz-leave-message"><span aria-hidden="true">🧩</span><h2 id="quiz-leave-title">Con đang làm bài</h2><p id="quiz-leave-message">Rời bài bây giờ?</p><div class="quiz-leave-dialog__actions"><button class="secondary-button" id="quiz-leave-stay" type="button">Tiếp tục làm</button><button class="primary-button" id="quiz-leave-confirm" type="button">Rời bài</button></div></section>';
+      document.body.append(dialog);
+    }
+    const authCopy = $v36("#auth-gate .auth-gate-card p"); const authSmall = $v36("#auth-gate .auth-gate-card small");
+    if (authCopy) authCopy.textContent = "Bé được hoàn thành tối đa 2 bài học thử trên toàn ứng dụng, không phải 2 bài cho mỗi môn. Phụ huynh vui lòng đăng nhập hoặc đăng ký để bé tiếp tục học.";
+    if (authSmall) authSmall.textContent = "Đăng nhập để mở toàn bộ bài học và lưu, đồng bộ tiến độ theo tài khoản.";
+  }
+
+  function renderHomeContinue() {
+    ensureV36Markup(); const card = $v36("#home-continue-card"), child = activeChild(), recommendation = getHomeRecommendation(child);
+    if (!card || !child || !recommendation) { if (card) card.hidden = true; return null; }
+    card.hidden = false; $v36("#home-continue-context").textContent = `${child.name} · ${recommendation.courseName}`; $v36("#home-continue-lesson").textContent = `Bài: ${recommendation.title}`;
+    const button = $v36("#home-continue-button"); button.textContent = recommendation.reason === "start" ? "Bắt đầu học →" : "Học tiếp →"; button.dataset.courseId = recommendation.courseId; button.dataset.recommendedLevelId = recommendation.levelId; button.setAttribute("aria-label", `${button.textContent.replace(" →", "")}: ${recommendation.title}`);
+    return recommendation;
+  }
+
+  function renderLevelRecommendation() {
+    const grid = $v36("#level-grid"), recommendation = getRecommendedNextLevel(); if (!grid) return recommendation;
+    grid.querySelectorAll(".level-card__recommendation").forEach((node) => node.remove());
+    if (!recommendation) return null;
+    const card = grid.querySelector(`[data-level-id="${CSS.escape(recommendation.levelId)}"]`);
+    if (!card || card.disabled || card.classList.contains("is-locked")) return null;
+    const marker = document.createElement("span"); marker.className = "level-card__recommendation"; marker.textContent = "Bài nên học tiếp"; card.insertBefore(marker, card.firstChild); return recommendation;
+  }
+
+  function renderResultCtas() {
+    if (screens.result.hidden || !quiz?.level) return;
+    const progress = loadProgress(), next = getNextLevelInTopic(quiz.level.id), nextOpen = next && canAccessLevel(next.id, currentLearningUser, progress, loadGuestTrial());
+    const passed = quiz.score >= quiz.level.unlockScore, continueButton = elements.continueButton, retryButton = elements.retryButton;
+    if (continueButton.dataset.action === "auth") { continueButton.className = "primary-button"; retryButton.className = "secondary-button"; retryButton.textContent = "Ôn lại ↻"; return; }
+    if (!passed) {
+      retryButton.className = "primary-button"; retryButton.textContent = "Học lại để mở bài tiếp →"; continueButton.className = "secondary-button"; continueButton.textContent = "Về chủ đề"; continueButton.dataset.action = "topic";
+    } else if (nextOpen) {
+      continueButton.className = "primary-button"; continueButton.textContent = "Học bài tiếp theo →"; retryButton.className = "secondary-button"; retryButton.textContent = "Ôn lại ↻";
+    } else {
+      continueButton.className = "primary-button"; continueButton.textContent = "Về chủ đề"; continueButton.dataset.action = "topic"; retryButton.className = "secondary-button"; retryButton.textContent = "Ôn lại ↻";
+    }
+  }
+
+  function refreshV36Ui() {
+    if (refreshing) return;
+    clearTimeout(refreshTimer); refreshTimer = null; refreshing = true;
+    try {
+      ensureV36Markup();
+      if (!screens.home.hidden) renderHomeContinue();
+      if (!screens.levels.hidden) renderLevelRecommendation();
+      if (!screens.result.hidden) renderResultCtas();
+    } finally { refreshing = false; }
+  }
+  function quizInProgress() { return !screens.quiz.hidden && Boolean(quiz?.level) && screens.result.hidden; }
+  function targetLeavesQuiz(target) { return Boolean(target?.closest?.('[data-go], button[data-course], [data-level-id], #quiz-back-button, #learn-back-button, [data-function-action], [data-child-switch], [data-child-select], [data-child-close]')); }
+  function openLeaveDialog(trigger) { pendingNavigation = trigger; const dialog = $v36("#quiz-leave-dialog"); dialog.hidden = false; $v36("#quiz-leave-stay").focus(); }
+  function closeLeaveDialog(restoreFocus = true) {
+    const trigger = pendingNavigation; pendingNavigation = null;
+    const dialog = $v36("#quiz-leave-dialog"); if (dialog) dialog.hidden = true;
+    if (restoreFocus && trigger?.isConnected) trigger.focus();
+  }
+  document.addEventListener("keydown", (event) => {
+    const dialog = $v36("#quiz-leave-dialog"); if (!dialog || dialog.hidden) return;
+    if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeLeaveDialog(); return; }
+    if (event.key !== "Tab") return;
+    const first = $v36("#quiz-leave-stay"), last = $v36("#quiz-leave-confirm");
+    if (!dialog.contains(document.activeElement) || (event.shiftKey ? document.activeElement === first : document.activeElement === last)) {
+      event.preventDefault(); (event.shiftKey ? last : first).focus();
+    }
+  }, true);
+
+  document.addEventListener("click", (event) => {
+    if (allowingNavigation || !quizInProgress() || !targetLeavesQuiz(event.target)) return;
+    event.preventDefault(); event.stopImmediatePropagation(); openLeaveDialog(event.target.closest("button, a, [role=button]"));
+  }, true);
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("#quiz-leave-stay")) closeLeaveDialog();
+    if (event.target.closest("#quiz-leave-confirm")) { const target = pendingNavigation; closeLeaveDialog(false); if (target) { allowingNavigation = true; try { target.click(); } finally { allowingNavigation = false; } } }
+    const continueButton = event.target.closest("#home-continue-button"); if (continueButton) openLearningLevel(continueButton.dataset.courseId, continueButton.dataset.recommendedLevelId);
+    if (event.target.closest("#parent-weekly-entry-button")) { window.HocCungBeWeeklyReport?.renderCurrentReport?.(); const report = $v36("#weekly-report"); report?.scrollIntoView({ behavior: "smooth", block: "start" }); report?.setAttribute("tabindex", "-1"); report?.focus({ preventScroll: true }); }
+  });
+  const scheduleRefresh = () => { if (refreshing) return; clearTimeout(refreshTimer); refreshTimer = window.setTimeout(refreshV36Ui, 0); };
+  document.addEventListener("click", scheduleRefresh); window.addEventListener("hoc-cung-be:child-changed", scheduleRefresh); window.addEventListener("hoc-cung-be:course-changed", scheduleRefresh);
+  window.addEventListener("hoc-cung-be:auth-state", () => {
+    const card = $v36("#home-continue-card");
+    if (card) card.hidden = true;
+    scheduleRefresh();
+  });
+  window.addEventListener("hoc-cung-be:cloud-synced", scheduleRefresh);
+
+  ensureV36Markup(); refreshV36Ui();
+  window.HocCungBeV36 = { getRecommendedNextLevel, getHomeRecommendation, recommendationForCourse, refresh: refreshV36Ui };
+  const testChild = { id: "v36-child", name: "An" }, testCourse = { id: "v36-course", name: "V36", levels: [{ id: "one", topic: "a", title: "Bài một" }, { id: "two", topic: "a", title: "Bài hai" }] };
+  const none = recommendationForCourse(testChild, testCourse, { levels: { one: { unlocked: true }, two: { unlocked: false } } });
+  const passed = recommendationForCourse(testChild, testCourse, { levels: { one: { unlocked: true, completed: true, lastPlayedAt: "2026-10-15" }, two: { unlocked: true } } });
+  const childA = { id: "v36-A", name: "An" }, childB = { id: "v36-B", name: "Bình" }, childARecommendation = recommendationForCourse(childA, testCourse, { levels: { one: { unlocked: true, completed: true }, two: { unlocked: true } } }), childBRecommendation = recommendationForCourse(childB, testCourse, { levels: { one: { unlocked: true }, two: { unlocked: false } } });
+  const lockedOnly = recommendationForCourse(testChild, testCourse, { levels: { one: { unlocked: false }, two: { unlocked: false } } });
+  const v36Results = [{ id: "A. unlocked-only recommendation", passed: none?.levelId === "one" }, { id: "B. completed lesson advances to unlocked next", passed: passed?.levelId === "two" }, { id: "C. active child required", passed: recommendationForCourse(null, testCourse, {}) === null }, { id: "D. locked levels are never recommended", passed: lockedOnly === null }, { id: "E. child recommendations stay isolated", passed: childARecommendation?.levelId === "two" && childBRecommendation?.levelId === "one" }, { id: "F. V36 DOM affordances", passed: Boolean($v36("#home-continue-card") && $v36("#quiz-leave-dialog") && $v36("#parent-weekly-entry")) }, { id: "G. guest wording is app-wide", passed: $v36("#auth-gate")?.textContent.includes("trên toàn ứng dụng") }, { id: "H. guest progress wording is safe", passed: $v36("#auth-gate")?.textContent.includes("lưu, đồng bộ tiến độ theo tài khoản") }, { id: "I. leave dialog has both actions", passed: Boolean($v36("#quiz-leave-stay") && $v36("#quiz-leave-confirm")) }, { id: "J. progress version remains two", passed: PROGRESS_VERSION === 2 }];
+  window.__hocCungBeV36UxTests = { passed: v36Results.every((item) => item.passed), results: v36Results };
+})();

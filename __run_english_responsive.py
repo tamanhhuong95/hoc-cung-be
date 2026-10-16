@@ -26,11 +26,17 @@ frame.addEventListener("load", async () => {
   try {
     win.localStorage.removeItem("hoc-cung-be:guest-trial");
     win.dispatchEvent(new win.CustomEvent("hoc-cung-be:auth-state", { detail: { user: null } }));
+    check(Boolean(document.querySelector("#home-continue-card")), "V36 Home continue card is missing");
     click('[data-go="grade1"]');
     const courseCards = [...document.querySelectorAll('#grade1-screen button[data-course]')];
     check(courseCards.length === 3, `Expected 3 course cards, got ${courseCards.length}`);
     check(courseCards.every((node) => { const rect = node.getBoundingClientRect(); return rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.right <= win.innerWidth; }), "Course card overflow/touch target invalid");
+    click('button[data-course="math-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); click("#quiz-back-button");
+    check(!document.querySelector("#quiz-leave-dialog").hidden, "V36 leave-quiz confirmation did not open"); click("#quiz-leave-stay");
+    check(!document.querySelector("#quiz-screen").hidden, "V36 leave-quiz stay action did not retain quiz"); click("#quiz-back-button"); click("#quiz-leave-confirm");
+    check(!document.querySelector("#levels-screen").hidden, "V36 leave-quiz confirm action did not leave quiz"); click('#levels-screen .back-button'); click('#math-screen .back-button[data-go="grade1"]');
     click('button[data-course="english-grade-1"]'); click("#topic-grid button"); click("#level-grid button");
+    check(document.querySelectorAll(".level-card__recommendation").length <= 1, "More than one V36 level recommendation marker");
     check(!document.querySelector("#learn-screen").hidden, "English Learn not visible");
     const media = document.querySelector("#learn-featured-media"), begin = document.querySelector("#begin-practice-button"), en08 = win.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-08");
     win.renderEnglishMedia(media, en08.media.featured, en08.title);
@@ -55,6 +61,7 @@ frame.addEventListener("load", async () => {
     const progresses = { "math-grade-1": { levels: { [win.HocCungBeLearning.COURSES["math-grade-1"].levels[0].id]: { unlocked: true } }, history: [], studyTime: { studyTimeByDate: { "2026-10-12": 600 } } }, "vietnamese-grade-1": { levels: { [win.HocCungBeLearning.COURSES["vietnamese-grade-1"].levels[0].id]: { unlocked: true } }, history: [], studyTime: { studyTimeByDate: {} } }, "english-grade-1": dashboardProgress };
     const weekly = win.HocCungBeWeeklyReport.buildWeeklyReport({ child: { id: "responsive-child", name: "Minh" }, progresses, courses: win.HocCungBeLearning.COURSES, now: new Date(2026, 9, 14, 10) });
     win.HocCungBeWeeklyReport.renderWeeklyReport(weekly);
+    check(document.querySelector("#parent-weekly-entry button")?.textContent.includes("Báo cáo tuần"), "V36 Weekly Report entry missing");
     const skillSection = document.querySelector("#english-skill-analytics"), skillCards = [...document.querySelectorAll(".english-skill-card")], skillGrid = document.querySelector(".english-skill-grid");
     check(skillSection && !skillSection.hidden && skillCards.length === 4, "English skill dashboard did not render four cards");
     check(skillCards.every((node) => { const rect = node.getBoundingClientRect(); return rect.left >= 0 && rect.right <= win.innerWidth; }), "Skill card horizontal overflow");

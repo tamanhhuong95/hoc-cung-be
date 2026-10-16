@@ -23,7 +23,7 @@ DIAGNOSTIC = ROOT / "__browser_test_diagnostic.json"
 CHROME = pathlib.Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 DEBUG_PORT = 9342
 HTTP_PORT = 8767
-MIN_CHECKS = 350
+MIN_CHECKS = 466
 CHROME_STDERR = pathlib.Path(tempfile.gettempdir()) / f"hoc-cung-be-chrome-{uuid.uuid4().hex}.stderr.txt"
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -53,6 +53,7 @@ window.addEventListener("load", async () => {
     ["Math counting", "__hocCungBeCountingQuestionTests"],
     ["V34 original-content audit", "__hocCungBeContentPilotTests"],
     ["V35 quality fixes", "__hocCungBeV35QualityFixTests"],
+    ["V36 small UX and retention", "__hocCungBeV36UxTests"],
     ["Math geometry and sequences", "__hocCungBeGeometryAndSequenceTests"],
     ["Audio and speech", "__hocCungBeAudioAndSpeechTests"],
     ["Mascot and results", "__hocCungBeMascotAndResultTests"],
@@ -81,7 +82,14 @@ window.addEventListener("load", async () => {
   window.__hcbRegressionState.pendingHooks = registry.filter(([, hook]) => !hookReady(hook)).map(([suite, hook]) => ({ suite, hook, exists: hook in window, pending: window[hook]?.pending === true }));
   const state = () => ({ activeScreen: [...document.querySelectorAll(".screen")].find((screen) => !screen.hidden)?.id || null, course: document.body.dataset.course || null, authenticated: document.body.dataset.authenticated || null, topics: document.querySelectorAll("#topic-grid button").length, levels: document.querySelectorAll("#level-grid button").length, answers: document.querySelectorAll("#answer-grid button").length, quizHidden: document.querySelector("#quiz-screen")?.hidden });
   const isQuiz = () => { const screen = document.querySelector("#quiz-screen"); return Boolean(screen && !screen.hidden && document.querySelectorAll("#answer-grid button").length === 4 && document.querySelector("#question-count")?.textContent.includes("1 / 5")); };
-  const click = (selector, root = document) => { const node = root.querySelector(selector); if (!node) throw new Error(`Missing clickable element: ${selector}`); if (node.disabled) throw new Error(`Clickable element is disabled: ${selector}`); node.click(); return node; };
+  const click = (selector, root = document) => { const node = root.querySelector(selector); if (!node) throw new Error(`Missing clickable element: ${selector}`); if (node.disabled) throw new Error(`Clickable element is disabled: ${selector}`); node.click();
+    const dialog = document.querySelector("#quiz-leave-dialog");
+    if (dialog && !dialog.hidden && !node.closest("#quiz-leave-dialog")) {
+      if (document.querySelector("#quiz-screen").hidden) throw new Error("Quiz left before confirmation");
+      document.querySelector("#quiz-leave-confirm").click();
+      if (!dialog.hidden) throw new Error("Leave confirmation did not close dialog");
+    }
+    return node; };
   const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
   const expectScreen = (screenId, label) => { const actual = state(); if (actual.activeScreen !== screenId) throw new Error(`${label}: expected ${screenId}, got ${JSON.stringify(actual)}`); };
   const resetScreen = () => { click('[data-go="home"]'); expectScreen("home-screen", "reset screen"); };
@@ -104,8 +112,88 @@ window.addEventListener("load", async () => {
     if (courseId === "english-grade-1") { expectScreen("learn-screen", "English Learn"); click("#begin-practice-button"); }
     if (!isQuiz()) throw new Error(`${courseId} did not transition to quiz: ${JSON.stringify(state())}`);
   };
+
+  const runV36InteractionTests = async () => {
+    const results = [], test = async (id, fn) => { try { await wait(0); await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    const recommend = window.HocCungBeV36.recommendationForCourse;
+    const child = { id: "v36-test" }, course = { id: "test", levels: [{ id: "a", topic: "t" }, { id: "b", topic: "t" }, { id: "c", topic: "t" }] };
+    await test("A. New child recommendation says start", () => { if (recommend(child, course, { levels: { a: { unlocked: true } } }).reason !== "start") throw new Error("New child was labelled continue"); });
+    await test("B. Unplayed incomplete does not override next after latest completion", () => { const got = recommend(child, course, { levels: { a: { unlocked: true }, b: { unlocked: true, completed: true, lastPlayedAt: "2026-10-15" }, c: { unlocked: true } } }); if (got.levelId !== "c" || got.reason !== "next") throw new Error(JSON.stringify(got)); });
+    await test("C. Recently played incomplete has priority", () => { const got = recommend(child, course, { levels: { a: { unlocked: true, lastPlayedAt: "2026-10-14" }, b: { unlocked: true, completed: true, lastPlayedAt: "2026-10-15" }, c: { unlocked: true } } }); if (got.levelId !== "a" || got.reason !== "continue") throw new Error(JSON.stringify(got)); });
+    await test("D. Leave dialog stay and confirm preserve attempt history", () => {
+      resetGuest(); enterQuiz("math-grade-1");
+      const history = JSON.stringify(window.eval("loadProgress().history"));
+      document.querySelector("#quiz-back-button").click();
+      const dialog = document.querySelector("#quiz-leave-dialog");
+      if (dialog.hidden || document.querySelector("#quiz-screen").hidden) throw new Error("Navigation escaped before confirmation");
+      document.querySelector("#quiz-leave-stay").click();
+      if (!dialog.hidden || document.querySelector("#quiz-screen").hidden) throw new Error("Stay action failed");
+      document.querySelector("#quiz-back-button").click(); document.querySelector("#quiz-leave-confirm").click();
+      expectScreen("levels-screen", "V36 confirmed back");
+      if (!dialog.hidden || JSON.stringify(window.eval("loadProgress().history")) !== history) throw new Error("Partial attempt persisted or dialog remained open");
+    });
+    await test("E. New child Home CTA says start", () => { resetGuest(); signedIn(); window.HocCungBeV36.refresh(); const card = document.querySelector("#home-continue-card"), button = document.querySelector("#home-continue-button"); if (card.hidden || !button.textContent.includes("Bắt đầu học")) throw new Error("New child Home CTA invalid"); });
+    await test("F. Home CTA switches course before opening recommended lesson", () => {
+      const originalLoad = window.HocCungBeLearning.loadProgressByCourse;
+      try {
+        window.eval('setActiveCourse("math-grade-1"); showScreen("home")');
+        window.HocCungBeLearning.loadProgressByCourse = (courseId) => { const progress = originalLoad(courseId); if (courseId === "english-grade-1") progress.levels[window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels[0].id].lastPlayedAt = "2026-10-16T10:00:00"; return progress; };
+        window.HocCungBeV36.refresh(); const button = document.querySelector("#home-continue-button");
+        if (button.dataset.courseId !== "english-grade-1") throw new Error("Latest course was not recommended");
+        button.click(); expectScreen("learn-screen", "Home English CTA"); if (document.body.dataset.course !== "english-grade-1") throw new Error("Home CTA retained wrong course");
+      } finally { window.HocCungBeLearning.loadProgressByCourse = originalLoad; }
+    });
+    await test("G. Home refresh is bounded and preserves course/topic/level", async () => {
+      resetGuest(); signedIn();
+      const before = window.eval('(() => { setActiveCourse("math-grade-1"); selectedTopic = Object.keys(TOPICS)[1]; selectedLevelId = getLevelsByTopic(selectedTopic)[0].id; return JSON.stringify([activeCourseId, selectedTopic, selectedLevelId]); })()');
+      let changes = 0; const listener = () => { changes += 1; }; window.addEventListener("hoc-cung-be:course-changed", listener);
+      try { window.HocCungBeV36.refresh(); await wait(120); if (changes > 4) throw new Error(`Refresh scheduled recursively: ${changes} course changes`); if (window.eval('JSON.stringify([activeCourseId, selectedTopic, selectedLevelId])') !== before) throw new Error("Recommendation read changed learning context"); }
+      finally { window.removeEventListener("hoc-cung-be:course-changed", listener); }
+    });
+    const resultFixture = (score, finalLevel = false) => {
+      resetGuest(); signedIn(); enterQuiz("math-grade-1");
+      window.eval(`(() => { if (${finalLevel}) { quiz.level = getLevelsByTopic(selectedTopic).at(-1); selectedLevelId = quiz.level.id; } quiz.score = ${score}; quiz.correct = ${score} / 20; const progress = loadProgress(); const next = getNextLevelInTopic(quiz.level.id); if (next) progress.levels[next.id].unlocked = ${score} >= 80; localStorage.setItem(progressStorageKey(), JSON.stringify(progress)); showScreen("result"); renderResult(progress); })()`);
+      window.HocCungBeV36.refresh();
+    };
+    await test("H. Below 80 result prioritizes retry", () => { resultFixture(40); const retry = document.querySelector("#retry-button"), next = document.querySelector("#continue-button"); if (!retry.classList.contains("primary-button") || !retry.textContent.includes("Học lại để mở bài tiếp") || next.dataset.action !== "topic") throw new Error("Below-80 CTA invalid"); });
+    await test("I. Passing result offers unlocked next lesson", () => { resultFixture(80); const next = document.querySelector("#continue-button"); if (!next.classList.contains("primary-button") || !next.textContent.includes("Học bài tiếp theo") || next.dataset.action !== "next" || !document.querySelector("#retry-button").textContent.includes("Ôn lại")) throw new Error("Passing CTA invalid"); });
+    await test("J. Final lesson offers topic and review", () => { resultFixture(100, true); const next = document.querySelector("#continue-button"); if (!next.classList.contains("primary-button") || next.textContent !== "Về chủ đề" || next.dataset.action !== "topic") throw new Error("Final CTA invalid"); });
+    await test("K. Exhausted guest retains login continuation", () => {
+      resetGuest(); enterQuiz("math-grade-1"); window.eval('(() => { saveGuestTrial({ completedLevelIds: ["counting-1", "counting-2"] }); quiz.score = 100; quiz.correct = 5; const progress = loadProgress(); progress.levels["counting-2"].unlocked = true; localStorage.setItem(progressStorageKey(), JSON.stringify(progress)); showScreen("result"); renderResult(progress); })()');
+      window.HocCungBeV36.refresh(); const next = document.querySelector("#continue-button");
+      if (document.querySelector("#trial-result-gate").hidden || next.dataset.action !== "auth" || !next.textContent.includes("Đăng nhập")) throw new Error("V36 replaced exhausted guest login CTA");
+    });
+    await test("L. Login event refreshes Home without an extra click", async () => {
+      resetGuest(); await wait(30); signedIn(); await wait(30);
+      if (document.querySelector("#home-continue-card").hidden || !document.querySelector("#home-continue-context").textContent.includes("Bé Test")) throw new Error("Login left the child recommendation hidden or stale");
+    });
+    await test("M. Logout event hides child recommendation without an extra click", async () => {
+      resetGuest(); signedIn(); window.HocCungBeV36.refresh();
+      if (document.querySelector("#home-continue-card").hidden) throw new Error("Signed-in fixture has no recommendation");
+      window.dispatchEvent(new CustomEvent("hoc-cung-be:auth-state", { detail: { user: null } })); await wait(30);
+      if (!document.querySelector("#home-continue-card").hidden) throw new Error("Logout retained the previous child's visible recommendation");
+    });
+    await test("N. Cloud sync restores recommendation marker after level re-render", async () => {
+      resetGuest(); signedIn(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); click("#topic-grid button"); await wait(30);
+      if (document.querySelectorAll("#level-grid .level-card__recommendation").length !== 1) throw new Error("Initial recommendation marker missing");
+      window.dispatchEvent(new CustomEvent("hoc-cung-be:cloud-synced")); await wait(30);
+      if (document.querySelectorAll("#level-grid .level-card__recommendation").length !== 1) throw new Error("Cloud sync removed the recommendation marker");
+    });
+    await test("O. Leave dialog traps Tab and Escape restores quiz focus", () => {
+      resetGuest(); enterQuiz("math-grade-1"); const back = document.querySelector("#quiz-back-button"); back.click();
+      const dialog = document.querySelector("#quiz-leave-dialog"), stay = document.querySelector("#quiz-leave-stay"), leave = document.querySelector("#quiz-leave-confirm");
+      if (document.activeElement !== stay) throw new Error("Dialog did not focus stay action");
+      leave.focus(); leave.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true }));
+      if (document.activeElement !== stay) throw new Error("Tab escaped the modal");
+      stay.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true }));
+      if (document.activeElement !== leave) throw new Error("Shift+Tab escaped the modal");
+      leave.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+      if (!dialog.hidden || document.querySelector("#quiz-screen").hidden || document.activeElement !== back) throw new Error("Escape did not retain quiz and restore focus");
+    });
+    return { passed: results.every((item) => item.passed), results };
+  };
   const runEnglishInteractionTests = async () => {
-    const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    const results = [], test = async (id, fn) => { try { await wait(0); await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
     await test("A. English course opens Learn before Practice", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="english-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); expectScreen("learn-screen", "English Learn"); if (!document.querySelector("#learn-word-grid button") || document.querySelectorAll("#learn-word-grid button").length < 3) throw new Error("English Learn cards missing"); });
     await test("B. English Learn audio control is clickable", () => { const button = click("#learn-word-grid button"); if (!button.getAttribute("aria-label")?.startsWith("Nghe")) throw new Error("Learn audio aria-label missing"); });
     await test("C. English Practice renders four choices", () => { click("#begin-practice-button"); if (!isQuiz()) throw new Error(`English Practice invalid: ${JSON.stringify(state())}`); });
@@ -116,7 +204,7 @@ window.addEventListener("load", async () => {
     return { passed: results.every((item) => item.passed), results };
   };
   const runEnglishVideoTests = async () => {
-    const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    const results = [], test = async (id, fn) => { try { await wait(0); await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
     const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json());
     const loadMetadata = async (src, poster) => { const response = await fetch(src, { cache: "no-store" }), blob = await response.blob(), url = URL.createObjectURL(blob); return new Promise((resolve, reject) => { const video = document.createElement("video"); video.preload = "metadata"; video.poster = poster; video.playsInline = true; video.muted = true; video.onloadedmetadata = () => { const result = { duration: video.duration, width: video.videoWidth, height: video.videoHeight, readyState: video.readyState, error: video.error }; URL.revokeObjectURL(url); video.remove(); resolve(result); }; video.onerror = () => { URL.revokeObjectURL(url); video.remove(); reject(new Error(`Media error ${video.error?.code || "unknown"}: ${src}`)); }; video.src = url; document.body.append(video); video.load(); video.play().catch(() => {}); }); };
     await test("A. Seven real WebM files have valid MIME, EBML signature and size budget", async () => { if (manifest.version !== 2 || manifest.clips.length !== 7) throw new Error("v30 media manifest invalid"); const responses = await Promise.all(manifest.clips.map((clip) => fetch(clip.webm, { cache: "no-store" }))); const bodies = await Promise.all(responses.map((response) => response.arrayBuffer())); responses.forEach((response, index) => { const bytes = new Uint8Array(bodies[index]), clip = manifest.clips[index], signature = [...bytes.slice(0, 4)].map((value) => value.toString(16).padStart(2, "0")).join(""); if (!response.ok || !response.headers.get("content-type")?.includes("video/webm") || signature !== "1a45dfa3" || bytes.length <= 0 || bytes.length >= 2 * 1024 * 1024 || !clip.available) throw new Error(`${clip.levelId}: status=${response.status} mime=${response.headers.get("content-type")} signature=${signature} bytes=${bytes.length}`); }); if (bodies.reduce((sum, body) => sum + body.byteLength, 0) >= 4 * 1024 * 1024) throw new Error("Combined video budget exceeded"); });
@@ -125,11 +213,11 @@ window.addEventListener("load", async () => {
     await test("D. Missing video switches to animation and poster fallback without crash", () => { const host = document.createElement("div"), clip = manifest.clips[0]; document.body.append(host); renderEnglishMedia(host, { type: "video", available: false, poster: clip.poster, fallback: clip.fallbackImage, animationFallback: clip.animationFallback, ariaLabel: "Fallback test" }, "Fallback test"); if (host.querySelector("video") || !host.querySelector(".english-animation") || !host.querySelector(".english-media-poster")) throw new Error("Fallback state invalid"); host.remove(); });
     await test("E. Video quiz cues do not expose answer text", () => { const questions = window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.flatMap((item) => item.questions).filter((item) => item.type === "video-choice"); if (questions.length !== 5) throw new Error(`Expected 5 video questions, got ${questions.length}`); questions.forEach((question) => { const host = document.createElement("div"); renderEnglishMedia(host, question.video, "Video question"); if (host.textContent.toLowerCase().includes(question.answer.toLowerCase()) || host.querySelector("video")?.getAttribute("aria-label").toLowerCase().includes(question.answer.toLowerCase())) throw new Error(`Quiz answer leaked: ${question.id}`); }); });
     await test("F. Video component attributes and replay controls are present", () => { const host = document.createElement("div"), media = window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-08").media.featured; renderEnglishMedia(host, media, "Greetings"); const video = host.querySelector("video"), source = host.querySelector("source"); if (!video?.controls || !video.playsInline || video.preload !== "metadata" || !video.poster || !video.getAttribute("aria-label") || source?.type !== "video/webm") throw new Error("Video attributes invalid"); });
-    await test("G. Offline runtime video cache and v35 remain configured", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); if (sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v35" || !sw.includes('"./weekly-report.js"') || sw.includes("assets/english-grade-1/videos/") || !sw.includes('request.destination === "video"') || !sw.includes("cacheMediaRange") || !sw.includes("caches.match(request.url")) throw new Error("Offline video runtime cache invalid"); });
+    await test("G. Offline runtime video cache and v36 remain configured", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); if (sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v36" || !sw.includes('"./weekly-report.js"') || sw.includes("assets/english-grade-1/videos/") || !sw.includes('request.destination === "video"') || !sw.includes("cacheMediaRange") || !sw.includes("caches.match(request.url")) throw new Error("Offline video runtime cache invalid"); });
     return { passed: results.every((item) => item.passed), results };
   };
   const runCanEnterQuizTests = async () => {
-    const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    const results = [], test = async (id, fn) => { try { await wait(0); await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
     await test("A. Guest can open first Math lesson", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); click("#topic-grid button"); if (document.querySelector("#levels-screen").hidden || !document.querySelector("#level-grid button")) throw new Error(`Math first lesson did not open: ${JSON.stringify(state())}`); });
     await test("B. Guest can start Math quiz", () => { resetGuest(); enterQuiz("math-grade-1"); });
     await test("C. Guest can open first Vietnamese lesson", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); click("#topic-grid button"); if (document.querySelector("#levels-screen").hidden || !document.querySelector("#level-grid button")) throw new Error(`Vietnamese first lesson did not open: ${JSON.stringify(state())}`); });
@@ -140,7 +228,7 @@ window.addEventListener("load", async () => {
     await test("H. Missing cloud progress does not block start", () => { resetGuest(); signedIn(); localStorage.removeItem("hoc-cung-be:progress:testchild01:math-grade-1"); localStorage.removeItem("hoc-cung-be:progress:testchild01:vietnamese-grade-1"); enterQuiz("vietnamese-grade-1"); });
     await test("I. Course switch Math → Vietnamese → Math still starts quiz", () => { resetGuest(); signedIn(); enterQuiz("math-grade-1"); click("#quiz-back-button"); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); if (!isQuiz()) throw new Error("Vietnamese did not start after switch"); click("#quiz-back-button"); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); if (!isQuiz()) throw new Error("Math did not restart after switch"); });
     await test("J. Refresh then start quiz works", () => { if (!isQuiz()) throw new Error("Refresh flow is executed by a dedicated fresh runner navigation"); });
-    await test("K. v35 app shell includes required modules and shared artwork", async () => { const required = ["./script.js", "./learning-analytics.js", "./weekly-report.js", "./child-settings.js", "./parent-auth.js", "./child-profiles.js", "./data/vietnamese-grade-1.js", "./assets/backgrounds/van-mieu-quoc-tu-giam.webp", "./assets/english-grade-1/images/review-2.webp"]; const text = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (text.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v35" || !required.every((path) => text.includes(`"${path}"`))) throw new Error("v35 app shell is incomplete"); });
+    await test("K. v36 app shell includes required modules and shared artwork", async () => { const required = ["./script.js", "./learning-analytics.js", "./weekly-report.js", "./child-settings.js", "./parent-auth.js", "./child-profiles.js", "./data/vietnamese-grade-1.js", "./assets/backgrounds/van-mieu-quoc-tu-giam.webp", "./assets/english-grade-1/images/review-2.webp"]; const text = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (text.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v36" || !required.every((path) => text.includes(`"${path}"`))) throw new Error("v36 app shell is incomplete"); });
     await test("L. Math Back stays on Grade 1", async () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); expectScreen("math-screen", "Math course"); click('#math-screen .back-button[data-go="grade1"]'); expectScreen("grade1-screen", "Math Back immediate"); await wait(1100); expectScreen("grade1-screen", "Math Back stable"); });
     await test("M. Vietnamese Back stays on Grade 1", async () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); expectScreen("math-screen", "Vietnamese course"); click('#math-screen .back-button[data-go="grade1"]'); expectScreen("grade1-screen", "Vietnamese Back immediate"); await wait(1100); expectScreen("grade1-screen", "Vietnamese Back stable"); });
     await test("N. Math quiz stays visible and Quiz Back returns to levels", async () => { resetGuest(); enterQuiz("math-grade-1"); await wait(1100); expectScreen("quiz-screen", "Math quiz stable"); click("#quiz-back-button"); expectScreen("levels-screen", "Quiz Back immediate"); await wait(1100); expectScreen("levels-screen", "Quiz Back stable"); });
@@ -149,7 +237,7 @@ window.addEventListener("load", async () => {
     return { passed: results.every((item) => item.passed), results };
   };
   const runAuthFunctionBackgroundTests = async () => {
-    const results = [], test = async (id, fn) => { try { await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
+    const results = [], test = async (id, fn) => { try { await wait(0); await fn(); results.push({ id, passed: true }); } catch (error) { results.push({ id, passed: false, error: String(error?.stack || error) }); } };
     const visibleNode = (node) => { if (!node) return false; for (let current = node; current; current = current.parentElement) { const style = getComputedStyle(current); if (current.hidden || style.display === "none" || style.visibility === "hidden") return false; } return true; };
     const visible = (selector) => visibleNode(document.querySelector(selector));
     const homeText = (selector) => document.querySelector(selector)?.textContent.trim() || "";
@@ -230,7 +318,7 @@ window.addEventListener("load", async () => {
     await test("X. Hidden backdrop does not intercept clicks", () => { const backdrop = document.querySelector("#function-menu-backdrop"), style = getComputedStyle(backdrop); if (!backdrop.hidden || (style.display !== "none" && style.pointerEvents !== "none")) throw new Error(`Hidden backdrop intercepts: ${style.display}/${style.pointerEvents}`); });
     await test("Y. prefers-reduced-motion exists", async () => { const css = await fetch("styles.css", { cache: "no-store" }).then((r) => r.text()); if (!css.includes("@media (prefers-reduced-motion: reduce)")) throw new Error("Reduced motion CSS missing"); });
     await test("Z. Background clarity and overlays are tuned", async () => { const [response, css] = await Promise.all([fetch("assets/backgrounds/van-mieu-quoc-tu-giam.webp", { cache: "no-store" }), fetch("styles.css", { cache: "no-store" }).then((r) => r.text())]), bytes = new Uint8Array(await response.arrayBuffer()), signature = String.fromCharCode(...bytes.slice(0, 4)) + String.fromCharCode(...bytes.slice(8, 12)); const expected = ["filter: none", "opacity: .72", "rgba(251, 252, 255, .18)", "rgba(251, 252, 255, .72)", "rgba(255,255,255,.90)", "rgba(255,255,255,.93)", "pointer-events: none"]; if (!response.ok || signature !== "RIFFWEBP" || bytes.length < 250000 || bytes.length > 500000 || !expected.every((value) => css.includes(value))) throw new Error(`WebP/background CSS invalid: ${signature}, ${bytes.length}`); });
-    await test("AA. Background WebP is in v35 APP_SHELL", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v35"') || !sw.includes('"./weekly-report.js"') || !sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"')) throw new Error("v35 APP_SHELL is invalid"); });
+    await test("AA. Background WebP is in v36 APP_SHELL", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v36"') || !sw.includes('"./learning-analytics.js"') || !sw.includes('"./weekly-report.js"') || !sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"')) throw new Error("v36 APP_SHELL is invalid"); });
     await test("AB. No old double-extension references", async () => { const files = ["index.html", "styles.css", "script.js", "child-settings.js", "service-worker.js", "README.md", "__run_browser_tests.py"], forbidden = ".webp" + ".png"; const texts = await Promise.all(files.map((path) => fetch(path, { cache: "no-store" }).then((r) => r.text()))); if (texts.some((text) => text.includes(forbidden))) throw new Error("Old double extension remains"); });
     await test("AC. Math navigation passes", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); expectScreen("math-screen", "Math navigation"); });
     await test("AD. Vietnamese navigation passes", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); expectScreen("math-screen", "Vietnamese navigation"); if (document.body.dataset.course !== "vietnamese-grade-1") throw new Error("Vietnamese course not active"); });
@@ -250,9 +338,9 @@ window.addEventListener("load", async () => {
     try { suites[suiteName] = await Promise.resolve(window[hook]); }
     catch (error) { suites[suiteName] = { passed: false, error: String(error), results: [{ id: "suite", passed: false }] }; }
   }
+  suites["V36 interaction and recommendation"] = await runV36InteractionTests();
   suites["Can Enter Quiz"] = await runCanEnterQuizTests();
   suites["English Learn and interaction flow"] = await runEnglishInteractionTests();
-  suites["English real video media"] = await runEnglishVideoTests();
   // A clean navigation validates that no state from the flow tests is required for entry.
   if (!location.search.includes("fresh-quiz")) {
     location.replace(`${location.pathname}?fresh-quiz=1`);
@@ -264,38 +352,54 @@ window.addEventListener("load", async () => {
   suites["Can Enter Quiz"].results = suites["Can Enter Quiz"].results.filter((item) => !item.id.startsWith("J." )).concat(freshQuiz);
   suites["Can Enter Quiz"].passed = suites["Can Enter Quiz"].results.every((item) => item.passed);
   suites["Auth, function menu, shared background and required navigation"] = await runAuthFunctionBackgroundTests();
+  suites["English real video media"] = await runEnglishVideoTests();
   const all = Object.entries(suites).flatMap(([suite, value]) => asChecks(value).map((check) => ({ suite, ...check })));
   const failed = all.filter((item) => item && item.passed === false);
   missingSuites.forEach((item) => runtimeErrors.push({ type: "missing-suite", message: `${item.suite}: ${item.hook}` }));
-  if (all.length < 350) runtimeErrors.push({ type: "incomplete-coverage", message: `Expected at least 350 checks, got ${all.length}` });
+  if (all.length < 466 || Object.keys(suites).length < 29) runtimeErrors.push({ type: "incomplete-coverage", message: `Expected at least 29 suites / 466 checks, got ${Object.keys(suites).length} / ${all.length}` });
   const realExitCode = failed.length || runtimeErrors.length || missingSuites.length ? 1 : 0;
   window.__hcbRegressionState = { ...window.__hcbRegressionState, stage: "L. report extraction", suitesComplete: true, suiteCount: Object.keys(suites).length, totalChecks: all.length, failedCount: failed.length, runtimeErrorCount: runtimeErrors.length, missingSuites };
   document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ realExitCode, suiteCount: Object.keys(suites).length, suiteNames: Object.keys(suites), total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, missingSuites })}</pre>`;
+  await fetch("/__regression_report", { method: "POST", headers: { "Content-Type": "application/json" }, body: document.querySelector("#test-output").textContent });
 });
 </script>
 '''
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def do_POST(self):
+        if self.path != "/__regression_report":
+            self.send_error(404)
+            return
+        length = int(self.headers.get("Content-Length", "0"))
+        if length <= 0 or length > 2000000:
+            self.send_error(400)
+            return
+        self.server.regression_report = self.rfile.read(length).decode("utf-8")
+        self.send_response(204)
+        self.end_headers()
+
     def log_message(self, *_args):
         pass
 
 
 class Cdp:
     def __init__(self, url):
-        self.ws = websockets.sync.client.connect(url, open_timeout=10)
+        self.ws = websockets.sync.client.connect(url, open_timeout=10, ping_interval=None, max_queue=None)
         self.next_id = 0
 
     def call(self, method, params=None):
         self.next_id += 1
         request_id = self.next_id
         self.ws.send(json.dumps({"id": request_id, "method": method, "params": params or {}}))
-        while True:
-            message = json.loads(self.ws.recv(timeout=20))
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            message = json.loads(self.ws.recv(timeout=max(0.1, deadline - time.monotonic())))
             if message.get("id") != request_id:
                 continue
             if "error" in message:
                 raise RuntimeError(f"{method}: {message['error']}")
             return message.get("result", {})
+        raise TimeoutError(f"CDP request exceeded 20 seconds: {method}")
 
     def evaluate(self, expression):
         result = self.call("Runtime.evaluate", {"expression": expression, "returnByValue": True})
@@ -332,7 +436,7 @@ def wait_for_server(server, server_thread, timeout=15):
             raise RuntimeError("Local test server stopped before browser startup")
         try:
             responses = [requests.get(url, timeout=1) for url in urls]
-            if all(response.status_code == 200 for response in responses) and "hoc-cung-be-v35" in responses[1].text:
+            if all(response.status_code == 200 for response in responses) and "hoc-cung-be-v36" in responses[1].text:
                 return responses
             last_error = RuntimeError(f"Unexpected readiness status: {[response.status_code for response in responses]}")
         except requests.RequestException as error:
@@ -396,10 +500,6 @@ def print_final_summary(summary):
 
 
 def main():
-    preserved_files = {
-        path: path.read_bytes() if path.exists() else None
-        for path in (REPORT, DIAGNOSTIC)
-    }
     summary = {
         "RUNNER_STAGE": "A. Python startup", "PYTHON_EXCEPTION": "none",
         "PORT_8767_IN_USE": False, "PORT_8767_OWNER": None, "SERVER_READY": False,
@@ -461,21 +561,21 @@ def main():
 
         summary["RUNNER_STAGE"] = "I. runner page navigation"
         cdp.call("Page.navigate", {"url": f"http://127.0.0.1:{HTTP_PORT}/{RUNNER.name}"})
-        deadline = time.time() + 55
+        deadline = time.time() + 120
         report_text = None
         while time.time() < deadline:
             summary["RUNNER_STAGE"] = "J-K. suite hooks and async suites"
-            report_text = cdp.evaluate("document.querySelector('#test-output')?.textContent || null")
+            report_text = getattr(server, "regression_report", None)
             if report_text:
                 break
             time.sleep(0.1)
-        summary["PAGE_READY"] = cdp.evaluate("document.readyState") == "complete"
+        summary["PAGE_READY"] = bool(report_text)
         if not report_text:
             diagnostic = browser_diagnostic(cdp)
             summary["SUITE_HOOKS_READY"] = bool(diagnostic.get("runnerState", {}).get("hooksReady"))
             DIAGNOSTIC.write_text(json.dumps(diagnostic, ensure_ascii=False, indent=2), encoding="utf-8")
             print("BROWSER_DIAGNOSTIC=" + json.dumps(diagnostic, ensure_ascii=False))
-            raise RuntimeError("Chrome did not produce test output within 55 seconds")
+            raise RuntimeError("Chrome did not produce test output within 120 seconds")
 
         summary["RUNNER_STAGE"] = "L. report extraction"
         report = json.loads(report_text)
@@ -489,7 +589,7 @@ def main():
         print(json.dumps(report, ensure_ascii=False, indent=2))
 
         summary["RUNNER_STAGE"] = "M. coverage guard"
-        summary["COVERAGE_GUARD_FAILED"] = summary["TOTAL_CHECKS"] < MIN_CHECKS
+        summary["COVERAGE_GUARD_FAILED"] = summary["TOTAL_CHECKS"] < MIN_CHECKS or summary["SUITE_COUNT"] < 29
         summary["REAL_EXIT_CODE"] = 1 if report.get("realExitCode", 1) or summary["COVERAGE_GUARD_FAILED"] else 0
     except BaseException as error:
         if isinstance(error, KeyboardInterrupt):
@@ -539,14 +639,6 @@ def main():
             RUNNER.unlink(missing_ok=True)
         except OSError as error:
             print(f"CLEANUP_RUNNER_ERROR={type(error).__name__}: {error}", file=sys.stderr)
-        for path, original_content in preserved_files.items():
-            try:
-                if original_content is None:
-                    path.unlink(missing_ok=True)
-                else:
-                    path.write_bytes(original_content)
-            except OSError as error:
-                print(f"CLEANUP_PRESERVED_FILE_ERROR={path}: {type(error).__name__}: {error}", file=sys.stderr)
         for attempt in range(10):
             try:
                 CHROME_STDERR.unlink(missing_ok=True)

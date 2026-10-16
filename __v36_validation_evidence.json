@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-16",
+  "documentVersion": "VAL-1.1",
+  "software": "V36 RC local",
+  "baselineHead": "f5fbebe5aa035522eb69bfbb45b41459805e95dd",
+  "previousValidation": {
+    "suiteCount": 29,
+    "totalChecks": 462,
+    "source": "__v36_validation_before_review.json"
+  },
+  "regression": {
+    "realExitCode": 0,
+    "suiteCount": 29,
+    "suiteNames": [
+      "Math clock",
+      "Math five-question lessons",
+      "Math progress compatibility",
+      "Math counting",
+      "V34 original-content audit",
+      "V35 quality fixes",
+      "V36 small UX and retention",
+      "Math geometry and sequences",
+      "Audio and speech",
+      "Mascot and results",
+      "Parent dashboard",
+      "Dynamic curriculum",
+      "Guest Trial",
+      "Multi-course and Vietnamese",
+      "English Grade 1 EN-01 to EN-40",
+      "English skill analytics",
+      "Parent Weekly Report",
+      "PWA and offline",
+      "Branding and icons",
+      "Parent Auth, verification, recovery, password and phone",
+      "Child Profiles",
+      "Cloud Sync",
+      "Parent PIN and feedback",
+      "Child Settings and cross-course limits",
+      "V36 interaction and recommendation",
+      "Can Enter Quiz",
+      "English Learn and interaction flow",
+      "Auth, function menu, shared background and required navigation",
+      "English real video media"
+    ],
+    "total": 466,
+    "failedCount": 0,
+    "failed": [],
+    "runtimeErrorCount": 0,
+    "runtimeErrors": [],
+    "missingSuites": []
+  },
+  "smoke": {
+    "checks": [
+      {
+        "name": "Physical click enters quiz",
+        "passed": true
+      },
+      {
+        "name": "Physical Back opens leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Tab cycles inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Shift Tab cycles backwards inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Escape retains quiz and restores opener focus",
+        "passed": true
+      },
+      {
+        "name": "Physical Stay retains quiz and closes dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Leave reaches level list",
+        "passed": true
+      },
+      {
+        "name": "Service worker controls GitHub Pages-style subpath",
+        "passed": true
+      },
+      {
+        "name": "V36 cache exists",
+        "passed": true
+      },
+      {
+        "name": "No recorded online interaction runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Offline reload loads app at subpath",
+        "passed": true
+      },
+      {
+        "name": "Offline reload preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline Vietnamese lesson opens with physical clicks",
+        "passed": true
+      }
+    ],
+    "totalChecks": 13,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "audit": {
+    "checks": 85,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "static": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\Admin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--check",
+        "script.js"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "py",
+        "-m",
+        "py_compile",
+        "__run_browser_tests.py",
+        "__run_english_responsive.py",
+        "__run_v36_smoke.py"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "--",
+        "parent-auth.js",
+        "child-profiles.js",
+        "firestore.rules",
+        "cloud-sync.js",
+        "data",
+        "index.html"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "sha256": {
+    "script.js": "e013e3046413235f075ecf02dc0872e0363ed54a32cd392932da527315b98a99",
+    "styles.css": "cecdd88db05ef5bd12766da9b335ca1e694cd3edd878296742c71482620aa158",
+    "service-worker.js": "37549a0f24ef3f39ca76c26d4883d333efe4789a882b4446578410cec86ed7cf",
+    "child-settings.js": "dcea48298f70f729fc0c0d48997cede33f1b9f1831862ec275b89ae58187d5cd",
+    "parent-tools.js": "615b4d7da2aa30e1aea0976d65301072035a29cde7e764fa0207e483b6fc5f8a",
+    "__run_browser_tests.py": "a1c9db8632d539c5e66c2bdfda82a6b76f70fc08049def767bf14c1c163203f6",
+    "__run_english_responsive.py": "d9f30c70bc77bb721d611b9c874fb4e7911cfee0e5ec825cb0ea49bc165382f2",
+    "__audit_english_videos.py": "c4ba67f3a56b531ca2a1544ab2f6fe8f3d51c83d950ca52b71deadd6e9fe7525",
+    "__run_v36_smoke.py": "8c47b8ec2c453eef1b5d7bf0c631b04c31ee50a6fe7241b0a489f3bd11a4118a"
+  },
+  "git": {
+    "branch": "main",
+    "head": "f5fbebe5aa035522eb69bfbb45b41459805e95dd",
+    "originMainLocalRef": "f5fbebe5aa035522eb69bfbb45b41459805e95dd",
+    "statusShort": "M README.md\n M __audit_english_videos.py\n M __run_browser_tests.py\n M __run_english_responsive.py\n M child-settings.js\n M parent-tools.js\n M script.js\n M service-worker.js\n M styles.css\n?? \"New folder/\"\n?? PROJECT_MEMORY_CURRENT.md\n?? __english_responsive_report.json\n?? __post_v35_ux_retention_review.md\n?? __run_v36_smoke.py\n?? __v34_content_quality_review.json\n?? __v34_content_quality_review.md\n?? __v36_keyboard_failure_before_fix.json\n?? __v36_mobile_offline.png\n?? __v36_prior_timeout_diagnostic.json\n?? __v36_review_failure_before_fix.json\n?? __v36_smoke_report.json\n?? __v36_validation_2026-10-16.md\n?? __v36_validation_before_review.json\n?? __v36_validation_evidence.json\n?? __video_audit_report.json"
+  },
+  "commit": false,
+  "push": false,
+  "deploy": false
+}
