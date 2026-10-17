@@ -3,8 +3,8 @@
 // Local-first Firestore sync. Only the whitelisted learning payload below is sent to cloud.
 (() => {
   const STORAGE_KEY = "hoc-cung-be:math-grade-1-progress";
-  const SUPPORTED_COURSE_IDS = ["math-grade-1", "vietnamese-grade-1", "english-grade-1", "math-grade-2", "vietnamese-grade-2", "english-grade-2"];
-  const COURSE_IDS = SUPPORTED_COURSE_IDS.filter(id=>id.endsWith("grade-1") || window.HOC_CUNG_BE_GRADE2?.cloudSyncEnabled===true);
+  const SUPPORTED_COURSE_IDS = Object.keys(window.HocCungBeLearning.COURSES);
+  const COURSE_IDS = SUPPORTED_COURSE_IDS.filter(id=>id.endsWith("grade-1"));
   const DIRTY_KEY = "hoc-cung-be:cloud-sync-pending";
   const LAST_SYNC_KEY = "hoc-cung-be:last-cloud-sync";
   const SYNC_DEBOUNCE_MS = 5000;
@@ -70,9 +70,9 @@
 
   function lastSyncForCurrentUser(courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const childId = activeChildId(); return user && childId && validObject(saved) ? saved[`${user.uid}:${childId}:${courseId}`] || null : null; }
   function setLastSync(value, childId = activeChildId(), courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const map = validObject(saved) ? saved : {}; if (user && childId) map[`${user.uid}:${childId}:${courseId}`] = value; safeSet(LAST_SYNC_KEY, JSON.stringify(map)); }
-  function statusText(status) { return ({ syncing: "Đang đồng bộ...", synced: "Đã đồng bộ", pending: "Chưa đồng bộ", offline: "Không có mạng", error: "Lỗi đồng bộ", guest: "Đăng nhập để đồng bộ", "local-only": "Lớp 2: đang lưu trên thiết bị" })[status] || "Chưa đồng bộ"; }
+  function statusText(status) { return ({ syncing: "Đang đồng bộ...", synced: "Đã đồng bộ", pending: "Chưa đồng bộ", offline: "Không có mạng", error: "Lỗi đồng bộ", guest: "Đăng nhập để đồng bộ", "local-only": "Lớp 2–5: đang lưu trên thiết bị" })[status] || "Chưa đồng bộ"; }
   function renderStatus(status = lastStatus) {
-    if(window.HocCungBeLearning?.getActiveCourseId?.().endsWith("grade-2") && !window.HOC_CUNG_BE_GRADE2?.cloudSyncEnabled) status="local-only";
+    if(!COURSE_IDS.includes(window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1")) status="local-only";
     else if(status==="local-only")status=user?"pending":"guest";
     lastStatus = status; document.querySelectorAll("[data-cloud-sync-status]").forEach((element) => { element.textContent = statusText(status); element.dataset.state = status; });
     document.querySelectorAll("[data-cloud-sync-time]").forEach((element) => { const value = lastSyncForCurrentUser(); element.textContent = value ? `Lần đồng bộ gần nhất: ${new Date(value).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" })}` : "Lần đồng bộ gần nhất: Chưa có"; });
@@ -90,7 +90,7 @@
 
   async function syncNow(reason = "manual", requestedCourseId = null) {
     const childId = activeChildId();
-    if(requestedCourseId?.endsWith("grade-2") && !window.HOC_CUNG_BE_GRADE2?.cloudSyncEnabled){renderStatus("local-only");return null;}
+    if(requestedCourseId && !COURSE_IDS.includes(requestedCourseId)){renderStatus("local-only");return null;}
     if (!cloudReady(user, firestore, db, childId)) { renderStatus("guest"); return null; }
     if (!navigator.onLine) { markPending(); renderStatus("offline"); return null; }
     const courseIds = requestedCourseId ? [requestedCourseId] : COURSE_IDS;

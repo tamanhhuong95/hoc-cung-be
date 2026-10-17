@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v41";
+const CACHE_NAME = "hoc-cung-be-v42";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -16,6 +16,9 @@ const APP_SHELL = [
   "./grade2-curriculum.js",
   "./grade2-art-data.js",
   "./grade2.css",
+  "./upper-curriculum.js",
+  "./upper-language.js",
+  "./upper-art.js",
   "./art-studio.css",
   "./learning-analytics.js",
   "./weekly-report.js",

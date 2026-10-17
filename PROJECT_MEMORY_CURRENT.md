@@ -1,6 +1,6 @@
 # Project Memory hiện hành — Học Cùng Bé
 
-Tài liệu PM-6.2,17/10/2026 UTC+7. Production đã xác minh trước nhiệm vụ: V40 SHA f189ffa8fa34e23988a929eec04cdbd60adae734. Local V41 bốn môn lớp2 chưa commit/phát hành, sync lớp2 đang tắt. Xem mục V41 cuối tài liệu; giữ phần cũ làm lịch sử.
+Tài liệu PM-6.4,17/10/2026 UTC+7. Production đã xác minh trước: V41 SHA ac9cc771942f5ae1074bd7da1c730198b66569d1. Local V42 lớp3/4/5 chưa commit/phát hành; lớp2–5 chỉ lưu thiết bị. Xem mục V42 cuối tài liệu; giữ phần cũ làm lịch sử.
 
 ## Quyết định và trạng thái xác minh
 
@@ -134,3 +134,45 @@ Giới hạn: chưa đánh giá sư phạm với giáo viên/trẻ, gấp thủ 
 ## Phê duyệt phát hành V41 — 17/10/2026
 
 Chủ dự án yêu cầu “phát hành” sau bàn giao bốn môn lớp2. Đã đối chiếu toàn bộ hash source/runner với gate34 suites/597 checks, browser277, PWA13, responsive3, audit85 đạt; origin/main vẫn V40 f189ffa. Cho phép commit/push/deploy bản hiện có với tiến độ lớp2 chỉ lưu thiết bị và metadata hồ sơ backend hiện hành. Không suy rộng thành duyệt sửa/deploy Firestore rules hoặc bật sync lớp2. Production V41 chỉ được xác nhận sau deployment và smoke riêng. Các mục chưa phát hành ở trên là lịch sử trước quyết định này.
+
+
+## Production V41 đã xác minh — 17/10/2026
+
+V41 đã commit/push/deploy tại SHA ac9cc771942f5ae1074bd7da1c730198b66569d1. GitHub Pages run39001923922 completed/success. Cả17 asset production HTTP200 và bytes khớp commit; cache hoc-cung-be-v41. Smoke production99/99, fail0/runtime0/exit0: bốn môn lớp2 online/offline, ba môn mở bài đúng curriculum, Learn tiếng Anh, cả8 dự án Mỹ thuật tới tự nhận xét, bài học/dialog/game/Mỹ thuật lớp1 cũ và sentinel local giữ nguyên. Kiểm tra Chrome profile riêng, không mở/xóa dữ liệu người dùng.
+
+Bằng chứng __v41_production_evidence.json, __v41_production_assets.json và v41_production_smoke_report.json; runner __run_v41_production_smoke.py. Gate34 suites/597 checks, browser277, PWA13, responsive3 và audit85 là bằng chứng trước phát hành đã đối chiếu hash, không thay bằng số liệu production. Những đoạn V41 chưa phát hành ở trên là lịch sử và được thay bằng mục này.
+
+Tiến độ lớp2 vẫn chỉ lưu thiết bị, cloudSyncEnabled=false; Firestore rules/schema và metadata child grade giữ nguyên, chưa áp dụng proposal hoặc Firebase E2E. Bộ bài nhập môn56 bài/240 câu/32 bước Mỹ thuật chưa phải trọn năm hay đối chiếu toàn bộ SGK; Speaking chỉ participation/accuracy=null, chưa thử sư phạm/thiết bị vật lý/gấp sản phẩm thật. Mỹ thuật chỉ phiênRAM. Bước tiếp theo: review nội dung cùng giáo viên/phụ huynh; phê duyệt và kiểm chứng rules/backend riêng nếu mở sync/hồ sơ lớp2.
+
+Main/HEAD/origin/main cùng SHA phát hành tại lúc kiểm tra. Source đã phát hành không đổi; README/Project Memory/bàn giao và bằng chứng hậu triển khai cập nhật local, chưa tạo commit tài liệu thứ hai. Untracked cũ giữ nguyên. Nếu cần quay lại, tạo commit revert V41 có cache phát hành mới, giữ nguyên localStorage và không reset dữ liệu; V40 ổn định trước là f189ffa8fa34e23988a929eec04cdbd60adae734. Chưa thực hiện rollback.
+
+
+## V42 local — lớp3, lớp4, lớp5, 17/10/2026
+
+Chủ dự án yêu cầu tiếp tục lớp3/4/5; giữ phạm vi bốn môn như lớp2. Mỗi lớp có12 bài Toán,8 Tiếng Việt,8 Tiếng Anh,6 Mỹ thuật: tổng102 bài mới/420 câu/18 dự án/78 bước SVG. Đây là bộ bài nhập môn tự biên soạn, không phải chương trình trọn năm hay bản đối chiếu đầy đủ từng trang của ba SGK. Không lấy bài lớp2 đổi nhãn; giữ nguyên dữ liệu/nội dung/ID các lớp trước, không có EN-41+.
+
+Toán3: số đến100.000, cấu tạo số, cộng/trừ, nhân/chia/chia dư, phần của số, chu vi/diện tích, thời gian, bài toán hai bước. Toán4: số lớn, nhân/chia hai chữ số, phân số cùng mẫu/phân số bằng nhau, trung bình cộng, đơn vị diện tích, góc/đường thẳng, tổng-hiệu. Toán5: thập phân, phần trăm, diện tích tam giác/hình thang, chu vi tròn, thể tích hộp và chuyển động. Mỗi lớp6 nhóm Toán với2 bài/nhóm, đúng4/5=80% mở bài tiếp theo như engine cũ.
+
+Tiếng Việt có24 đoạn văn gốc riêng, nội dung đọc hiểu, ý chính, hoạt động/tính từ/đọc kỹ câu trích. Chưa có chấm viết đoạn văn, giọng đọc hoặc đầy đủ mạch kiến thức cả năm. Tiếng Anh có24 bài riêng, Learn→Practice, từ/câu tăng độ khó theo lớp. Listening dùng TTS, phụ thuộc giọng và offline của trình duyệt; chưa có bộ video/audio riêng lớp3–5. Writing chỉ nhận biết chữ/thứ tự từ qua trắc nghiệm; Speaking là participation/coverage, accuracy=null, không chấm phát âm.
+
+Mỹ thuật: bố cục phố/cây, xa-gần/sắc độ/cảm xúc, mặt nạ trưng bày, ghép giấy, khung ảnh, áp phích, tranh nổi, bìa sổ, quạt/hoa giấy/mô hình hộp. Có vật liệu, an toàn, bước trước-sau, zoom, chọn bước và tự nhận xét. Hình khai triển hộp sáu mặt và bảy tai dán được vẽ riêng; chưa cắt/gấp sản phẩm vật lý, cần người lớn review và hỗ trợ. Sơ đồ mang tính hướng dẫn/gợi ý bố cục, không chứng minh kết quả làm thật. Toàn bộ Mỹ thuật chỉ RAM, không lưu điểm/ảnh/tiến độ/thời gian hoặc chuyển tự nhận xét thành năng lực.
+
+Ứng dụng có15 course đánh giá, storage vẫn theo trẻ/môn, progressVersion=2 và migration/merge/scoring/unlock cũ giữ nguyên. Home, back về đúng lớp, parent selector15 môn, summary của lớp đang chọn, daily-limit cộng đủ các môn, weekly15 môn và English từng lớp tách riêng. Cloud chỉ whitelist3 môn lớp1; lớp2–5 lưu thiết bị, nút sync khóa và có giải thích. RequestedCourse không thuộc whitelist bị chặn trước khi gọi backend. Không đổi/deploy Firestore rules/schema, metadata hồ sơ child vẫn theo backend cũ; chưa tạo grade3/4/5 trong hồ sơ hoặc tự di chuyển dữ liệu.
+
+Gate cuối: regression35 suites/668 checks, fail0/runtime0/missing=[]/exit0; thao tác thật lớp3–5/PWA/offline/responsive 174/174, runtime[]/exit0, catalog/quiz/EnglishLearn/art ở375×812/768×1024/1280×900, tất cả18 dự án trênmobile và offline; actualV41→V42 upgrade/browser 277/277, fail/runtime0/exit0, dữ liệu /10/history/thời gian/quota/sentinel giữ nguyên; responsive lớp1/2 cũ3/3 exit0; media/PWA/security audit85/85 exit0; syntax và git diff --check exit0. Tất cả dùng hồ sơ test riêng, không reset dữ liệu thật. Kiểm tra mới gồm60% không mở/80% mở, UI hoàn thành4/5 mỗi9 môn, phân biệt30 khóa của2 trẻ×15 môn, context read/save không đổi lựa chọn/phát course event, toán oracle, đoạn đọc gốc, English accuracy=null, chặn cloud lớp3–5 và weekly tách lớp.
+
+Run đầu chỉ thiếu assertion registry cũ (đếm6 toàn app); đã giữ kiểm tra6 môn lớp1/2 và thêm kiểm tra15 toàn ứng dụng, không bỏ suite. Giữ __v42_before_registry_update.json. Runner chụp ảnh desktop gặp giới hạn frame1MiB, sửa transport16MiB và cleanup rồi chạy lại; bằng chứng __v42_capture_transport_before_fix.txt. Đã phát hiện listener runtime bị mất sau offline reload, thêm Page.addScriptToEvaluateOnNewDocument và gate yêu cầu capture là mảng rỗng; report trước sửa __v42_runtime_capture_before_fix.json chỉ là bằng chứng chưa hoàn chỉnh, không dùng kết luận runtime0. Không quy lỗi runner thành lỗi ứng dụng/cache và không hạ gate.
+
+File mới: upper-curriculum.js, upper-language.js, upper-art.js; runner __run_upper_browser.py, __run_upper_upgrade.py, __run_upper_responsive.py. Tích hợp index.html/script.js, art-studio.js, child-profiles.js, cloud-sync.js, learning-analytics.js, weekly-report.js, grade2.css; cache/precache candidate hoc-cung-be-v42 và các assertion liên quan. child-settings vẫn lấy tất cả course cho giới hạn, chỉ literal cache đổi. README/Project Memory/bàn giao cập nhật; thay đổi tài liệu hậu phát hành V41 có sẵn và untracked cũ giữ nguyên. Các source/curriculum lớp1/2 không bị ghi đè. Hash và kết quả __v42_validation_evidence.json; git status __v42_git_status.txt.
+
+Nguồn đối chiếu mới chỉ cấp danh mục/giới thiệu, không nhận đã bám đầy đủ ba bộ SGK: https://sachdientu.nxbgd.vn/ ; https://taphuan.nxbgd.vn/tap-huan/chi-tiet-sach/toan-3-tap-mot-939748183.939748183 . Hướng dẫn và câu hỏi do nhóm tự biên soạn, không chép đoạn sách hoặc hình có bản quyền.
+
+Branch codex/grades-three-to-five; HEAD/origin/main vẫn ac9cc771942f5ae1074bd7da1c730198b66569d1. V42 chưa commit/push/deploy; quyền phát hành V41 không suy rộng sang V42. Production được xác minh lần trước làV41, chưa kiểm tra production mới trong nhiệm vụ này. Preview http://127.0.0.1:8786/ → Lớp3/4/5. Chưa kiểm thử giáo viên/trẻ, gấp sản phẩm vật lý, thiết bị thật/Safari/FirebaseE2E. Tiếp theo: review bài và giao diện local, phát hành khi được duyệt; mở cloud/hồ sơ lớp mới cần phạm vi backend phê duyệt riêng.
+
+
+Bổ sung kiểm chứng cuối: báo cáo English lớp2–5 thiếu lịch sử nay hiện “Chưa đủ dữ liệu”, không điền0 hoạt động. Test ban đầu dùng toàn bộ tuần rỗng nên renderer hợp lệ trả global empty state trước các section; đã đổi fixture sang có hoạt động Toán nhưng thiếu English để kiểm tra đúng trạng thái thiếu từng môn, giữ failure tại __v42_empty_week_fixture_before_fix.json. Full35 suites/668 checks chạy lại sau sửa fixture/source và đạt. Physical174/upgrade277 kiểm tra điều hướng, bài học, cache và dữ liệu trước chỉnh empty-report này; final regression kiểm tra riêng thay đổi báo cáo mới.
+
+
+## Phê duyệt phát hành V42 — 17/10/2026
+
+Chủ dự án yêu cầu “phát hành đi” sau bàn giao lớp3/4/5. Đã đối chiếu hash toàn bộ source/runner với gate35 suites/668 checks, physical174, upgrade277, responsive3, audit85 đạt; origin/main vẫn V41 ac9cc77. Cho phép commit/push/deploy bản hiện có. Lớp2–5 vẫn chỉ lưu thiết bị; không suy rộng thành duyệt sửa/deploy Firestore rules, đổi metadata child hoặc bật cloud các lớp này. Production V42 chỉ xác nhận sau deployment và smoke riêng. Những mục chưa phát hành phía trên là lịch sử trước quyết định này.

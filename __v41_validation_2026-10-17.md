@@ -28,3 +28,14 @@ Giới hạn: chưa đánh giá sư phạm với giáo viên/trẻ, gấp thủ 
 ## Phê duyệt phát hành V41 — 17/10/2026
 
 Chủ dự án yêu cầu “phát hành” sau bàn giao bốn môn lớp2. Đã đối chiếu toàn bộ hash source/runner với gate34 suites/597 checks, browser277, PWA13, responsive3, audit85 đạt; origin/main vẫn V40 f189ffa. Cho phép commit/push/deploy bản hiện có với tiến độ lớp2 chỉ lưu thiết bị và metadata hồ sơ backend hiện hành. Không suy rộng thành duyệt sửa/deploy Firestore rules hoặc bật sync lớp2. Production V41 chỉ được xác nhận sau deployment và smoke riêng. Các mục chưa phát hành ở trên là lịch sử trước quyết định này.
+
+
+## Production V41 đã xác minh — 17/10/2026
+
+V41 đã commit/push/deploy tại SHA ac9cc771942f5ae1074bd7da1c730198b66569d1. GitHub Pages run39001923922 completed/success. Cả17 asset production HTTP200 và bytes khớp commit; cache hoc-cung-be-v41. Smoke production99/99, fail0/runtime0/exit0: bốn môn lớp2 online/offline, ba môn mở bài đúng curriculum, Learn tiếng Anh, cả8 dự án Mỹ thuật tới tự nhận xét, bài học/dialog/game/Mỹ thuật lớp1 cũ và sentinel local giữ nguyên. Kiểm tra Chrome profile riêng, không mở/xóa dữ liệu người dùng.
+
+Bằng chứng __v41_production_evidence.json, __v41_production_assets.json và v41_production_smoke_report.json; runner __run_v41_production_smoke.py. Gate34 suites/597 checks, browser277, PWA13, responsive3 và audit85 là bằng chứng trước phát hành đã đối chiếu hash, không thay bằng số liệu production. Những đoạn V41 chưa phát hành ở trên là lịch sử và được thay bằng mục này.
+
+Tiến độ lớp2 vẫn chỉ lưu thiết bị, cloudSyncEnabled=false; Firestore rules/schema và metadata child grade giữ nguyên, chưa áp dụng proposal hoặc Firebase E2E. Bộ bài nhập môn56 bài/240 câu/32 bước Mỹ thuật chưa phải trọn năm hay đối chiếu toàn bộ SGK; Speaking chỉ participation/accuracy=null, chưa thử sư phạm/thiết bị vật lý/gấp sản phẩm thật. Mỹ thuật chỉ phiênRAM. Bước tiếp theo: review nội dung cùng giáo viên/phụ huynh; phê duyệt và kiểm chứng rules/backend riêng nếu mở sync/hồ sơ lớp2.
+
+Main/HEAD/origin/main cùng SHA phát hành tại lúc kiểm tra. Source đã phát hành không đổi; README/Project Memory/bàn giao và bằng chứng hậu triển khai cập nhật local, chưa tạo commit tài liệu thứ hai. Untracked cũ giữ nguyên. Nếu cần quay lại, tạo commit revert V41 có cache phát hành mới, giữ nguyên localStorage và không reset dữ liệu; V40 ổn định trước là f189ffa8fa34e23988a929eec04cdbd60adae734. Chưa thực hiện rollback.

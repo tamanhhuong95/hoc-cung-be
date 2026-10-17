@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-17",
+  "candidate": "V42 local",
+  "branch": "codex/grades-three-to-five",
+  "HEAD": "ac9cc771942f5ae1074bd7da1c730198b66569d1",
+  "originMain": "ac9cc771942f5ae1074bd7da1c730198b66569d1",
+  "scope": {
+    "grades": [
+      3,
+      4,
+      5
+    ],
+    "perGrade": {
+      "mathLessons": 12,
+      "vietnameseLessons": 8,
+      "englishLessons": 8,
+      "artProjects": 6
+    },
+    "newLessons": 102,
+    "questions": 420,
+    "artSteps": 78
+  },
+  "regression": {
+    "suiteCount": 35,
+    "total": 668,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "missingSuites": [],
+    "realExitCode": 0
+  },
+  "upperPhysical": {
+    "totalChecks": 174,
+    "failedCount": 0,
+    "runtimeErrors": [],
+    "realExitCode": 0
+  },
+  "upgrade": {
+    "baselineSha": "ac9cc771942f5ae1074bd7da1c730198b66569d1",
+    "totalChecks": 277,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "audit": {
+    "totalChecks": 85,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "sourceSha256": {
+    "upper-curriculum.js": "fc6d243c7d82f1f0f1e4cd5186a6c5927342a0e72aa22579aabbeb128a81dff9",
+    "upper-language.js": "014098cb588326eadbe3a2a56d34d2d451ac6d1382d88ab23648737435d0ebe6",
+    "upper-art.js": "f919cbbc153d94dc1fae8036b76053c244c22a83025552c23db615b97e75173e",
+    "script.js": "3accb3980c2db97183129c1659894d58125a207b8eff3e3d65627fa08d142369",
+    "index.html": "9177ad4ad9f0cf3e210bc1607043e8538a38fceee8b625b141f7591e5744e66d",
+    "grade2.css": "1d0973bc66e3260cdfa4fe3143eebada1aa032551f45a7a1cdd28c71913409bd",
+    "art-studio.js": "b4d34fc783df73d4e63ed5bb9dd0afcc41d4d605b5e193428be9282ca001c90a",
+    "learning-analytics.js": "c0379c709d731439adebdd58ec4faaadc198de3a32483148c4a6665151ccb754",
+    "weekly-report.js": "fbaba86102df4fdb5fda2ffec8ebed62f6bd1d236664cb5d0392cd3df7f1eef4",
+    "child-profiles.js": "1a5595652fe13e5d5ed5dc235a1d90087b85c0030c40511e990fde8528e4b839",
+    "child-settings.js": "594c55534914287f3bcf17806f2f01eebe1aee5b61b54f2ce99468c8d37f04b6",
+    "cloud-sync.js": "9a9bf821a3c7fc01212ad15c61ec53c356c234dd544dd92846baf0f32afefcdc",
+    "parent-tools.js": "75ad957a7d936d8c077e503bec05697abe4a3a35b279437d0e123da6bf85ef69",
+    "service-worker.js": "42d6155cc58abfc9fea8919fe1a91a0448ac38740484d4b1d43a587b15239d5c",
+    "__run_browser_tests.py": "7cd3aad4ec26372899be6767919d8dc01f7df78d98542eba921d991e567c89da",
+    "__run_upper_browser.py": "244cfa5d3847c2212023369846b4657accbda82ec41dc64f0d5ec692906de9a2",
+    "__run_upper_upgrade.py": "7129d934ee62d734a1aad2f7a464a7505d3dc9fbf16e2ad73039fd84a4ba37a3",
+    "__run_upper_responsive.py": "e9315501461cd2502492ca609ee69c78e5d71bc73f9b8bc3e7f1b779d8e26d6a",
+    "__audit_english_videos.py": "8b9b24c6c2d7bd008fffdc538610074ed058d539b25e7f576987d5851c32a148"
+  },
+  "firestoreRulesChanged": false,
+  "cloudCourseIds": [
+    "math-grade-1",
+    "vietnamese-grade-1",
+    "english-grade-1"
+  ],
+  "committed": false,
+  "pushed": false,
+  "deployed": false
+}

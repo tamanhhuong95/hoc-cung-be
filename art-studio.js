@@ -84,10 +84,10 @@
   window.addEventListener('hoc-cung-be:auth-state',e=>{const next=e.detail?.user?.uid||null;if(next!==uid)reset();uid=next;});
   data.sources.forEach(s=>{const li=document.createElement('li'),a=text('a',s.title);a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';li.append(a,text('p',s.scope));$('#art-sources').append(li);});
   function setGrade(grade){
-    const next=grade==="grade-2"?window.HOC_CUNG_BE_ART_GRADE2:gradeOneData;if(!next)return false;reset();data=next;group="all";renderCards();
-    const two=data.grade==="grade-2";$('#art-title').textContent=two?"Xưởng sáng tạo lớp 2":"Xưởng sắc màu của bé";
-    screen.querySelector('.page-intro .eyebrow').textContent=two?"🎨 Mỹ thuật lớp 2":"🎨 Mỹ thuật lớp 1";
-    screen.querySelector('.page-intro .back-button').dataset.go=two?"grade2":"grade1";screen.querySelector('.page-intro .back-button').textContent=two?"← Về lớp 2":"← Về lớp 1";
+    const next=grade==="grade-1"?gradeOneData:grade==="grade-2"?window.HOC_CUNG_BE_ART_GRADE2:window.HOC_CUNG_BE_UPPER_ART?.[Number(grade.split("-").at(-1))];if(!next)return false;reset();data=next;group="all";renderCards();
+    const two=data.grade!==undefined&&data.grade!=="grade-1";const number=data.grade?.split("-").at(-1)||"1";$('#art-title').textContent=two?`Xưởng sáng tạo lớp ${number}`:"Xưởng sắc màu của bé";
+    screen.querySelector('.page-intro .eyebrow').textContent=`🎨 Mỹ thuật lớp ${number}`;
+    screen.querySelector('.page-intro .back-button').dataset.go=`grade${number}`;screen.querySelector('.page-intro .back-button').textContent=`← Về lớp ${number}`;
     $('#art-sources').replaceChildren();data.sources.forEach(s=>{const li=document.createElement("li"),a=text("a",s.title);a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";li.append(a,text("p",s.scope));$('#art-sources').append(li);});return true;
   }
   document.addEventListener('click',event=>{const button=event.target.closest('button[data-go="art"]');if(button)setGrade(button.dataset.artGrade||"grade-1");},true);
