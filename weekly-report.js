@@ -2,7 +2,7 @@
 
 // V32 Parent Weekly Report: deterministic, derived and local-only.
 (() => {
-  const COURSE_IDS = Object.freeze(["math-grade-1", "vietnamese-grade-1", "english-grade-1"]);
+  const COURSE_IDS = Object.freeze(["math-grade-1", "vietnamese-grade-1", "english-grade-1", "math-grade-2", "vietnamese-grade-2", "english-grade-2"]);
   const DAY_LABELS = Object.freeze(["T2", "T3", "T4", "T5", "T6", "T7", "CN"]);
   const SKILL_IDS = Object.freeze(["listening", "speaking", "reading", "writing"]);
   const safeNumber = (value, maximum = Number.MAX_SAFE_INTEGER) => Math.min(maximum, Math.max(0, Number.isFinite(Number(value)) ? Number(value) : 0));
@@ -56,7 +56,7 @@
 
   function summarizeWeeklyEnglishSkills(progress = {}, curriculum, range = getWeekRange()) {
     const filtered = weeklyEnglishProgress(progress, curriculum, range); const analytics = window.HocCungBeLearningAnalytics;
-    const analysis = analytics?.analyzeEnglishSkills?.({ courseId: "english-grade-1", progress: filtered, curriculum, now: range.currentEnd });
+    const analysis = analytics?.analyzeEnglishSkills?.({ courseId: curriculum?.id || "english-grade-1", progress: filtered, curriculum, now: range.currentEnd });
     if (!analysis) return { hasData: false, skills: Object.fromEntries(SKILL_IDS.map((id) => [id, { id, label: id, icon: "", attemptedTasks: 0, accuracy: null }])) };
     const speakingSessions = filtered.history.filter((entry) => curriculum?.levels?.find((level) => level.id === entry.levelId)?.skills?.includes("speaking")).length;
     analysis.skills.speaking.weeklySessions = speakingSessions; analysis.skills.speaking.accuracy = null;
@@ -110,7 +110,7 @@
 
   function buildRangeReport({ child, progresses, courses, englishCurriculum, range }) {
     const study = summarizeWeeklyStudy(progresses, range); const courseSummary = summarizeWeeklyCourses(progresses, courses, range); const result = summarizeResult(progresses, courseSummary, range); const english = summarizeWeeklyEnglishSkills(progresses["english-grade-1"] || {}, englishCurriculum, range);
-    const report = { child: child ? { id: child.id, name: child.name || "Bé", avatar: child.avatar || "🧒" } : { id: null, name: "Bé", avatar: "🧒" }, range, study, courses: courseSummary, result, english, hasActivity: result.lessonCount > 0 || (study.totalStudySeconds || 0) > 0, hasDatedActivity: courseSummary.some((course) => course.completedLessons > 0 || (course.studyMinutes || 0) > 0), limitedHistory: courseSummary.some((course) => course.historyLimited), highlights: [], practiceAreas: [], recommendations: [] };
+    const report = { child: child ? { id: child.id, name: child.name || "Bé", avatar: child.avatar || "🧒" } : { id: null, name: "Bé", avatar: "🧒" }, range, study, courses: courseSummary, result, english, englishGrade2: courses["english-grade-2"] ? summarizeWeeklyEnglishSkills(progresses["english-grade-2"] || {}, courses["english-grade-2"], range) : null, hasActivity: result.lessonCount > 0 || (study.totalStudySeconds || 0) > 0, hasDatedActivity: courseSummary.some((course) => course.completedLessons > 0 || (course.studyMinutes || 0) > 0), limitedHistory: courseSummary.some((course) => course.historyLimited), highlights: [], practiceAreas: [], recommendations: [] };
     report.highlights = buildHighlights(report); report.practiceAreas = buildPracticeAreas(report, courses); report.recommendations = buildWeeklyRecommendations(report, { progresses, courses }); return report;
   }
 
@@ -137,7 +137,8 @@
     const practice = report.practiceAreas.length ? report.practiceAreas.map((item) => `<li><span aria-hidden="true">${item.icon}</span> ${html(item.text)}</li>`).join("") : "<li>Chưa đủ dữ liệu; bé có thể tiếp tục các bài đã mở.</li>";
     const recommendations = report.recommendations.length ? report.recommendations.map((item) => `<article class="weekly-recommendation"><div><span>${html(item.courseName)}</span><h3>${html(item.levelId)} — ${html(item.title)}</h3></div><button class="secondary-button" type="button" data-weekly-course="${html(item.courseId)}" data-weekly-level="${html(item.levelId)}">${item.action}</button></article>`).join("") : "<p>Chưa đủ dữ liệu để tạo gợi ý phù hợp.</p>";
     const comparison = report.comparison.available ? `<dl class="weekly-comparison"><div><dt>Thời gian học</dt><dd>${signed(report.comparison.studyMinutes, "phút")}</dd></div><div><dt>Số ngày học</dt><dd>${signed(report.comparison.studyDays, "ngày")}</dd></div><div><dt>Bài hoàn thành</dt><dd>${signed(report.comparison.lessons, "bài")}</dd></div><div><dt>Độ chính xác gần đây</dt><dd>${report.comparison.accuracy === null ? "Chưa đủ dữ liệu" : signed(report.comparison.accuracy, "điểm %")}</dd></div></dl>` : `<p>${report.comparison.message}</p>`;
-    section.innerHTML = `${header}<div class="weekly-summary" aria-label="Tóm tắt tuần">${summary}</div>${chart}<section class="weekly-block"><h3>Môn học trong tuần</h3><div class="weekly-course-grid">${courseCards}</div></section><section class="weekly-block"><h3>Kết quả học tập gần đây</h3><p>${accuracy}</p></section><section class="weekly-block" aria-labelledby="weekly-english-title"><h3 id="weekly-english-title">Tiếng Anh tuần này</h3><div class="weekly-skill-grid">${skillCards}</div></section><div class="weekly-two-column"><section class="weekly-block"><h3>Điểm nổi bật tuần này</h3><ul class="weekly-list">${highlights}</ul></section><section class="weekly-block"><h3>Nên luyện thêm</h3><ul class="weekly-list">${practice}</ul></section></div><section class="weekly-block"><h3>Gợi ý cho tuần tới</h3><div class="weekly-recommendations">${recommendations}</div></section><section class="weekly-block"><h3>So với tuần trước</h3>${comparison}</section>`;
+    section.innerHTML = `${header}<div class="weekly-summary" aria-label="Tóm tắt tuần">${summary}</div>${chart}<section class="weekly-block"><h3>Môn học trong tuần</h3><div class="weekly-course-grid">${courseCards}</div></section><section class="weekly-block"><h3>Kết quả học tập gần đây</h3><p>${accuracy}</p></section><section class="weekly-block" aria-labelledby="weekly-english-title"><h3 id="weekly-english-title">Tiếng Anh lớp 1 tuần này</h3><div class="weekly-skill-grid">${skillCards}</div></section><div class="weekly-two-column"><section class="weekly-block"><h3>Điểm nổi bật tuần này</h3><ul class="weekly-list">${highlights}</ul></section><section class="weekly-block"><h3>Nên luyện thêm</h3><ul class="weekly-list">${practice}</ul></section></div><section class="weekly-block"><h3>Gợi ý cho tuần tới</h3><div class="weekly-recommendations">${recommendations}</div></section><section class="weekly-block"><h3>So với tuần trước</h3>${comparison}</section>`;
+    if(report.englishGrade2){const block=document.createElement("section");block.className="weekly-block";block.dataset.weeklyGrade="grade-2";const heading=document.createElement("h3");heading.textContent="Tiếng Anh lớp 2 tuần này";block.append(heading);SKILL_IDS.forEach(id=>{const skill=report.englishGrade2.skills[id],p=document.createElement("p");p.textContent=id==="speaking"?`Nói: ${skill.weeklySessions||0} lần tham gia; không chấm phát âm`:`${skill.label}: ${skill.attemptedTasks||0} hoạt động${skill.accuracy===null||skill.accuracy===undefined?" · Chưa đủ dữ liệu":` · ${skill.accuracy}%`}`;block.append(p);});section.append(block);}
     return report;
   }
 

@@ -121,7 +121,7 @@
   }
 
   function analyzeEnglishSkills({ courseId = COURSE_ID, progress = {}, curriculum = window.HOC_CUNG_BE_ENGLISH_GRADE_1, now = new Date() } = {}) {
-    if (courseId !== COURSE_ID || curriculum?.id !== COURSE_ID) return null;
+    if (![COURSE_ID,"english-grade-2"].includes(courseId) || curriculum?.id !== courseId) return null;
     const index = curriculumIndex(curriculum); const collected = collectAttempts(progress, index); const skills = {};
     ["listening", "reading", "writing"].forEach((skillId) => {
       const items = collected.attempts[skillId]; const correctTasks = items.filter((item) => item.correct).length; const recent = items.slice(-10); const recentCorrect = recent.filter((item) => item.correct).length;
@@ -161,17 +161,17 @@
   function renderEnglishSkillDashboard({ courseId = COURSE_ID, progress = {}, curriculum = window.HOC_CUNG_BE_ENGLISH_GRADE_1 } = {}) {
     let section = document.querySelector("#english-skill-analytics");
     if (!section) { section = document.createElement("section"); section.id = "english-skill-analytics"; section.className = "parent-section english-skill-analytics"; section.setAttribute("aria-labelledby", "english-skill-title"); document.querySelector("#parent-summary")?.insertAdjacentElement("afterend", section); }
-    section.hidden = courseId !== COURSE_ID;
+    section.hidden = ![COURSE_ID,"english-grade-2"].includes(courseId);
     if (section.hidden) { section.replaceChildren(); return null; }
     const analysis = analyzeEnglishSkills({ courseId, progress, curriculum }); const recommendations = buildEnglishSkillRecommendations(analysis, { progress, curriculum }); analysis.recommendations = recommendations;
-    if (!analysis.hasData) { section.innerHTML = `<p class="eyebrow">Phân tích kết quả học tập</p><h2 id="english-skill-title">4 kỹ năng Tiếng Anh</h2><div class="english-skill-empty" role="status"><strong>Chưa đủ dữ liệu để phân tích.</strong><span>Bé hãy hoàn thành vài bài Tiếng Anh trước nhé.</span></div>`; return analysis; }
+    if (!analysis.hasData) { section.innerHTML = `<p class="eyebrow">Phân tích kết quả học tập</p><h2 id="english-skill-title">4 kỹ năng ${curriculum.grade === "grade-2" ? "Tiếng Anh lớp 2" : "Tiếng Anh lớp 1"}</h2><div class="english-skill-empty" role="status"><strong>Chưa đủ dữ liệu để phân tích.</strong><span>Bé hãy hoàn thành vài bài Tiếng Anh trước nhé.</span></div>`; return analysis; }
     const cards = SKILL_IDS.map((skillId) => {
       const skill = analysis.skills[skillId]; const speaking = skillId === "speaking"; const metric = speaking ? `${skill.completedActivities} / ${skill.availableActivities}` : skill.accuracy === null ? `Đã làm ${skill.attemptedTasks} hoạt động` : `${skill.accuracy}%`; const progressValue = speaking ? skill.participationRate ?? 0 : skill.accuracy ?? 0; const detail = speaking ? `Mức tham gia ${skill.participationRate ?? 0}% · không chấm phát âm` : `Đã làm ${skill.attemptedTasks} hoạt động · Gần đây ${skill.recentAccuracy === null ? "chưa đủ dữ liệu" : `${skill.recentAccuracy}%`}`; const recommendation = recommendations.find((item) => item.skillId === skillId)?.text || `${skill.icon} Tiếp tục luyện tập trong các bài đã mở.`;
       return `<article class="english-skill-card" data-skill="${skillId}"><div class="english-skill-card__heading"><span aria-hidden="true">${skill.icon}</span><h3>${skill.label}</h3></div><strong class="english-skill-card__metric">${metric}</strong><span class="english-skill-progress" role="progressbar" aria-label="${skill.label}: ${speaking ? "mức tham gia" : "độ chính xác"} ${progressValue}%" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progressValue}"><i style="width:${progressValue}%"></i></span><p>${detail}</p><strong class="english-skill-status">${skill.status}</strong><small>${TREND_LABELS[skill.trend]}</small><p class="english-skill-recommendation">${recommendation}</p></article>`;
     }).join("");
     const insight = analysis.strongestSkill ? `<div class="english-skill-insight"><div><span>Điểm mạnh hiện tại</span><strong>${SKILL_META[analysis.strongestSkill].icon} ${SKILL_META[analysis.strongestSkill].label}</strong></div>${analysis.practiceSkill ? `<div><span>Nên luyện thêm</span><strong>${SKILL_META[analysis.practiceSkill].icon} ${SKILL_META[analysis.practiceSkill].label}</strong></div>` : ""}</div>` : "";
     const patterns = analysis.errorPatterns.length ? `<p class="english-error-pattern"><strong>Trong các bài gần nhất nên ôn:</strong> ${analysis.errorPatterns.map((item) => item.topic).join(", ")}.</p>` : "";
-    section.innerHTML = `<div class="parent-section__heading"><div><p class="eyebrow">Phân tích kết quả học tập</p><h2 id="english-skill-title">4 kỹ năng Tiếng Anh</h2><p>Dữ liệu gần đây từ tối đa 50 lượt học của riêng bé đang chọn.</p></div><strong class="english-study-time">Thời gian học Tiếng Anh 7 ngày gần đây: ${formatMinutes(analysis.studyTimeLast7Days)}</strong></div>${insight}<div class="english-skill-grid">${cards}</div>${patterns}`;
+    section.innerHTML = `<div class="parent-section__heading"><div><p class="eyebrow">Phân tích kết quả học tập</p><h2 id="english-skill-title">4 kỹ năng ${curriculum.grade === "grade-2" ? "Tiếng Anh lớp 2" : "Tiếng Anh lớp 1"}</h2><p>Dữ liệu gần đây từ tối đa 50 lượt học của riêng bé đang chọn.</p></div><strong class="english-study-time">Thời gian học Tiếng Anh 7 ngày gần đây: ${formatMinutes(analysis.studyTimeLast7Days)}</strong></div>${insight}<div class="english-skill-grid">${cards}</div>${patterns}`;
     return analysis;
   }
 

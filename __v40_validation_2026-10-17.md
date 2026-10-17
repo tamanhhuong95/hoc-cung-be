@@ -43,3 +43,12 @@ Trước sửa, regression có2 fail: toggle gợi ý làm mất tự nhận xé
 Branch codex/art-visual-folds; HEAD/main/origin/main kiểm tra cuối là0c619526f247d34c712092a58c5a418c84102679 (productionV39). V40 chỉlocal, chưa commit/push/deploy. Bảo toàn tài liệu cập nhật sau phát hànhV39 và untracked có sẵn. Bằng chứng __v40_validation_evidence.json; status __v40_git_status.txt.
 
 Bước tiếp: người lớn gấp thử hạc/sao bằng giấy thực, review nếp mở túi/lộn và ngôn ngữ, rồi quyết định phát hành. Chưa thiết bị vật lý/Safari/iOS/Firebase tài khoản thật E2E. Lệnh chạy tuần tự: py __run_browser_tests.py; py __run_visual_art_browser.py; py __run_v40_pwa_smoke.py; py __run_english_responsive.py; py __audit_english_videos.py. Runner cũ là lịch sử.
+
+
+## Production V40 đã xác minh — 17/10/2026
+
+V40 đã commit/push/deploy tại SHA f189ffa8fa34e23988a929eec04cdbd60adae734. GitHub Pages run38978240870 completed/success. Cả14 asset production HTTP200 và bytes khớp commit; cache hoc-cung-be-v40. Smoke production63/63, fail0/runtime0/exit0: hạc28 bước/sao10 bước online và offline, trước/sau, zoom/Escape trả focus, guide toggle giữ tự nhận xét, các nhóm Mỹ thuật cũ,5 trò, luồng bài học/dialog và sentinel local giữ nguyên. Kiểm tra bằng profile test riêng, không xóa hoặc mở profile người dùng.
+
+Nguồn bằng chứng __v40_production_evidence.json; runner __run_v40_production_smoke.py. Gate trước phát hành33 suites/563 checks và browser277 checks là bằng chứng local riêng. Các đoạn V40 chưa phát hành ở trên mô tả lịch sử trước quyết định phát hành và được thay bằng mục này.
+
+Giới hạn chưa gấp sản phẩm vật lý theo sơ đồ, cần người lớn hỗ trợ hạc/sao, chưa thiết bị thật/Safari/Firebase E2E vẫn giữ. Mỹ thuật chưa lưu/sync tiến độ, không gán bấm xong thành năng lực hoặc sản phẩm thực. Source phát hành không đổi; tài liệu/bằng chứng sau deploy cập nhật local chưa commit.

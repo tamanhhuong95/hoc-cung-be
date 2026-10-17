@@ -3,7 +3,8 @@
 // Local-first Firestore sync. Only the whitelisted learning payload below is sent to cloud.
 (() => {
   const STORAGE_KEY = "hoc-cung-be:math-grade-1-progress";
-  const COURSE_IDS = ["math-grade-1", "vietnamese-grade-1", "english-grade-1"];
+  const SUPPORTED_COURSE_IDS = ["math-grade-1", "vietnamese-grade-1", "english-grade-1", "math-grade-2", "vietnamese-grade-2", "english-grade-2"];
+  const COURSE_IDS = SUPPORTED_COURSE_IDS.filter(id=>id.endsWith("grade-1") || window.HOC_CUNG_BE_GRADE2?.cloudSyncEnabled===true);
   const DIRTY_KEY = "hoc-cung-be:cloud-sync-pending";
   const LAST_SYNC_KEY = "hoc-cung-be:last-cloud-sync";
   const SYNC_DEBOUNCE_MS = 5000;
@@ -21,7 +22,7 @@
   const scopedKey = (base, childId = activeChildId(), uid = user?.uid, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => uid && childId ? `${base}:${uid}:${childId}:${courseId}` : base;
   const cloudReady = (currentUser, firestoreSdk, database, childId = activeChildId()) => Boolean(currentUser && firestoreSdk && database && childId);
   const withCourse = (courseId, callback) => { const previous = window.HocCungBeLearning?.getActiveCourseId?.(); if (courseId && previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(courseId); try { return callback(); } finally { if (previous && previous !== courseId) window.HocCungBeLearning?.setActiveCourse?.(previous); } };
-  const normal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => withCourse(courseId, () => typeof window.normalizeProgress === "function" ? window.normalizeProgress(value) : value);
+  const normal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => window.HocCungBeLearning?.normalizeProgressForCourse ? window.HocCungBeLearning.normalizeProgressForCourse(value, courseId) : withCourse(courseId, () => typeof window.normalizeProgress === "function" ? window.normalizeProgress(value) : value);
   const loadLocal = (courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.loadProgress === "function" ? window.loadProgress(localStorage, courseId) : normal(parse(safeGet(STORAGE_KEY)) || {}, courseId);
   const saveLocal = (value, courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") => typeof window.saveProgress === "function" ? window.saveProgress(value, localStorage, courseId) : (safeSet(STORAGE_KEY, JSON.stringify(normal(value, courseId))), normal(value, courseId));
   const fingerprint = (entry) => typeof window.historyFingerprint === "function" ? window.historyFingerprint(entry) : [entry.levelId, entry.score, entry.correct, entry.questionCount, entry.completedAt].join("|");
@@ -69,11 +70,13 @@
 
   function lastSyncForCurrentUser(courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const childId = activeChildId(); return user && childId && validObject(saved) ? saved[`${user.uid}:${childId}:${courseId}`] || null : null; }
   function setLastSync(value, childId = activeChildId(), courseId = window.HocCungBeLearning?.getActiveCourseId?.() || "math-grade-1") { const saved = parse(safeGet(LAST_SYNC_KEY)); const map = validObject(saved) ? saved : {}; if (user && childId) map[`${user.uid}:${childId}:${courseId}`] = value; safeSet(LAST_SYNC_KEY, JSON.stringify(map)); }
-  function statusText(status) { return ({ syncing: "Đang đồng bộ...", synced: "Đã đồng bộ", pending: "Chưa đồng bộ", offline: "Không có mạng", error: "Lỗi đồng bộ", guest: "Đăng nhập để đồng bộ" })[status] || "Chưa đồng bộ"; }
+  function statusText(status) { return ({ syncing: "Đang đồng bộ...", synced: "Đã đồng bộ", pending: "Chưa đồng bộ", offline: "Không có mạng", error: "Lỗi đồng bộ", guest: "Đăng nhập để đồng bộ", "local-only": "Lớp 2: đang lưu trên thiết bị" })[status] || "Chưa đồng bộ"; }
   function renderStatus(status = lastStatus) {
+    if(window.HocCungBeLearning?.getActiveCourseId?.().endsWith("grade-2") && !window.HOC_CUNG_BE_GRADE2?.cloudSyncEnabled) status="local-only";
+    else if(status==="local-only")status=user?"pending":"guest";
     lastStatus = status; document.querySelectorAll("[data-cloud-sync-status]").forEach((element) => { element.textContent = statusText(status); element.dataset.state = status; });
     document.querySelectorAll("[data-cloud-sync-time]").forEach((element) => { const value = lastSyncForCurrentUser(); element.textContent = value ? `Lần đồng bộ gần nhất: ${new Date(value).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" })}` : "Lần đồng bộ gần nhất: Chưa có"; });
-    document.querySelectorAll("[data-cloud-sync-button]").forEach((button) => { button.disabled = status === "syncing" || !user; });
+    document.querySelectorAll("[data-cloud-sync-button]").forEach((button) => { button.disabled = status === "syncing" || status === "local-only" || !user; });
   }
 
   function installUi() {
@@ -87,6 +90,7 @@
 
   async function syncNow(reason = "manual", requestedCourseId = null) {
     const childId = activeChildId();
+    if(requestedCourseId?.endsWith("grade-2") && !window.HOC_CUNG_BE_GRADE2?.cloudSyncEnabled){renderStatus("local-only");return null;}
     if (!cloudReady(user, firestore, db, childId)) { renderStatus("guest"); return null; }
     if (!navigator.onLine) { markPending(); renderStatus("offline"); return null; }
     const courseIds = requestedCourseId ? [requestedCourseId] : COURSE_IDS;
@@ -122,7 +126,8 @@
 
   function disconnect() { authGeneration += 1; user = null; clearTimeout(debounceTimer); renderStatus("guest"); }
 
-  window.addEventListener("hoc-cung-be:progress-saved", () => { if (!applyingCloud) scheduleSync(); });
+  window.addEventListener("hoc-cung-be:course-changed", () => renderStatus());
+  window.addEventListener("hoc-cung-be:progress-saved", (event) => { if (!applyingCloud && COURSE_IDS.includes(event.detail?.courseId || "math-grade-1")) scheduleSync(); });
   window.addEventListener("hoc-cung-be:quiz-completed", () => syncNow("quiz-completed"));
   window.addEventListener("hoc-cung-be:parent-dashboard-open", () => syncNow("dashboard"));
   window.addEventListener("online", () => { if (user && safeGet(scopedKey(DIRTY_KEY)) === "1") syncNow("online"); });

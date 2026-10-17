@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-17",
+  "candidate": "V41 local",
+  "branch": "codex/grade-two-subjects",
+  "head": "f189ffa8fa34e23988a929eec04cdbd60adae734",
+  "originMain": "f189ffa8fa34e23988a929eec04cdbd60adae734",
+  "regression": {
+    "suiteCount": 34,
+    "total": 597,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "missingSuites": [],
+    "realExitCode": 0
+  },
+  "browser": {
+    "baselineSha": "f189ffa8fa34e23988a929eec04cdbd60adae734",
+    "totalChecks": 277,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "pwa": {
+    "checks": [
+      {
+        "name": "Physical click enters quiz",
+        "passed": true
+      },
+      {
+        "name": "Physical Back opens leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Tab cycles inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Shift Tab cycles backwards inside leave dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Escape retains quiz and restores opener focus",
+        "passed": true
+      },
+      {
+        "name": "Physical Stay retains quiz and closes dialog",
+        "passed": true
+      },
+      {
+        "name": "Physical Leave reaches level list",
+        "passed": true
+      },
+      {
+        "name": "Service worker controls GitHub Pages-style subpath",
+        "passed": true
+      },
+      {
+        "name": "V41 cache exists",
+        "passed": true
+      },
+      {
+        "name": "No recorded online interaction runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Offline reload loads app at subpath",
+        "passed": true
+      },
+      {
+        "name": "Offline reload preserves local data",
+        "passed": true
+      },
+      {
+        "name": "Offline Vietnamese lesson opens with physical clicks",
+        "passed": true
+      }
+    ],
+    "totalChecks": 13,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "audit": {
+    "totalChecks": 85,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "sourceSha256": {
+    "grade2-curriculum.js": "15800ea0b9f9d680aa728be66dff9aaac05a2134403e9c21e3b7889b07d7d462",
+    "grade2-art-data.js": "8f1ac0b98666a4129356907314962957206e8e06c629983ffa93705c061b65d8",
+    "grade2.css": "eb47b406576e08e15acfd725a8f7e7a43854f988fb7d09e72b59a1e2f890c6f4",
+    "index.html": "385570a80b76e40d158cafeb96a340855d5e08888603a9ab764bbd6b13839637",
+    "script.js": "6da1c6307a004069e54f04beef9b1867de261421386b863964d558508fa0d9ee",
+    "art-studio.js": "26b1bfcd659da067ca9207e8e0b770a8880f754d224cfe034d32935b5758b435",
+    "child-profiles.js": "82a5aa027706348790fd35502b84b962489af418873881b5ab3e9f04ba611696",
+    "child-settings.js": "0426ac09aa0d999e47f6a0840aab25e7d636f411942a7f46ab8977c74064422c",
+    "cloud-sync.js": "6285d84ede04438ed90e119bacd1a7344539a260c804c46947e126b6ccd71514",
+    "learning-analytics.js": "844fbc1136ae18f9b1ffb2996623e4b86fcea4f688812d1e9d7b941801926886",
+    "weekly-report.js": "3bdbe2309ebe2bb653f1fbd6c5d21e26308360ce71f3cc9b85b2e4f835df8e8d",
+    "parent-tools.js": "e1f513cce74f83b444f052dbff5c922ac0a9e8ecb767d4fafbcabe056410067d",
+    "service-worker.js": "d6b426803b1cfaeb83c2a9a8fb7fc57d0b629c3467c0b7e4e6134357b0cfff69",
+    "__run_browser_tests.py": "1195ec1aaaaa16eb867cf8f8e6fd9e4f952a8c76c2118dab036426a8b2c7c78f",
+    "__audit_english_videos.py": "19c79ea9c54f3d5ad3715f3876706a0c964ba62b45a336678e031715c34c5406",
+    "__run_grade2_browser.py": "fd267aa89670aad8ff8b37bf3c86a25276e79bd56987adf918e41a40d342cf68",
+    "__run_grade2_responsive.py": "eef641f34352cb932fa2774bd68b4a0ca1c95a8da2e369a58e0a0cc91b4b2ccb",
+    "__run_v41_pwa_smoke.py": "f9d19fecc474801de329c7aaec3023636fa5fbc6057b620092b35bd3b03ad449"
+  },
+  "firestoreRulesChanged": false,
+  "cloudSyncGrade2Enabled": false,
+  "committed": false,
+  "pushed": false,
+  "deployed": false
+}

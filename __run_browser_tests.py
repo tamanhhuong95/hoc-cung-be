@@ -23,7 +23,7 @@ DIAGNOSTIC = ROOT / "__browser_test_diagnostic.json"
 CHROME = pathlib.Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 DEBUG_PORT = 9342
 HTTP_PORT = 8767
-MIN_CHECKS = 563
+MIN_CHECKS = 597
 CHROME_STDERR = pathlib.Path(tempfile.gettempdir()) / f"hoc-cung-be-chrome-{uuid.uuid4().hex}.stderr.txt"
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -233,7 +233,7 @@ window.addEventListener("load", async () => {
     await test("Y. Complete game does not persist lesson results or quota", async () => { fresh();await wait(30);const before=storage();finish();await wait(30);if(storage()!==before) throw new Error("Game changed application storage"); });
     await test("Z. Existing child settings can block game start", () => { enter();const original=window.HocCungBeChildSettings.canStartLesson;try{window.HocCungBeChildSettings.canStartLesson=()=>false;start();if(game.getSummary()!==null || document.querySelector("#memory-intro").hidden) throw new Error("Parent limit was bypassed");}finally{window.HocCungBeChildSettings.canStartLesson=original;} });
     await test("AA. Settings check preserves course topic and level context", () => { enter();const original=window.HocCungBeChildSettings.canStartLesson;const before=window.eval('(() => { selectedTopic=Object.keys(TOPICS)[1];selectedLevelId=getLevelsByTopic(selectedTopic)[0].id;return JSON.stringify([activeCourseId,selectedTopic,selectedLevelId]);})()');try{window.HocCungBeChildSettings.canStartLesson=()=>{for(const id of ["math-grade-1","vietnamese-grade-1","english-grade-1"])window.HocCungBeLearning.loadProgressByCourse(id);return true;};start();if(window.eval('JSON.stringify([activeCourseId,selectedTopic,selectedLevelId])')!==before)throw new Error("Game start changed lesson context");}finally{window.HocCungBeChildSettings.canStartLesson=original;} });
-    await test("AB. PWA caches both game assets in V37", async () => { const sw=await fetch("service-worker.js",{cache:"no-store"}).then(r=>r.text());if(!sw.includes('"./thinking-games.js"') || !sw.includes('"./thinking-games.css"') || !sw.includes('hoc-cung-be-v40'))throw new Error("Game missing from offline cache"); });
+    await test("AB. PWA caches both game assets in V37", async () => { const sw=await fetch("service-worker.js",{cache:"no-store"}).then(r=>r.text());if(!sw.includes('"./thinking-games.js"') || !sw.includes('"./thinking-games.css"') || !sw.includes('hoc-cung-be-v41'))throw new Error("Game missing from offline cache"); });
     await test("AC. Cards meet touch target and reduced-motion support", async () => { const cards=[...document.querySelectorAll("#memory-grid button")];const css=await fetch("thinking-games.css",{cache:"no-store"}).then(r=>r.text());if(cards.length!==8 || cards.some(b=>b.getBoundingClientRect().height<44 || b.getBoundingClientRect().width<44) || !css.includes("prefers-reduced-motion"))throw new Error("Game accessibility sizing invalid"); });
     await test("AD. Hidden game cannot start from stale controls", () => { click('#thinking-games-screen [data-go="grade1"]');document.querySelector("#memory-start").click();if(game.getSummary()!==null || !document.querySelector("#thinking-games-screen").hidden)throw new Error("Hidden game restarted"); });
     await test("AE. Repeated guest auth event keeps the current round", () => { fresh();tile(0).click();window.dispatchEvent(new CustomEvent("hoc-cung-be:auth-state",{detail:{user:null}}));if(game.getSummary()===null || !tile(0).classList.contains("is-open"))throw new Error("Unchanged guest context reset the round"); });
@@ -260,7 +260,7 @@ window.addEventListener("load", async () => {
     await test("D. Missing video switches to animation and poster fallback without crash", () => { const host = document.createElement("div"), clip = manifest.clips[0]; document.body.append(host); renderEnglishMedia(host, { type: "video", available: false, poster: clip.poster, fallback: clip.fallbackImage, animationFallback: clip.animationFallback, ariaLabel: "Fallback test" }, "Fallback test"); if (host.querySelector("video") || !host.querySelector(".english-animation") || !host.querySelector(".english-media-poster")) throw new Error("Fallback state invalid"); host.remove(); });
     await test("E. Video quiz cues do not expose answer text", () => { const questions = window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.flatMap((item) => item.questions).filter((item) => item.type === "video-choice"); if (questions.length !== 5) throw new Error(`Expected 5 video questions, got ${questions.length}`); questions.forEach((question) => { const host = document.createElement("div"); renderEnglishMedia(host, question.video, "Video question"); if (host.textContent.toLowerCase().includes(question.answer.toLowerCase()) || host.querySelector("video")?.getAttribute("aria-label").toLowerCase().includes(question.answer.toLowerCase())) throw new Error(`Quiz answer leaked: ${question.id}`); }); });
     await test("F. Video component attributes and replay controls are present", () => { const host = document.createElement("div"), media = window.HOC_CUNG_BE_ENGLISH_GRADE_1.levels.find((item) => item.id === "EN-08").media.featured; renderEnglishMedia(host, media, "Greetings"); const video = host.querySelector("video"), source = host.querySelector("source"); if (!video?.controls || !video.playsInline || video.preload !== "metadata" || !video.poster || !video.getAttribute("aria-label") || source?.type !== "video/webm") throw new Error("Video attributes invalid"); });
-    await test("G. Offline runtime video cache and v37 remain configured", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); if (sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v40" || !sw.includes('"./weekly-report.js"') || sw.includes("assets/english-grade-1/videos/") || !sw.includes('request.destination === "video"') || !sw.includes("cacheMediaRange") || !sw.includes("caches.match(request.url")) throw new Error("Offline video runtime cache invalid"); });
+    await test("G. Offline runtime video cache and v37 remain configured", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); if (sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v41" || !sw.includes('"./weekly-report.js"') || sw.includes("assets/english-grade-1/videos/") || !sw.includes('request.destination === "video"') || !sw.includes("cacheMediaRange") || !sw.includes("caches.match(request.url")) throw new Error("Offline video runtime cache invalid"); });
     return { passed: results.every((item) => item.passed), results };
   };
   const runCanEnterQuizTests = async () => {
@@ -275,7 +275,7 @@ window.addEventListener("load", async () => {
     await test("H. Missing cloud progress does not block start", () => { resetGuest(); signedIn(); localStorage.removeItem("hoc-cung-be:progress:testchild01:math-grade-1"); localStorage.removeItem("hoc-cung-be:progress:testchild01:vietnamese-grade-1"); enterQuiz("vietnamese-grade-1"); });
     await test("I. Course switch Math → Vietnamese → Math still starts quiz", () => { resetGuest(); signedIn(); enterQuiz("math-grade-1"); click("#quiz-back-button"); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); if (!isQuiz()) throw new Error("Vietnamese did not start after switch"); click("#quiz-back-button"); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); click("#topic-grid button"); click("#level-grid button"); if (!isQuiz()) throw new Error("Math did not restart after switch"); });
     await test("J. Refresh then start quiz works", () => { if (!isQuiz()) throw new Error("Refresh flow is executed by a dedicated fresh runner navigation"); });
-    await test("K. v37 app shell includes required modules and shared artwork", async () => { const required = ["./script.js", "./learning-analytics.js", "./weekly-report.js", "./child-settings.js", "./parent-auth.js", "./child-profiles.js", "./data/vietnamese-grade-1.js", "./assets/backgrounds/van-mieu-quoc-tu-giam.webp", "./assets/english-grade-1/images/review-2.webp"]; const text = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (text.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v40" || !required.every((path) => text.includes(`"${path}"`))) throw new Error("v37 app shell is incomplete"); });
+    await test("K. v37 app shell includes required modules and shared artwork", async () => { const required = ["./script.js", "./learning-analytics.js", "./weekly-report.js", "./child-settings.js", "./parent-auth.js", "./child-profiles.js", "./data/vietnamese-grade-1.js", "./assets/backgrounds/van-mieu-quoc-tu-giam.webp", "./assets/english-grade-1/images/review-2.webp"]; const text = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (text.match(/const CACHE_NAME = "([^"]+)"/)?.[1] !== "hoc-cung-be-v41" || !required.every((path) => text.includes(`"${path}"`))) throw new Error("v37 app shell is incomplete"); });
     await test("L. Math Back stays on Grade 1", async () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); expectScreen("math-screen", "Math course"); click('#math-screen .back-button[data-go="grade1"]'); expectScreen("grade1-screen", "Math Back immediate"); await wait(1100); expectScreen("grade1-screen", "Math Back stable"); });
     await test("M. Vietnamese Back stays on Grade 1", async () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); expectScreen("math-screen", "Vietnamese course"); click('#math-screen .back-button[data-go="grade1"]'); expectScreen("grade1-screen", "Vietnamese Back immediate"); await wait(1100); expectScreen("grade1-screen", "Vietnamese Back stable"); });
     await test("N. Math quiz stays visible and Quiz Back returns to levels", async () => { resetGuest(); enterQuiz("math-grade-1"); await wait(1100); expectScreen("quiz-screen", "Math quiz stable"); click("#quiz-back-button"); expectScreen("levels-screen", "Quiz Back immediate"); await wait(1100); expectScreen("levels-screen", "Quiz Back stable"); });
@@ -365,7 +365,7 @@ window.addEventListener("load", async () => {
     await test("X. Hidden backdrop does not intercept clicks", () => { const backdrop = document.querySelector("#function-menu-backdrop"), style = getComputedStyle(backdrop); if (!backdrop.hidden || (style.display !== "none" && style.pointerEvents !== "none")) throw new Error(`Hidden backdrop intercepts: ${style.display}/${style.pointerEvents}`); });
     await test("Y. prefers-reduced-motion exists", async () => { const css = await fetch("styles.css", { cache: "no-store" }).then((r) => r.text()); if (!css.includes("@media (prefers-reduced-motion: reduce)")) throw new Error("Reduced motion CSS missing"); });
     await test("Z. Background clarity and overlays are tuned", async () => { const [response, css] = await Promise.all([fetch("assets/backgrounds/van-mieu-quoc-tu-giam.webp", { cache: "no-store" }), fetch("styles.css", { cache: "no-store" }).then((r) => r.text())]), bytes = new Uint8Array(await response.arrayBuffer()), signature = String.fromCharCode(...bytes.slice(0, 4)) + String.fromCharCode(...bytes.slice(8, 12)); const expected = ["filter: none", "opacity: .72", "rgba(251, 252, 255, .18)", "rgba(251, 252, 255, .72)", "rgba(255,255,255,.90)", "rgba(255,255,255,.93)", "pointer-events: none"]; if (!response.ok || signature !== "RIFFWEBP" || bytes.length < 250000 || bytes.length > 500000 || !expected.every((value) => css.includes(value))) throw new Error(`WebP/background CSS invalid: ${signature}, ${bytes.length}`); });
-    await test("AA. Background WebP is in v37 APP_SHELL", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v40"') || !sw.includes('"./learning-analytics.js"') || !sw.includes('"./weekly-report.js"') || !sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"')) throw new Error("v37 APP_SHELL is invalid"); });
+    await test("AA. Background WebP is in v37 APP_SHELL", async () => { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((r) => r.text()); if (!sw.includes('const CACHE_NAME = "hoc-cung-be-v41"') || !sw.includes('"./learning-analytics.js"') || !sw.includes('"./weekly-report.js"') || !sw.includes('"./assets/backgrounds/van-mieu-quoc-tu-giam.webp"')) throw new Error("v37 APP_SHELL is invalid"); });
     await test("AB. No old double-extension references", async () => { const files = ["index.html", "styles.css", "script.js", "child-settings.js", "service-worker.js", "README.md", "__run_browser_tests.py"], forbidden = ".webp" + ".png"; const texts = await Promise.all(files.map((path) => fetch(path, { cache: "no-store" }).then((r) => r.text()))); if (texts.some((text) => text.includes(forbidden))) throw new Error("Old double extension remains"); });
     await test("AC. Math navigation passes", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="math-grade-1"]'); expectScreen("math-screen", "Math navigation"); });
     await test("AD. Vietnamese navigation passes", () => { resetGuest(); click('[data-go="grade1"]'); click('button[data-course="vietnamese-grade-1"]'); expectScreen("math-screen", "Vietnamese navigation"); if (document.body.dataset.course !== "vietnamese-grade-1") throw new Error("Vietnamese course not active"); });
@@ -427,8 +427,66 @@ window.addEventListener("load", async () => {
     await test('Same guest auth preserves round; logout clears it',()=>{start('odd');window.dispatchEvent(new CustomEvent('hoc-cung-be:auth-state',{detail:{user:null}}));assert(api.getSummary()?.kind==='odd','guest event reset');window.dispatchEvent(new CustomEvent('hoc-cung-be:auth-state',{detail:{user:{uid:'playground-test'}}}));assert(api.getSummary()===null,'account state leaked');resetGuest();});
     await test('Games leave progress and quota untouched',async()=>{start('count');await wait(30);const snapshot=()=>JSON.stringify(Object.keys(localStorage).filter(k=>k.startsWith('hoc-cung-be:')).sort().map(k=>[k,localStorage.getItem(k)]));const before=snapshot();solveUI('count');await wait(30);assert(before===snapshot(),'persistent learning data changed');});
     await test('Unknown games and invalid answers rejected',()=>{assert(api.createChallenge('bad')===null&&api.createSession('bad')===null,'unknown game');for(const kind of ['odd','pattern','count','order']){const state=api.createSession(kind);assert(api.answer(state,null)==='ignored'&&!api.next(state),'invalid action');}});
-    await test('New game files precached with V38',async()=>{const sw=await fetch('service-worker.js',{cache:'no-store'}).then(r=>r.text());assert(sw.includes('hoc-cung-be-v40')&&sw.includes('"./thinking-playground.js"')&&sw.includes('"./playground.css"'),'precache absent');});
+    await test('New game files precached with V38',async()=>{const sw=await fetch('service-worker.js',{cache:'no-store'}).then(r=>r.text());assert(sw.includes('hoc-cung-be-v41')&&sw.includes('"./thinking-playground.js"')&&sw.includes('"./playground.css"'),'precache absent');});
     enter();return {passed:results.every(r=>r.passed),results};
+  };
+
+  const runGradeTwoTests=async()=>{
+    const results=[], api=window.HocCungBeLearning, data=window.HOC_CUNG_BE_GRADE2;
+    const assert=(ok,message)=>{if(!ok)throw Error(message);};
+    const test=async(id,fn)=>{try{await fn();results.push({id,passed:true});}catch(e){results.push({id,passed:false,error:String(e.stack||e)});}};
+    const courses=[data.math,data.vietnamese,data.english];
+    await test('Six assessed courses, unchanged three Grade 1 cards',()=>assert(Object.keys(api.COURSES).length===6&&document.querySelectorAll('#grade1-screen [data-course]').length===3&&document.querySelectorAll('#grade2-screen [data-course]').length===3,'registry/cards'));
+    await test('48 scored lessons plus 8 art projects',()=>assert(courses.map(c=>c.levels.length).join(',')==='24,12,12'&&HOC_CUNG_BE_ART_GRADE2.lessons.length===8,'coverage'));
+    await test('Unique IDs across both grades; no EN-41+',()=>{const ids=Object.values(api.COURSES).flatMap(c=>c.levels.map(l=>l.id));assert(new Set(ids).size===ids.length&&!ids.includes('EN-41'),'collision');});
+    for(const course of courses){
+      await test(course.id+': valid authored five-question lessons',()=>{for(const l of course.levels){const qs=l.pilotQuestions||l.questions;assert(l.questionCount===5&&l.unlockScore===80&&qs.length===5,'scoring');for(const q of qs)assert(q.options.length===4&&new Set(q.options).size===4&&q.options.includes(q.answer),'ambiguous answer');}});
+      await test(course.id+': normalizer separates Grade 1 keys',()=>{const p=api.normalizeProgressForCourse({},course.id);assert(course.levels.every(l=>p.levels[l.id])&&!p.levels['EN-01']&&!p.levels['TV-01'],'mixed curriculum');});
+      await test(course.id+': reads preserve navigation and emit no change',()=>{resetGuest();api.setActiveCourse('math-grade-1');const before=document.body.dataset.course;let changes=0;const listener=()=>changes++;window.addEventListener('hoc-cung-be:course-changed',listener);try{api.loadProgressByCourse(course.id);assert(api.getActiveCourseId()==='math-grade-1'&&document.body.dataset.course===before&&changes===0,'read navigated');}finally{window.removeEventListener('hoc-cung-be:course-changed',listener);}});
+      await test(course.id+': real navigation enters correct topic list',()=>{resetGuest();click('[data-go="grade2"]');expectScreen('grade2-screen','grade2');click(`#grade2-screen [data-course="${course.id}"]`);expectScreen('math-screen','topics');assert(api.getActiveCourseId()===course.id&&document.querySelectorAll('#topic-grid button').length===Object.keys(course.topics).length,'topic list');click('#topic-grid button');expectScreen('levels-screen','levels');click('#level-grid button');assert(!document.querySelector('#quiz-screen').hidden||!document.querySelector('#learn-screen').hidden,'lesson did not open');});
+    }
+    await test('Arithmetic checked independently from stored answers',()=>{let n=0;for(const l of data.math.levels)for(const q of l.pilotQuestions){const m=q.displayText.match(/^(\d+) ([+−]) (\d+) =/);if(m){assert(Number(q.answer)===(m[2]==='+'?Number(m[1])+Number(m[3]):Number(m[1])-Number(m[3])),'arithmetic');n++;}}assert(n===40,'arithmetic coverage');});
+    await test('Reading tasks display original passage',()=>{for(const l of data.vietnamese.levels)for(const q of l.questions)assert(q.visual.includes('grade2-reading')&&q.visual.length>150,'passage missing');});
+    await test('English offers all four skills without speech accuracy score',()=>{for(const l of data.english.levels)assert(l.skills.includes('speaking')&&l.questions.some(q=>q.skills.includes('listening'))&&l.questions.some(q=>q.skills.includes('writing'))&&!('pronunciationScore' in l),'skills');});
+    for(const course of courses){
+      await test(course.id+': complete five answers, persist separately and unlock at 80%',()=>{
+        resetGuest();signedIn();
+        const storageKey=api.courseProgressKey('testchild01',course.id);localStorage.removeItem(storageKey);
+        click('[data-go="grade2"]');click(`#grade2-screen [data-course="${course.id}"]`);click('#topic-grid button');click('#level-grid button');
+        if(!document.querySelector('#learn-screen').hidden)click('#begin-practice-button');
+        for(let i=0;i<5;i++){
+          const answer=window.eval('quiz.questions[quiz.index].answer');
+          const button=[...document.querySelectorAll('#answer-grid button')].find(b=>b.dataset.answer===answer);
+          assert(button,'correct option missing');if(i===0)[...document.querySelectorAll('#answer-grid button')].find(b=>b.dataset.answer!==answer).click();button.click();click('#next-button');
+        }
+        expectScreen('result-screen','completed Grade 2');
+        const progress=JSON.parse(localStorage.getItem(storageKey));
+        assert(progress.progressVersion===2&&progress.levels[course.levels[0].id].completed&&progress.levels[course.levels[1].id].unlocked,'completion/unlock');
+        assert(progress.history.length===1&&progress.history[0].score===80&&progress.history[0].correct===4&&progress.history[0].levelId===course.levels[0].id,'history');
+        const other=api.courseProgressKey('otherchild01',course.id);assert(localStorage.getItem(other)===null,'child isolation');
+        localStorage.removeItem(storageKey);resetGuest();
+      });
+    }
+    await test('Explicit course save uses target curriculum and restores current course',()=>{
+      api.setActiveCourse('math-grade-1');const values=new Map(),storage={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+      const p=api.normalizeProgressForCourse({},'english-grade-2');window.saveProgress(p,storage,'english-grade-2');
+      assert(api.getActiveCourseId()==='math-grade-1'&&values.size===1,'save changed context');
+      const saved=JSON.parse([...values.values()][0]);assert(saved.levels['E2-01']&&!saved.levels['counting-1'],'wrong normalization');
+    });
+    await test('Grade 2 English analytics keeps speaking accuracy null and rejects wrong grade',()=>{
+      const p=api.normalizeProgressForCourse({},'english-grade-2');p.levels['E2-01'].attempts=1;
+      const a=HocCungBeLearningAnalytics.analyzeEnglishSkills({courseId:'english-grade-2',curriculum:data.english,progress:p});
+      assert(a.skills.speaking.accuracy===null&&a.skills.speaking.completedActivities===1,'speech assessment');
+      assert(HocCungBeLearningAnalytics.analyzeEnglishSkills({courseId:'english-grade-1',curriculum:data.english,progress:p})===null,'cross-grade analytics');
+    });
+
+    await test('Grade 2 backend writes remain disabled',async()=>{assert(data.cloudSyncEnabled===false,'unexpected cloud flag');const rules=await fetch('firestore.rules').then(r=>r.text());assert(!rules.includes('math-grade-2')&&!rules.includes('english-grade-2'),'unapproved rules changed');});
+    for(const lesson of HOC_CUNG_BE_ART_GRADE2.lessons){
+      await test(lesson.id+': all four illustrated stages and return to Grade 2',()=>{resetGuest();click('[data-go="grade2"]');click('#grade2-screen [data-go="art"]');assert(HocCungBeArtStudio.getGrade()==='grade-2','wrong art grade');click(`[data-art-lesson="${lesson.id}"]`);for(let i=0;i<lesson.steps.length;i++){click('#art-step-next');assert(HocCungBeArtStudio.getSummary().step===i&&document.querySelector('#art-step-picture svg'),'illustration missing');}click('#art-step-next');assert(HocCungBeArtStudio.getSummary().finished,'reflection');click('#art-screen [data-go="grade2"]');expectScreen('grade2-screen','art return');});
+    }
+    await test('Returning to Grade 1 restores all fourteen art lessons',()=>{resetGuest();click('[data-go="grade1"]');click('#grade1-screen [data-go="art"]');assert(HocCungBeArtStudio.getGrade()==='grade-1'&&document.querySelectorAll('[data-art-lesson]').length===14,'grade1 art lost');});
+    await test('Grade 2 assets precached for offline use',async()=>{const sw=await fetch('service-worker.js').then(r=>r.text());assert(['grade2-curriculum.js','grade2-art-data.js','grade2.css'].every(f=>sw.includes('"./'+f+'"')),'precache');});
+    resetGuest();return {passed:results.every(r=>r.passed),results};
   };
 
   const runArtStudioTests=async()=>{
@@ -437,7 +495,7 @@ window.addEventListener("load", async () => {
     const assert=(v,m)=>{if(!v)throw new Error(m);};
     const enter=()=>{resetGuest();click('[data-go="grade1"]');click('#grade1-screen [data-go="art"]');};
     const snapshot=()=>JSON.stringify(Object.keys(localStorage).filter(k=>k.startsWith('hoc-cung-be:')).sort().map(k=>[k,localStorage.getItem(k)]));
-    await test('Art entry preserves three assessed courses',()=>{enter();assert(document.querySelectorAll('#grade1-screen [data-course]').length===3&&Object.keys(HocCungBeLearning.COURSES).length===3,'course registry changed');});
+    await test('Art entry preserves three assessed courses',()=>{enter();assert(document.querySelectorAll('#grade1-screen [data-course]').length===3&&Object.keys(HocCungBeLearning.COURSES).filter(id=>id.endsWith('-grade-1')).length===3,'course registry changed');});
     await test('Fourteen unique first-party lessons',()=>{assert(data.lessons.length===14&&new Set(data.lessons.map(l=>l.id)).size===14&&data.lessons.every(l=>l.authored),'lesson catalog');});
     await test('Three groups retain four originals plus two folding lessons',()=>{assert(data.groups.length===3&&data.groups.every(g=>data.lessons.filter(l=>l.group===g.id).length===(g.id==='fold'?6:4)),'group coverage');});
     await test('Sources and limitations are explicit',()=>{assert(data.sources.length===3&&new Set(data.sources.map(s=>s.id)).size===3&&document.querySelector('.art-notes').textContent.includes('chưa đối chiếu đầy đủ'),'source claims');});
@@ -458,7 +516,7 @@ window.addEventListener("load", async () => {
     await test('Art leaves progress history quota and storage untouched',async()=>{enter();click('[data-art-lesson="ART-09"]');await wait(30);const before=snapshot();for(let i=0;i<5;i++)click('#art-step-next');document.querySelector('#art-checks input').click();await wait(30);assert(snapshot()===before,'art persisted into learning data');});
     await test('Navigation and child change clear art state',()=>{click('#art-screen [data-go="grade1"]');assert(api.getSummary()===null&&!api.open('ART-01')&&!api.advance(),'hidden controls');enter();api.open('ART-01');window.dispatchEvent(new CustomEvent('hoc-cung-be:child-will-change'));assert(api.getSummary()===null,'child state leaked');});
     await test('Stable guest stays and actual auth change clears',()=>{enter();api.open('ART-01');window.dispatchEvent(new CustomEvent('hoc-cung-be:auth-state',{detail:{user:null}}));assert(api.getSummary()?.lessonId==='ART-01','guest reset');window.dispatchEvent(new CustomEvent('hoc-cung-be:auth-state',{detail:{user:{uid:'art-test'}}}));assert(api.getSummary()===null,'account leak');resetGuest();});
-    await test('Art precache V39 and rules whitelist unchanged',async()=>{const sw=await fetch('service-worker.js',{cache:'no-store'}).then(r=>r.text());const rules=await fetch('firestore.rules',{cache:'no-store'}).then(r=>r.text());assert(sw.includes('hoc-cung-be-v40')&&['art-grade1-data.js','art-studio.js','art-studio.css'].every(f=>sw.includes(`"./${f}"`))&&!rules.includes('art-grade-1'),'precache/schema');});
+    await test('Art precache V39 and rules whitelist unchanged',async()=>{const sw=await fetch('service-worker.js',{cache:'no-store'}).then(r=>r.text());const rules=await fetch('firestore.rules',{cache:'no-store'}).then(r=>r.text());assert(sw.includes('hoc-cung-be-v41')&&['art-grade1-data.js','art-studio.js','art-studio.css'].every(f=>sw.includes(`"./${f}"`))&&!rules.includes('art-grade-1'),'precache/schema');});
     enter();return {passed:results.every(r=>r.passed),results};
   };
 
@@ -477,7 +535,7 @@ window.addEventListener("load", async () => {
     await test('Step picker respects child settings',()=>{const old=HocCungBeChildSettings.canStartLesson;try{HocCungBeChildSettings.canStartLesson=()=>false;const picker=document.querySelector('#art-step-select');picker.value='2';picker.dispatchEvent(new Event('change'));assert(api.getSummary().step===27&&picker.value==='27','picker bypass');}finally{HocCungBeChildSettings.canStartLesson=old;}});
     await test('Guide toggling retains completed reflection',()=>{api.advance();assert(api.getSummary().finished,'completion');click('#art-guide-toggle');assert(api.getSummary().finished&&!document.querySelector('#art-result').hidden,'toggle reset completion');});
     await test('Crane and star state adult assistance',()=>{for(const id of ['ART-13','ART-14']){const l=data.lessons.find(l=>l.id===id);assert(l.difficulty.includes('người lớn')&&l.safety.includes('người lớn')&&l.references.length,'difficulty/source missing');}});
-    await test('New fold module precached with V40',async()=>{const sw=await fetch('service-worker.js',{cache:'no-store'}).then(r=>r.text());assert(sw.includes('hoc-cung-be-v40')&&sw.includes('"./art-folds.js"'),'fold module offline');});
+    await test('New fold module precached with V40',async()=>{const sw=await fetch('service-worker.js',{cache:'no-store'}).then(r=>r.text());assert(sw.includes('hoc-cung-be-v41')&&sw.includes('"./art-folds.js"'),'fold module offline');});
     enter();return {passed:results.every(r=>r.passed),results};
   };
 
@@ -497,6 +555,7 @@ window.addEventListener("load", async () => {
   suites["Thinking playground variety"] = await runPlaygroundTests();
   suites["Art studio grade one"] = await runArtStudioTests();
   suites["Visual origami guides"] = await runVisualArtTests();
+  suites["Grade 2 four subjects"] = await runGradeTwoTests();
   suites["Can Enter Quiz"] = await runCanEnterQuizTests();
   suites["English Learn and interaction flow"] = await runEnglishInteractionTests();
   // A clean navigation validates that no state from the flow tests is required for entry.
@@ -514,7 +573,7 @@ window.addEventListener("load", async () => {
   const all = Object.entries(suites).flatMap(([suite, value]) => asChecks(value).map((check) => ({ suite, ...check })));
   const failed = all.filter((item) => item && item.passed === false);
   missingSuites.forEach((item) => runtimeErrors.push({ type: "missing-suite", message: `${item.suite}: ${item.hook}` }));
-  if (all.length < 563 || Object.keys(suites).length < 33) runtimeErrors.push({ type: "incomplete-coverage", message: `Expected at least 33 suites / 563 checks, got ${Object.keys(suites).length} / ${all.length}` });
+  if (all.length < 597 || Object.keys(suites).length < 34) runtimeErrors.push({ type: "incomplete-coverage", message: `Expected at least 34 suites / 597 checks, got ${Object.keys(suites).length} / ${all.length}` });
   const realExitCode = failed.length || runtimeErrors.length || missingSuites.length ? 1 : 0;
   window.__hcbRegressionState = { ...window.__hcbRegressionState, stage: "L. report extraction", suitesComplete: true, suiteCount: Object.keys(suites).length, totalChecks: all.length, failedCount: failed.length, runtimeErrorCount: runtimeErrors.length, missingSuites };
   document.body.innerHTML = `<pre id="test-output">${JSON.stringify({ realExitCode, suiteCount: Object.keys(suites).length, suiteNames: Object.keys(suites), total: all.length, failedCount: failed.length, failed, runtimeErrorCount: runtimeErrors.length, runtimeErrors, missingSuites })}</pre>`;
@@ -594,7 +653,7 @@ def wait_for_server(server, server_thread, timeout=15):
             raise RuntimeError("Local test server stopped before browser startup")
         try:
             responses = [requests.get(url, timeout=1) for url in urls]
-            if all(response.status_code == 200 for response in responses) and "hoc-cung-be-v40" in responses[1].text:
+            if all(response.status_code == 200 for response in responses) and "hoc-cung-be-v41" in responses[1].text:
                 return responses
             last_error = RuntimeError(f"Unexpected readiness status: {[response.status_code for response in responses]}")
         except requests.RequestException as error:
@@ -674,7 +733,7 @@ def main():
     try:
         summary["RUNNER_STAGE"] = "B. temporary runner HTML generation"
         app_html = (ROOT / "index.html").read_text(encoding="utf-8")
-        runner_html = re.sub(r"(<body\b[^>]*>)", r"\1" + probe, app_html, count=1, flags=re.I)
+        runner_html = re.sub(r"(<body\b[^>]*>)", lambda match: match.group(1) + probe, app_html, count=1, flags=re.I)
         if runner_html == app_html:
             raise RuntimeError("Could not inject regression probe into runner HTML")
         RUNNER.write_text(runner_html, encoding="utf-8")
@@ -747,7 +806,7 @@ def main():
         print(json.dumps(report, ensure_ascii=False, indent=2))
 
         summary["RUNNER_STAGE"] = "M. coverage guard"
-        summary["COVERAGE_GUARD_FAILED"] = summary["TOTAL_CHECKS"] < MIN_CHECKS or summary["SUITE_COUNT"] < 33
+        summary["COVERAGE_GUARD_FAILED"] = summary["TOTAL_CHECKS"] < MIN_CHECKS or summary["SUITE_COUNT"] < 34
         summary["REAL_EXIT_CODE"] = 1 if report.get("realExitCode", 1) or summary["COVERAGE_GUARD_FAILED"] else 0
     except BaseException as error:
         if isinstance(error, KeyboardInterrupt):

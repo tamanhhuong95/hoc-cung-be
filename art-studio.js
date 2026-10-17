@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-  const screen=document.querySelector('#art-screen'), data=window.HocCungBeArtData;
+  const screen=document.querySelector('#art-screen');let data=window.HocCungBeArtData;const gradeOneData=data;
   if(!screen||!data)return;
   const $=s=>screen.querySelector(s);
   let current=null,step=-1,uid=null,group='all',showGuide=true;
@@ -83,6 +83,14 @@
   ['hoc-cung-be:screen-changed','hoc-cung-be:child-will-change','hoc-cung-be:child-changed'].forEach(name=>window.addEventListener(name,()=>{reset();group='all';renderCards();}));
   window.addEventListener('hoc-cung-be:auth-state',e=>{const next=e.detail?.user?.uid||null;if(next!==uid)reset();uid=next;});
   data.sources.forEach(s=>{const li=document.createElement('li'),a=text('a',s.title);a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';li.append(a,text('p',s.scope));$('#art-sources').append(li);});
+  function setGrade(grade){
+    const next=grade==="grade-2"?window.HOC_CUNG_BE_ART_GRADE2:gradeOneData;if(!next)return false;reset();data=next;group="all";renderCards();
+    const two=data.grade==="grade-2";$('#art-title').textContent=two?"Xưởng sáng tạo lớp 2":"Xưởng sắc màu của bé";
+    screen.querySelector('.page-intro .eyebrow').textContent=two?"🎨 Mỹ thuật lớp 2":"🎨 Mỹ thuật lớp 1";
+    screen.querySelector('.page-intro .back-button').dataset.go=two?"grade2":"grade1";screen.querySelector('.page-intro .back-button').textContent=two?"← Về lớp 2":"← Về lớp 1";
+    $('#art-sources').replaceChildren();data.sources.forEach(s=>{const li=document.createElement("li"),a=text("a",s.title);a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";li.append(a,text("p",s.scope));$('#art-sources').append(li);});return true;
+  }
+  document.addEventListener('click',event=>{const button=event.target.closest('button[data-go="art"]');if(button)setGrade(button.dataset.artGrade||"grade-1");},true);
   reset();renderCards();
-  window.HocCungBeArtStudio={open,reset,advance,getSummary:()=>current?{lessonId:current.id,step,finished:!$('#art-result').hidden}:null};
+  window.HocCungBeArtStudio={open,reset,advance,setGrade,getGrade:()=>data.grade||"grade-1",getSummary:()=>current?{lessonId:current.id,step,finished:!$('#art-result').hidden}:null};
 })();
