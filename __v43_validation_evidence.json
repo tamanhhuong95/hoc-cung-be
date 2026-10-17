@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-17",
+  "candidate": "V43 garden interface",
+  "branch": "codex/garden-interface",
+  "baselineSha": "f7c562f302bd967523cbdd97e0d0731ff2faae41",
+  "originMain": "f7c562f302bd967523cbdd97e0d0731ff2faae41",
+  "regression": {
+    "suiteCount": 36,
+    "total": 680,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "missingSuites": [],
+    "realExitCode": 0
+  },
+  "physical": {
+    "totalChecks": 207,
+    "failedCount": 0,
+    "runtimeErrors": [],
+    "realExitCode": 0
+  },
+  "upgrade": {
+    "baselineSha": "f7c562f302bd967523cbdd97e0d0731ff2faae41",
+    "totalChecks": 277,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "audit": {
+    "totalChecks": 85,
+    "failedCount": 0,
+    "realExitCode": 0
+  },
+  "sourceSha256": {
+    "garden-theme.css": "9d9ec013608e53067e66cad39fed74a60133c98aca4e83e1d79f508366a12d48",
+    "garden-ui.js": "e8e37dc2e33c767a6a2962e9d4588e51097351405f5619a05068a9a14d8dfa7f",
+    "script.js": "b886fb68aea847f0b3e9e4bfbfc1189219e44150d90f5ed5642271aa81a33bba",
+    "index.html": "207957466b8c78db82faea514177a077cfd8f875798522ec3a2dc1f6232878ce",
+    "manifest.webmanifest": "36d4f9be3d33830c28a7cd88feed03d7d47639380666b34ab822b598647580b8",
+    "service-worker.js": "5886f9bc58c61316b1c96210f09aad2b3902c1cbe31b94f31289f13dea04af54",
+    "child-settings.js": "0132b9b5fcf6ef9c5aebd4b1d35ac9478dd826c883e1d1ce327b655a4893268a",
+    "parent-tools.js": "dc31313cdf230941841cce93517a1513d31f0577d6654090db20096162fee6e8",
+    "__run_browser_tests.py": "0c03e0569bae21a7e15f9b33a2257df1425c9f7361cc192cad647056dd7ef587",
+    "__audit_english_videos.py": "e21bd3448fe8a017dcd993dc1dc75ef78b3338242b50cf7e9afcfb8f9576553b",
+    "__run_garden_browser.py": "41960b801ab00265bf298d84549df402d4b405aa0de821c1d4102981c7bd24f7",
+    "__run_garden_upgrade.py": "85e19336ceed4baf3f34b7fff4087f030482495b9b0d33d9559cb68da8e7732e",
+    "__run_garden_responsive.py": "52dcf2040f2fd866db0d1e54283c46a0f4c4031655089bcbc09748831b2b08ad"
+  },
+  "firestoreRulesChanged": false,
+  "releaseAuthorized": true,
+  "backgroundSha256": "2f11fe5e5e0f82fd99299ea09b76ad4df4740fc945d409922ecc77efcc0e163d"
+}

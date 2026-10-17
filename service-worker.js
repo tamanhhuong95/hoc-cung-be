@@ -1,10 +1,12 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v42";
+const CACHE_NAME = "hoc-cung-be-v43";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./garden-theme.css",
+  "./garden-ui.js",
   "./script.js",
   "./thinking-games.js",
   "./thinking-games.css",

@@ -1,6 +1,6 @@
 # Project Memory hiện hành — Học Cùng Bé
 
-Tài liệu PM-6.4,17/10/2026 UTC+7. Production đã xác minh trước: V41 SHA ac9cc771942f5ae1074bd7da1c730198b66569d1. Local V42 lớp3/4/5 chưa commit/phát hành; lớp2–5 chỉ lưu thiết bị. Xem mục V42 cuối tài liệu; giữ phần cũ làm lịch sử.
+Tài liệu PM-6.6,17/10/2026 UTC+7. Production xác minh trước: V42 f7c562f302bd967523cbdd97e0d0731ff2faae41. V43 giao diện vườn học đạt gate và được phép phát hành; chờ xác minh production. Lớp2–5 chỉ lưu thiết bị.
 
 ## Quyết định và trạng thái xác minh
 
@@ -176,3 +176,33 @@ Bổ sung kiểm chứng cuối: báo cáo English lớp2–5 thiếu lịch s�
 ## Phê duyệt phát hành V42 — 17/10/2026
 
 Chủ dự án yêu cầu “phát hành đi” sau bàn giao lớp3/4/5. Đã đối chiếu hash toàn bộ source/runner với gate35 suites/668 checks, physical174, upgrade277, responsive3, audit85 đạt; origin/main vẫn V41 ac9cc77. Cho phép commit/push/deploy bản hiện có. Lớp2–5 vẫn chỉ lưu thiết bị; không suy rộng thành duyệt sửa/deploy Firestore rules, đổi metadata child hoặc bật cloud các lớp này. Production V42 chỉ xác nhận sau deployment và smoke riêng. Những mục chưa phát hành phía trên là lịch sử trước quyết định này.
+
+
+## Production V42 đã xác minh — 17/10/2026
+
+V42 đã commit/push/deploy tại SHA f7c562f302bd967523cbdd97e0d0731ff2faae41. GitHub Pages run39015140662 completed/success. Cả20 asset production HTTP200 và bytes khớp commit; cache hoc-cung-be-v42. Smoke production174/174, fail0/runtime0/exit0: catalog/ba môn đánh giá/EnglishLearn/Mỹ thuật lớp3–5 ở375×812/768×1024/1280×900, tất cả18 dự án trênmobile online/offline, cold reload offline, sentinel giữ nguyên; bài học lớp1/dialog và Tiếng Việt lớp2 offline vẫn mở được. Runtime capture được cài trước mỗi document và xác nhận tồn tại sau offline reload. Chạy Chrome profile test riêng, không mở/xóa dữ liệu thật.
+
+Bằng chứng __v42_production_evidence.json, __v42_production_assets.json, __v42_production_smoke_report.json và runner __run_v42_production_smoke.py. Gate35 suites/668 checks, physical174, upgrade277, responsive3, audit85 là kết quả local trước phát hành riêng, không thay bằng số production. Các đoạn V42 chưa phát hành ở trên là lịch sử và được thay bằng mục này.
+
+Lớp2–5 vẫn chỉ lưu thiết bị; cloud chỉ3 môn lớp1. Không sửa/deploy Firestore rules/schema hoặc mở metadata grade mới. Nội dung102 bài/420 câu/78 bước lớp3–5 là nhập môn tự biên soạn, chưa trọn năm hoặc đối chiếu đầy đủ từng trang3SGK. Chưa FirebaseE2E, trẻ/giáo viên/thiết bị vật lý/Safari hoặc thực hành cắt/gấp sản phẩm thật. Speaking participation/accuracy=null; Mỹ thuật RAM-only vẫn giữ.
+
+Main/HEAD/origin/main cùng SHA phát hành lúc kiểm tra. Source phát hành không đổi; tài liệu/bằng chứng hậu triển khai cập nhật local chưa tạo commit tài liệu thứ hai, untracked cũ giữ nguyên. Bước tiếp theo: đánh giá nội dung với phụ huynh/giáo viên và mở rộng đủ chương trình theo phạm vi được giao; backend sync cần phê duyệt riêng. Nếu cần quay lại, dùng commit revert có cache phát hành mới, không reset localStorage hay dữ liệu trẻ; V41 ổn định trước là ac9cc771942f5ae1074bd7da1c730198b66569d1. Chưa thực hiện rollback.
+
+
+## V43 — giao diện vườn học, 17/10/2026
+
+Chủ dự án yêu cầu “Đưa lên web” sau khi duyệt hướng thiết kế MagicPath, giữ nền Văn Miếu và thân thiện với học sinh tiểu học. Quyền này gồm triển khai giao diện lên website sau validation. Không đổi framework hoặc đưa React/TSX/prototype curriculum vào sản phẩm. Bản MagicPath chỉ là thiết kế; bản website dùng HTML/CSS/JS thuần và luồng/dữ liệu thật hiện có.
+
+Thêm garden-theme.css và garden-ui.js. Giữ đúng bytes ảnh assets/backgrounds/van-mieu-quoc-tu-giam.webp, tạo hero rõ cảnh Văn Miếu, màu kem/xanh lá, wordmark, thẻ môn với SVG riêng, chọn lớp gọn và điều hướng dưới trênmobile. Home có4 nút môn thật theo lớp đang xem, cập nhật theo sự kiện điều hướng/course; trạng thái chọn lớp chỉ RAM, không đọc/ghi tiến độ hoặc gửi mạng. Quiz giữ đáp án/feedback/score thật, chỉ thay màu/chữ/khoảng cách/vùng chạm. Mỹ thuật/parent/auth cùng bảng màu; không thay nội dung học, số câu, điều kiện mở bài, phiên Mỹ thuật hoặc Speaking accuracy=null.
+
+Đăng nhập/đăng ký/học thử/PWA giữ luồng hiện có, không nhập demo account hoặc số liệu giả từ prototype. Mobile phụ huynh guest dùng login thật, authenticated dùng parent gate thật. Nút mới được thêm vào selector bảo vệ rời quiz; không được đi vòng qua dialog/PIN. Giữ7 chức năng tài khoản; action mobile riêng không chèn vào registry của menu. Còn15 môn đánh giá, dữ liệu theo trẻ/môn, progressVersion2, schema/rules/merge/quota hiện có; lớp2–5 chỉ lưu thiết bị. Không thêm dependencies/tracking/ads/networkfont. Font dùng stack hiện có, nên có thể khác Nunito trong MagicPath tùy máy.
+
+Gate cuối: regression36 suites/680 checks, fail0/runtime0/missing=[]/exit0; physical207/207/runtime[]/exit0 ở375×812/768×1024/1280×900, gồmHome/minimumtargets/điều hướng mới/thoát quiz/parentlogin và các môn lớp3–5/Mỹ thuật online-offline; upgrade actualV42→V43 277/277,fail/runtime0/exit0, legacy /10/history/time/quota/sentinel giữ nguyên; responsive lớp1/2 cũ3/3 exit0; audit85/85 exit0; syntax/diffcheck exit0. Dùng profile/fixture riêng, không mở/xóa dữ liệu thật.
+
+Review đầu phát hiện assertion brand cũ yêu cầu không có chữ, không còn đúng với wordmark mới; đã thay bằng kiểm tra logo+tên thật. Assertion7 menu phát hiện mobile parent dùng chung data-function-action; đã tách data-garden-parent, giữ đúng7 menu và bổ sung leave-quiz guard. Giữ __v43_before_navigation_review.json. Header nhãn Việt hóa “Trang chủ”; giữ auth CTA và kiểm tra trạng thái guest/auth. Runner click thật chọn phần tử đang hiển thị khiHome vàcatalog cùng dẫn tới một course, không click node có rect0. Sau xem ảnh thật đã thu gọn nút tài khoản, giảm khoảng68px cũ, ưu tiênCTA học và chạy lại toàn bộ gate trên tree cuối.
+
+Nguồn thiết kế: MagicPath project462124513023377408, desktop component462124548473638912 revision462127320858255360, mobile462127631505186816 revision462127631505186817. Giữ bản mẫu ở MagicPath; source website không phụ thuộc dịch vụMagicPath hoặc GoogleFonts. Giới hạn khác prototype: giữ toàn bộ auth/status/install/học tiếp thật, khóa môn/PIN/thiếu dữ liệu, không thay chúng bằng dữ liệu hoặc màn giả. Chưa đánh giá với trẻ/giáo viên, thiết bị vật lý/Safari hoặc Firebase E2E.
+
+File source đổi: index.html, script.js (copy/wordmark/navigationguard), manifest.webmanifest (màu), service-worker.js (cache hoc-cung-be-v43/precache2file), garden-theme.css, garden-ui.js; parent-tools/child-settings chỉ literal cache. Runner/audit và README/Project Memory cập nhật; giữ tài liệu hậu phát hànhV42 có sẵn vàuntracked cũ. __v43_validation_evidence.json ghi hash. Không thay data curriculum, cloud-sync.js, Firestore rules hoặc scoring/sync logic.
+
+Branch codex/garden-interface từ V42 f7c562f302bd967523cbdd97e0d0731ff2faae41; origin/main cùngbaseline tạipreflight. Chủ dự án đã cho phép commit/push/deploy V43. Chỉ xác nhậnproduction sau workflow và đối chiếu asset/smoke riêng; các số gate trên là local. Bằng chứng production sẽ ghi __v43_production_evidence.json. Nếu cần quay lại, tạo commit revert có cache phát hành mới và giữ localStorage; chưa thực hiện rollback.

@@ -560,9 +560,9 @@ function installExperienceUi() {
   const content = $("#home-screen .hero__content"), gradeHeading = $("#grade-choices .section-heading"), parentEntry = elements.parentEntryButton?.closest(".parent-entry");
   if (content && !$("#guest-home-actions")) {
     const eyebrow = content.querySelector(".eyebrow"), title = content.querySelector("h1"), description = content.querySelector(".hero__description"), learnLink = content.querySelector('a[href="#grade-choices"]');
-    if (eyebrow) eyebrow.textContent = "Học vui mỗi ngày";
-    if (title) title.textContent = "Học vui mỗi ngày";
-    if (description) { description.dataset.guestText = "Đăng nhập để quản lý hồ sơ, tiến độ và cài đặt riêng cho từng bé."; description.dataset.authText = "Chọn bài học phù hợp và tiếp tục hành trình của bé."; description.textContent = description.dataset.guestText; }
+    if (eyebrow) eyebrow.textContent = "Một ngày mới, bao điều hay";
+    if (title) title.innerHTML = "Học một chút,<br><span>vui thật nhiều.</span>";
+    if (description) { description.dataset.guestText = "Cùng khám phá, thử điều mới và lớn lên qua những bài học nhỏ mỗi ngày."; description.dataset.authText = "Cùng khám phá, thử điều mới và tiếp tục hành trình riêng của con."; description.textContent = description.dataset.guestText; }
     learnLink?.insertAdjacentHTML("beforebegin", `<div class="guest-auth-actions" id="guest-home-actions" data-guest-only><button class="primary-button" id="home-login-button" type="button" data-auth-open="login" data-guest-only>Đăng nhập</button><button class="secondary-button" id="home-register-button" type="button" data-auth-open="register" data-guest-only>Đăng ký</button></div>`);
     if (learnLink) { learnLink.textContent = "Học thử →"; learnLink.dataset.homeLearnLink = "true"; }
   }
@@ -1033,7 +1033,7 @@ async function runEnglishGrade1Tests() {
   test("V", english.levels.length === 40 && parentStatistics(blank).totalLevels === 40 && parentStatistics(oldProgress).opened >= 2);
   for (let attempt = 0; attempt < 40 && typeof window.HocCungBeCloudSync?.cloudPath !== "function"; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 50));
   test("W", window.HocCungBeCloudSync?.cloudPath?.("uid", "child", english.id) === "users/uid/children/child/progress/english-grade-1");
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v42"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("X", sw.includes('const CACHE_NAME = "hoc-cung-be-v43"') && sw.includes('"./learning-analytics.js"') && sw.includes('"./weekly-report.js"') && sw.includes('"./data/english-grade-1.js"') && sw.includes('"./assets/english-grade-1/images/greetings.webp"') && sw.includes('"./assets/english-grade-1/images/review-2.webp"') && !sw.includes("assets/english-grade-1/videos/")); } catch (error) { test("X", false, String(error)); }
   test("Y", new Set(allQuestions.map((item) => item.type)).size >= 8 && ["choice", "image-choice", "listen-choice", "word-to-image", "match", "letter-order", "true-false", "animation-choice"].every((type) => allQuestions.some((item) => item.type === type)));
   const mediaPaths = english.levels.flatMap((item) => [item.media?.learn?.[0]?.src, item.media?.featured?.poster, item.media?.featured?.fallback]).filter(Boolean);
   try { const responses = await Promise.all([...new Set(mediaPaths)].map((path) => fetch(path, { cache: "no-store" }))); test("Z", responses.every((response) => response.ok)); } catch (error) { test("Z", false, String(error)); }
@@ -1047,7 +1047,7 @@ async function runEnglishGrade1Tests() {
   const videoQuestions = allQuestions.filter((item) => item.type === "video-choice");
   test("AF", videoQuestions.length === 5 && videoQuestions.every((item) => item.video?.webm.endsWith(".webm") && !item.video.ariaLabel.toLowerCase().includes(item.answer.toLowerCase())));
   try { const manifest = await fetch("assets/english-grade-1/media-manifest.json", { cache: "no-store" }).then((response) => response.json()); test("AG", manifest.version === 2 && manifest.videoAssetsRequired === true && manifest.clips.length === 7 && manifest.clips.every((clip) => clip.available === true && clip.mimeType === "video/webm" && clip.webm.endsWith(".webm") && clip.poster && clip.fallbackImage && clip.animationFallback)); } catch (error) { test("AG", false, String(error)); }
-  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v42" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
+  try { const sw = await fetch("service-worker.js", { cache: "no-store" }).then((response) => response.text()); test("AH", sw.match(/const CACHE_NAME = "([^"]+)"/)?.[1] === "hoc-cung-be-v43" && sw.includes('request.destination === "video"') && sw.includes("cacheMediaRange") && sw.includes('"./weekly-report.js"')); } catch (error) { test("AH", false, String(error)); }
   if (previousCourse !== activeCourseId) setActiveCourse(previousCourse);
   return { passed: results.every((item) => item.passed), results };
 }
@@ -1087,7 +1087,7 @@ async function runBrandingTests() {
   test("A", Boolean(headerLogo && logo?.naturalWidth));
   test("B", getComputedStyle(headerLogo).objectFit === "contain" && headerLogo.clientWidth > 0 && headerLogo.clientHeight > 0);
   test("C", logo?.naturalWidth === logo?.naturalHeight && headerLogo.getAttribute("width") === "68" && headerLogo.getAttribute("height") === "68" && css.includes("height: 68px"));
-  test("D", document.querySelector(".brand")?.textContent.trim() === "");
+  test("D", document.querySelector(".garden-wordmark")?.textContent.includes("Học Cùng Bé") && Boolean(document.querySelector(".brand__logo")));
   test("E", Boolean(document.querySelector("#account-login-screen .account-brand-logo")));
   test("F", Boolean(document.querySelector("#account-register-screen .account-brand-logo")));
   test("G", Boolean(document.querySelector("#account-forgot-screen .account-brand-logo")));
@@ -1226,7 +1226,7 @@ window.__hocCungBeBrandingTests = runBrandingTests();
     } finally { refreshing = false; }
   }
   function quizInProgress() { return !screens.quiz.hidden && Boolean(quiz?.level) && screens.result.hidden; }
-  function targetLeavesQuiz(target) { return Boolean(target?.closest?.('[data-go], button[data-course], [data-level-id], #quiz-back-button, #learn-back-button, [data-function-action], [data-child-switch], [data-child-select], [data-child-close]')); }
+  function targetLeavesQuiz(target) { return Boolean(target?.closest?.('[data-go], button[data-course], [data-level-id], #quiz-back-button, #learn-back-button, [data-function-action], [data-garden-parent], [data-child-switch], [data-child-select], [data-child-close]')); }
   function openLeaveDialog(trigger) { pendingNavigation = trigger; const dialog = $v36("#quiz-leave-dialog"); dialog.hidden = false; $v36("#quiz-leave-stay").focus(); }
   function closeLeaveDialog(restoreFocus = true) {
     const trigger = pendingNavigation; pendingNavigation = null;
