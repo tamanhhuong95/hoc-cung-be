@@ -1,6 +1,6 @@
 # Project Memory hiện hành — Học Cùng Bé
 
-Tài liệu PM-7.1, 18/10/2026 UTC+7. V45 là candidate local theo yêu cầu đổi sang nông trại mô hình chân thực. Chưa commit/push/deploy; production và HEAD vẫn V44 7b45bd0. Kết quả hiện tại và giới hạn trong __v45_living_farm_validation_2026-10-18.md; các trạng thái phía dưới là lịch sử.
+Tài liệu PM-7.3, 18/10/2026 UTC+7. V46 kiểm soát nông trại đã hoàn thiện local, chưa commit/push/deploy. Production/HEAD vẫn V45 493562e. Có bật/tắt, 1–120 phút/ngày và mật khẩu riêng theo UID/bé trên trình duyệt, không sync. Xem __v46_parent_farm_validation_2026-10-18.md. Các trạng thái phía dưới là lịch sử.
 
 ## Quyết định và trạng thái xác minh
 
@@ -271,3 +271,26 @@ Kết quả: Full browser regression: 680 checks, fail 0, exit 0; Farm core and 
 ## Phê duyệt phát hành V45 — 18/10/2026
 
 Chủ dự án yêu cầu “phát hành đi” sau khi duyệt nông trại mô hình local. Cho phép commit/push/deploy V45. Đã đối chiếu SHA-256 12 tài nguyên với bằng chứng kiểm thử; không đổi source sau gate. Production vẫn V44 tại thời điểm chuẩn bị commit; phải xác minh Pages, tài nguyên, browser và offline sau deploy. Không thay đổi visibility/schema/rules hoặc dữ liệu trẻ.
+
+
+## Production V45 xác minh — 18/10/2026
+
+Chủ dự án yêu cầu phát hành; đã commit/push V45 493562e53f32fbca59590cbd81338621b202bd60. GitHub Pages run 39115462661 completed/success. Production 28/28 tài nguyên byte-match commit; browser 74/74, failed=0, runtime=0, missingSuites=[], realExitCode=0; cache hoc-cung-be-v45 và cold reload offline đạt.
+
+Website: https://tamanhhuong95.github.io/hoc-cung-be/ → Nông trại tri thức. Giữ dữ liệu học, ví/kho đồ hiện có; không đổi schema/rules. Chi tiết __v45_production_evidence.json và __v45_production_smoke_report.json. Báo cáo local phía trên là mốc lịch sử trước phát hành. Chưa thử thiết bị thật/Safari/Firebase sync thật.
+
+Rollback nếu cần: hoàn nguyên commit V45 bằng commit mới, tăng tên cache và giữ dữ liệu local; V44 đọc được các trường tăng trưởng bổ sung mà không đổi farmVersion. Không force push hoặc xóa dữ liệu bé.
+
+
+## V46 local — kiểm soát nông trại theo yêu cầu, 18/10/2026
+
+Chủ dự án yêu cầu cho phép/không cho phép chơi, giới hạn thời gian và mật khẩu riêng vào vườn. Đã bổ sung trong dashboard, mặc định 15 phút/ngày, 1–120 phút; chưa có mật khẩu thì khóa, cần hồ sơ bé. Mỗi lượt vào xác thực lại; rời tab/đổi bé/tài khoản khóa phiên; Web Locks giới hạn một phiên cùng UID/bé và lưu quota trước khi chơi. Hết giờ/lỗi lưu khóa vườn, không reset ví/kho đồ. Khóa/password PBKDF2 có muối chỉ local, không sync. Đổi/reset mật khẩu cần PIN phụ huynh và giữ nguyên thời gian đã dùng.
+
+Tự kiểm tra migration PIN cũ được tách sang storage RAM để không tráo PIN thật lúc khởi động. Giữ đầy đủ test migration và dữ liệu cũ. Preview cũ chuyển về app để không có vườn chơi không khóa. Không sửa Firestore/schema/progressVersion/scoring/unlock hoặc nội dung.
+
+Gate: Full browser regression: 680, fail=0, exit=0; Farm controls core: 56, fail=0, exit=0; Farm controls physical browser: 67, fail=0, exit=0; Farm economy and growth: 70, fail=0, exit=0; Existing farm browser flows: 74, fail=0, exit=0; V45 to V46 upgrade and art/games: 280, fail=0, exit=0; Controls visual review at three sizes: 7, fail=0, exit=0; Media/PWA/security audit: 85, fail=0, exit=0; English responsive: 3, fail=0, exit=0. Runtime/missing cụ thể và hash trong __v46_validation_evidence.json. Chưa thử thiết bị thật/Safari/Firebase E2E. Chưa được yêu cầu phát hành V46; chờ duyệt local.
+
+
+## Phê duyệt phát hành V46 — 18/10/2026
+
+Chủ dự án yêu cầu “phát hành” sau khi duyệt V46 local. Cho phép commit/push/deploy V46. Đã đối chiếu SHA-256 toàn bộ 10 tệp source đã kiểm thử; không đổi source sau gate. Production vẫn V45 tại thời điểm chuẩn bị commit. Phải xác minh Pages, byte tài nguyên, kiểm soát phụ huynh, nông trại và offline trên website thật. Không đổi visibility/Firestore hoặc dữ liệu trẻ.

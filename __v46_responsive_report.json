@@ -1,0 +1,26 @@
+{
+  "realExitCode": 0,
+  "results": [
+    {
+      "requested": "375x812",
+      "width": 375,
+      "height": 812,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "requested": "768x1024",
+      "width": 768,
+      "height": 1024,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "requested": "1280x900",
+      "width": 1280,
+      "height": 900,
+      "passed": true,
+      "failures": []
+    }
+  ]
+}

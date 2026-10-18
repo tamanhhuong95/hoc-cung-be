@@ -14,6 +14,7 @@
   if(!navigator.locks)throw Error('Trình duyệt này chưa hỗ trợ lưu nông trại an toàn. Hãy mở bằng Chrome hoặc Edge mới.');
   return navigator.locks.request(expected,()=>{
    if(context()!==expected)throw Error('Hồ sơ đã thay đổi. Con mở lại nông trại nhé.');
+   if(action)window.HocCungBeFarmAccess.assertAllowed();
    if(action&&L.canStartThinkingGame()===false)throw Error('Đến giờ nghỉ rồi. Nông trại sẽ chờ con nhé.');
    const id=identity(),before=read(expected),next=C.reconcile(before,snapshots(id));
    const result=action?C.transact(next,action):next;
@@ -25,8 +26,8 @@
  const adapter={context,name:()=>identity()?.name||'bé',demo:false,load:()=>transaction(null),mutate:transaction,learn:()=>document.querySelector('#grade-choices [data-go="grade'+(window.HocCungBeGardenUi?.getGrade()||'1')+'"]')?.click()};
  function hideResult(){document.querySelector('#farm-result-reward')?.remove();}
  function close(){ui?.close();hideResult();ui?.destroy();ui=null;root.replaceChildren();}
- function open(){if(!ui)ui=window.HocCungBeFarmUI.mount(root,adapter);else ui.refresh();}
- window.addEventListener('hoc-cung-be:screen-changed',e=>{if(e.detail.name==='farm')open();else ui?.close();});
+ function open(){window.HocCungBeFarmAccess.enter(root,()=>{ui=window.HocCungBeFarmUI.mount(root,adapter);},()=>{ui?.destroy();ui=null;});}
+ window.addEventListener('hoc-cung-be:screen-changed',e=>{if(e.detail.name==='farm')open();else window.HocCungBeFarmAccess.leave();});
  for(const name of ['hoc-cung-be:child-will-change','hoc-cung-be:child-changed','hoc-cung-be:auth-state'])window.addEventListener(name,()=>{close();if(!root.hidden)open();});
  window.addEventListener('storage',e=>{if(e.key===context()&&!root.hidden)ui?.refresh();});
  document.addEventListener('click',event=>{if(event.target.closest('#farm-result-reward [data-go="farm"]'))document.querySelector('.farm-entry')?.click();});

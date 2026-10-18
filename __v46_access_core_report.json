@@ -1,0 +1,234 @@
+{
+  "suiteCount": 1,
+  "totalChecks": 56,
+  "failedCount": 0,
+  "runtimeErrorCount": 0,
+  "missingSuites": [],
+  "checks": [
+    {
+      "name": "Defaults require a new password to be set",
+      "passed": true
+    },
+    {
+      "name": "No stored policy is a new locked policy",
+      "passed": true
+    },
+    {
+      "name": "Keys separate UID",
+      "passed": true
+    },
+    {
+      "name": "Keys separate child",
+      "passed": true
+    },
+    {
+      "name": "Keys escape delimiters",
+      "passed": true
+    },
+    {
+      "name": "No identity gives no key",
+      "passed": true
+    },
+    {
+      "name": "Reject negative minutes",
+      "passed": true
+    },
+    {
+      "name": "Reject zero minutes",
+      "passed": true
+    },
+    {
+      "name": "Reject fraction minutes",
+      "passed": true
+    },
+    {
+      "name": "Reject too high minutes",
+      "passed": true
+    },
+    {
+      "name": "Reject text minutes",
+      "passed": true
+    },
+    {
+      "name": "Accept 1 minutes",
+      "passed": true
+    },
+    {
+      "name": "Accept 15 minutes",
+      "passed": true
+    },
+    {
+      "name": "Accept 60 minutes",
+      "passed": true
+    },
+    {
+      "name": "Accept 120 minutes",
+      "passed": true
+    },
+    {
+      "name": "Disabled policy can remain without password",
+      "passed": true
+    },
+    {
+      "name": "Reject unknown policy version",
+      "passed": true
+    },
+    {
+      "name": "Reject invalid policy JSON without defaulting",
+      "passed": true
+    },
+    {
+      "name": "Reject malformed policy without defaulting",
+      "passed": true
+    },
+    {
+      "name": "Reject password length/content \"\"",
+      "passed": true
+    },
+    {
+      "name": "Reject password length/content \"123\"",
+      "passed": true
+    },
+    {
+      "name": "Reject password length/content \"    \"",
+      "passed": true
+    },
+    {
+      "name": "Reject password length/content \"                    \"",
+      "passed": true
+    },
+    {
+      "name": "Reject password length/content \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+      "passed": true
+    },
+    {
+      "name": "Accept four characters",
+      "passed": true
+    },
+    {
+      "name": "Accept sixty four characters",
+      "passed": true
+    },
+    {
+      "name": "PBKDF2 salted record valid",
+      "passed": true
+    },
+    {
+      "name": "Different random salt per password save",
+      "passed": true
+    },
+    {
+      "name": "Password not persisted as plaintext",
+      "passed": true
+    },
+    {
+      "name": "Correct password verifies",
+      "passed": true
+    },
+    {
+      "name": "Wrong password rejected",
+      "passed": true
+    },
+    {
+      "name": "Different parent PIN rejected by farm verifier",
+      "passed": true
+    },
+    {
+      "name": "Wrong algorithm rejected",
+      "passed": true
+    },
+    {
+      "name": "Reduced PBKDF2 work factor rejected",
+      "passed": true
+    },
+    {
+      "name": "Non-string salt rejected",
+      "passed": true
+    },
+    {
+      "name": "Malformed hash rejected",
+      "passed": true
+    },
+    {
+      "name": "Hash remains after roundtrip",
+      "passed": true
+    },
+    {
+      "name": "Missing crypto never falls back to weak hash",
+      "passed": true
+    },
+    {
+      "name": "New daily usage starts at zero",
+      "passed": true
+    },
+    {
+      "name": "Reserve writes a whole second",
+      "passed": true
+    },
+    {
+      "name": "Reserve does not mutate input",
+      "passed": true
+    },
+    {
+      "name": "Remaining deducts usage",
+      "passed": true
+    },
+    {
+      "name": "Limit decrease never resets usage",
+      "passed": true
+    },
+    {
+      "name": "Limit increase preserves used time",
+      "passed": true
+    },
+    {
+      "name": "Usage roundtrip persists",
+      "passed": true
+    },
+    {
+      "name": "New local day resets only its time budget",
+      "passed": true
+    },
+    {
+      "name": "Clock rollback fails closed",
+      "passed": true
+    },
+    {
+      "name": "Reject corrupt usage broken",
+      "passed": true
+    },
+    {
+      "name": "Reject corrupt usage {}",
+      "passed": true
+    },
+    {
+      "name": "Reject corrupt usage {\"version\":1,\"day\":\"2026-10-18\",\"usedMs\":-1}",
+      "passed": true
+    },
+    {
+      "name": "Reject corrupt usage {\"version\":1,\"day\":\"2026-10-18\",\"usedMs\":\"0\"}",
+      "passed": true
+    },
+    {
+      "name": "Reject corrupt usage {\"version\":1,\"day\":\"2026-10-18\",\"usedMs\":86400001}",
+      "passed": true
+    },
+    {
+      "name": "Reject corrupt usage {\"version\":2,\"day\":\"2026-10-18\",\"usedMs\":0}",
+      "passed": true
+    },
+    {
+      "name": "Reserve rejects negative duration",
+      "passed": true
+    },
+    {
+      "name": "Reserve rejects fractional duration",
+      "passed": true
+    },
+    {
+      "name": "Usage never exceeds a day",
+      "passed": true
+    }
+  ],
+  "realExitCode": 0
+}

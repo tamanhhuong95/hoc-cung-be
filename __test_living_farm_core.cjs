@@ -21,4 +21,4 @@ check('mature legacy plant retained',C.growthStage({id:'sunflower',care:2},0)===
 check('timed data survives roundtrip',C.validate(JSON.parse(JSON.stringify(bloom))));
 check('corrupt growth metadata rejected',!C.validate({...s,items:[{id:'sunflower',care:1,growthVersion:1,growthFrom:0,readyAt:'tomorrow'}]}));
 check('growth never changes wallet',JSON.stringify(C.wallet(bloom))===JSON.stringify(C.wallet(s)));
-const report={suiteCount:1,totalChecks:checks.length,failedCount:checks.filter(c=>!c.passed).length,runtimeErrorCount:0,missingSuites:[],checks};report.realExitCode=report.failedCount?1:0;fs.writeFileSync(__dirname+'/__v45_core_report.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));process.exitCode=report.realExitCode;
+const report={suiteCount:1,totalChecks:checks.length,failedCount:checks.filter(c=>!c.passed).length,runtimeErrorCount:0,missingSuites:[],checks};report.realExitCode=report.failedCount?1:0;fs.writeFileSync(__dirname+'/__v46_core_report.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));process.exitCode=report.realExitCode;

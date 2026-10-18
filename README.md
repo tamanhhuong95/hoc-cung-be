@@ -6,7 +6,9 @@ Website giáo dục tĩnh bằng HTML, CSS và JavaScript thuần cho học sinh
 
 ## Trạng thái mới nhất
 
-**V45 đang ở local, chưa phát hành:** nông trại mô hình chân thực, 8 cây/hoa, 7 vật nuôi chuyển động, tưới/cho ăn và cây lớn theo thời gian. Xem [báo cáo V45](__v45_living_farm_validation_2026-10-18.md). Vườn mẫu: `http://127.0.0.1:8789/__living-farm-preview.html`; dữ liệu mẫu chỉ ở RAM.
+**V46 local, chưa phát hành:** phụ huynh bật/tắt nông trại, giới hạn 1–120 phút/ngày và đặt mật khẩu riêng theo bé trên thiết bị. Chưa đặt mật khẩu thì vườn khóa; học thử cần đăng nhập/chọn hồ sơ để dùng vườn. Xem [báo cáo V46](__v46_parent_farm_validation_2026-10-18.md).
+
+**V45 đã phát hành**, SHA `493562e`, production 28/28 tài nguyên và 74/74 kiểm tra đạt. **Nội dung:** nông trại mô hình chân thực, 8 cây/hoa, 7 vật nuôi chuyển động, tưới/cho ăn và cây lớn theo thời gian. Xem [báo cáo V45](__v45_living_farm_validation_2026-10-18.md). Vườn mẫu: `http://127.0.0.1:8789/__living-farm-preview.html`; dữ liệu mẫu chỉ ở RAM.
 
 **V44 nông trại đã phát hành**, SHA `7b45bd0`, production23/23 tài nguyên và55/55 kiểm tra đạt. Xem [báo cáo nông trại](__v44_farm_validation_2026-10-18.md). Production V44 được xác minh ngày18/10/2026; các mục V43/V40/V39 bên dưới là lịch sử.
 

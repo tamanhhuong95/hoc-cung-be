@@ -1,0 +1,39 @@
+{
+  "suiteCount": 1,
+  "totalChecks": 7,
+  "failedCount": 0,
+  "runtimeErrors": [],
+  "runtimeErrorCount": 0,
+  "missingSuites": [],
+  "checks": [
+    {
+      "name": "375 controls panel rendered",
+      "passed": true
+    },
+    {
+      "name": "375 password panel rendered",
+      "passed": true
+    },
+    {
+      "name": "768 controls panel rendered",
+      "passed": true
+    },
+    {
+      "name": "768 password panel rendered",
+      "passed": true
+    },
+    {
+      "name": "1280 controls panel rendered",
+      "passed": true
+    },
+    {
+      "name": "1280 password panel rendered",
+      "passed": true
+    },
+    {
+      "name": "Countdown rendered after actual password unlock",
+      "passed": true
+    }
+  ],
+  "realExitCode": 0
+}

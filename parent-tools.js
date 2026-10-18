@@ -48,15 +48,15 @@
     if (isLegacyShaRecord(record)) { const hash = await legacySha256Hash(pin, record.salt, cryptoApi); return Boolean(hash && hash === record.hash); }
     return isLegacyFnvRecord(record) && fallbackHash(`${record.salt}:${pin}`) === record.hash;
   }
-  async function verifyStoredPin(pin) {
-    const record = parse(safeGet(PIN_KEY));
+  async function verifyStoredPin(pin, store = { get: safeGet, set: safeSet }) {
+    const record = parse(store.get(PIN_KEY));
     if (!record) return { verified: false };
     if (!webCryptoAvailable() && !isLegacyFnvRecord(record)) return { verified: false, unsupported: true };
     const verified = await verifyPin(pin, record);
     if (!verified) return { verified: false };
     if (!isPbkdf2Record(record) && webCryptoAvailable()) {
       const migrated = await pinRecord(pin);
-      if (!migrated || !safeSet(PIN_KEY, JSON.stringify(migrated))) return { verified: false, migrationFailed: true };
+      if (!migrated || !store.set(PIN_KEY, JSON.stringify(migrated))) return { verified: false, migrationFailed: true };
     }
     return { verified: true };
   }
@@ -116,7 +116,7 @@
   }
   function feedbackPayload(values) {
     const lines = ["Góp ý cho Học Cùng Bé", "", `Loại góp ý: ${values.type}`, `Tiêu đề: ${values.title}`, "", "Nội dung:", values.message, "", `Email liên hệ: ${values.email || "(không cung cấp)"}`];
-    if (values.technical) lines.push("", "Thông tin kỹ thuật (được phụ huynh chủ động chọn):", `URL: ${location.href}`, `Trình duyệt: ${navigator.userAgent}`, "Phiên bản ứng dụng: hoc-cung-be-v45");
+    if (values.technical) lines.push("", "Thông tin kỹ thuật (được phụ huynh chủ động chọn):", `URL: ${location.href}`, `Trình duyệt: ${navigator.userAgent}`, "Phiên bản ứng dụng: hoc-cung-be-v46");
     return lines.join("\r\n");
   }
   function buildFeedbackMailto(values, destination = FEEDBACK_EMAIL) { return `mailto:${encodeURIComponent(destination)}?subject=${encodeURIComponent(`[Học Cùng Bé] ${values.type}: ${values.title}`)}&body=${encodeURIComponent(feedbackPayload(values))}`; }
@@ -172,12 +172,11 @@
     test("E", record?.iterations === PBKDF2_ITERATIONS && record?.algorithm === PBKDF2_ALGORITHM);
     const legacySha = { version: 1, algorithm: "SHA-256", salt: "legacy-sha-salt", hash: await legacySha256Hash("2345", "legacy-sha-salt") };
     test("F", await verifyPin("2345", legacySha));
-    const originalStoredPin = safeGet(PIN_KEY), originalAttempts = safeGet(PIN_ATTEMPTS_KEY);
-    safeSet(PIN_KEY, JSON.stringify(legacySha)); const shaMigration = await verifyStoredPin("2345"); test("G", shaMigration.verified && isPbkdf2Record(parse(safeGet(PIN_KEY))));
+    // Test migration only in memory; never swap the real parent's stored PIN.
+    const memory = new Map(), sandbox = { get: (key) => memory.get(key) ?? null, set: (key,value) => { memory.set(key,value); return true; } };
+    sandbox.set(PIN_KEY, JSON.stringify(legacySha)); const shaMigration = await verifyStoredPin("2345", sandbox); test("G", shaMigration.verified && isPbkdf2Record(parse(sandbox.get(PIN_KEY))));
     const legacyFnv = { version: 1, algorithm: "fallback-fnv1a", salt: "legacy-fnv-salt", hash: fallbackHash("legacy-fnv-salt:3456") };
-    safeSet(PIN_KEY, JSON.stringify(legacyFnv)); const fnvMigration = await verifyStoredPin("3456"); test("H", fnvMigration.verified && isPbkdf2Record(parse(safeGet(PIN_KEY))));
-    if (originalStoredPin === null) { try { localStorage.removeItem(PIN_KEY); } catch {} } else safeSet(PIN_KEY, originalStoredPin);
-    if (originalAttempts === null) { try { localStorage.removeItem(PIN_ATTEMPTS_KEY); } catch {} } else safeSet(PIN_ATTEMPTS_KEY, originalAttempts);
+    sandbox.set(PIN_KEY, JSON.stringify(legacyFnv)); const fnvMigration = await verifyStoredPin("3456", sandbox); test("H", fnvMigration.verified && isPbkdf2Record(parse(sandbox.get(PIN_KEY))));
     test("I", !await pinRecord("4567", salt, null));
     const simulated = [1, 2, 3, 4, 5].reduce((state) => ({ count: state.count + 1, lockedUntil: state.count + 1 >= 5 ? 1 : 0 }), { count: 0, lockedUntil: 0 }); test("J", simulated.lockedUntil === 1);
     test("K", safeGet("hoc-cung-be:math-grade-1-progress") === progressBefore);

@@ -1,0 +1,307 @@
+{
+  "suiteCount": 1,
+  "totalChecks": 74,
+  "failedCount": 0,
+  "runtimeErrors": [],
+  "runtimeErrorCount": 0,
+  "missingSuites": [],
+  "checks": [
+    {
+      "name": "Home real link opens farm",
+      "passed": true
+    },
+    {
+      "name": "New profile has no invented currency",
+      "passed": true
+    },
+    {
+      "name": "Physical watering persists",
+      "passed": true
+    },
+    {
+      "name": "Watering too early gives waiting guidance",
+      "passed": true
+    },
+    {
+      "name": "Rejected watering has no success effect",
+      "passed": true
+    },
+    {
+      "name": "Seed becomes sprout automatically without reloading",
+      "passed": true
+    },
+    {
+      "name": "Insufficient wallet disables confirmation",
+      "passed": true
+    },
+    {
+      "name": "Escape dismisses native dialog",
+      "passed": true
+    },
+    {
+      "name": "Ten distinct mastered lessons earn 200 stars and 2 gems",
+      "passed": true
+    },
+    {
+      "name": "Reopen cannot mint again",
+      "passed": true
+    },
+    {
+      "name": "Farm does not mutate learning storage",
+      "passed": true
+    },
+    {
+      "name": "Confirmed purchase adds tulip",
+      "passed": true
+    },
+    {
+      "name": "Purchase deducts exact price",
+      "passed": true
+    },
+    {
+      "name": "Seven animal products",
+      "passed": true
+    },
+    {
+      "name": "Cancel has no debit",
+      "passed": true
+    },
+    {
+      "name": "Animal bought",
+      "passed": true
+    },
+    {
+      "name": "Animal care persists",
+      "passed": true
+    },
+    {
+      "name": "Expansion adds three plots",
+      "passed": true
+    },
+    {
+      "name": "Expansion deducts both currencies",
+      "passed": true
+    },
+    {
+      "name": "Concurrent purchase cannot overspend",
+      "passed": true
+    },
+    {
+      "name": "Expired identity purchase is rejected",
+      "passed": true
+    },
+    {
+      "name": "Child does not inherit another profile wallet",
+      "passed": true
+    },
+    {
+      "name": "UID is part of farm key",
+      "passed": true
+    },
+    {
+      "name": "Child is part of farm key",
+      "passed": true
+    },
+    {
+      "name": "Corrupt farm refuses overwrite",
+      "passed": true
+    },
+    {
+      "name": "Second child independent",
+      "passed": true
+    },
+    {
+      "name": "No selected child blocked",
+      "passed": true
+    },
+    {
+      "name": "Storage failure retains old farm",
+      "passed": true
+    },
+    {
+      "name": "375 garden no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "375 garden touch targets",
+      "passed": true
+    },
+    {
+      "name": "375 shop no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "375 shop touch targets",
+      "passed": true
+    },
+    {
+      "name": "375 rewards no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "375 rewards touch targets",
+      "passed": true
+    },
+    {
+      "name": "768 garden no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "768 garden touch targets",
+      "passed": true
+    },
+    {
+      "name": "768 shop no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "768 shop touch targets",
+      "passed": true
+    },
+    {
+      "name": "768 rewards no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "768 rewards touch targets",
+      "passed": true
+    },
+    {
+      "name": "1280 garden no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "1280 garden touch targets",
+      "passed": true
+    },
+    {
+      "name": "1280 shop no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "1280 shop touch targets",
+      "passed": true
+    },
+    {
+      "name": "1280 rewards no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "1280 rewards touch targets",
+      "passed": true
+    },
+    {
+      "name": "Farm navigation guarded during unfinished quiz",
+      "passed": true
+    },
+    {
+      "name": "Stay preserves active quiz",
+      "passed": true
+    },
+    {
+      "name": "Confirmed leave enters farm",
+      "passed": true
+    },
+    {
+      "name": "Result shows reward explanation",
+      "passed": true
+    },
+    {
+      "name": "Result CTA opens farm",
+      "passed": true
+    },
+    {
+      "name": "PWA V46 cached farm assets",
+      "passed": true
+    },
+    {
+      "name": "No online runtime errors",
+      "passed": true
+    },
+    {
+      "name": "Offline farm restored",
+      "passed": true
+    },
+    {
+      "name": "Offline watering works",
+      "passed": true
+    },
+    {
+      "name": "Offline shop has flower illustrations",
+      "passed": true
+    },
+    {
+      "name": "Unrelated data preserved",
+      "passed": true
+    },
+    {
+      "name": "No offline runtime errors",
+      "passed": true
+    },
+    {
+      "name": "Isolated fixture shows all seven animal species",
+      "passed": true
+    },
+    {
+      "name": "Isolated fixture shows all eight flower species",
+      "passed": true
+    },
+    {
+      "name": "Background loaded",
+      "passed": true
+    },
+    {
+      "name": "Animal gait uses changing atlas frames",
+      "passed": true
+    },
+    {
+      "name": "Animal walks through pasture",
+      "passed": true
+    },
+    {
+      "name": "Pause stops animal movement",
+      "passed": true
+    },
+    {
+      "name": "Pause stops gait",
+      "passed": true
+    },
+    {
+      "name": "Wrong tool gives guidance without changing care",
+      "passed": true
+    },
+    {
+      "name": "Feeding has visual feedback",
+      "passed": true
+    },
+    {
+      "name": "Reduced motion disables gait",
+      "passed": true
+    },
+    {
+      "name": "Explicit play can enable motion with OS reduce preference",
+      "passed": true
+    },
+    {
+      "name": "Mobile pasture button pans map",
+      "passed": true
+    },
+    {
+      "name": "Demo mobile has no page overflow",
+      "passed": true
+    },
+    {
+      "name": "Leaving farm removes the scene and revokes access",
+      "passed": true
+    },
+    {
+      "name": "Leaving farm blocks stale care actions",
+      "passed": true
+    },
+    {
+      "name": "Fixture preserves unrelated local data",
+      "passed": true
+    }
+  ],
+  "realExitCode": 0
+}

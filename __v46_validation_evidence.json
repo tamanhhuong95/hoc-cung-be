@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-18",
+  "version": "V46 local",
+  "status": "Not committed, pushed or deployed",
+  "branch": "codex/farm-pilot",
+  "head": "493562e53f32fbca59590cbd81338621b202bd60",
+  "originMain": "493562e53f32fbca59590cbd81338621b202bd60",
+  "cache": "hoc-cung-be-v46",
+  "runs": [
+    {
+      "name": "Full browser regression",
+      "suiteCount": 36,
+      "totalChecks": 680,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Farm controls core",
+      "suiteCount": 1,
+      "totalChecks": 56,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Farm controls physical browser",
+      "suiteCount": 1,
+      "totalChecks": 67,
+      "failedCount": 0,
+      "runtimeErrors": [],
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Farm economy and growth",
+      "suiteCount": 1,
+      "totalChecks": 70,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Existing farm browser flows",
+      "suiteCount": 1,
+      "totalChecks": 74,
+      "failedCount": 0,
+      "runtimeErrors": [],
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "V45 to V46 upgrade and art/games",
+      "baselineSha": "493562e53f32fbca59590cbd81338621b202bd60",
+      "totalChecks": 280,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "runtimeErrors": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Controls visual review at three sizes",
+      "suiteCount": 1,
+      "totalChecks": 7,
+      "failedCount": 0,
+      "runtimeErrors": [],
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Media/PWA/security audit",
+      "totalChecks": 85,
+      "failedCount": 0,
+      "realExitCode": 0
+    },
+    {
+      "name": "English responsive",
+      "totalChecks": 3,
+      "failedCount": 0,
+      "realExitCode": 0
+    }
+  ],
+  "source": [
+    {
+      "file": "index.html",
+      "bytes": 42385,
+      "sha256": "0fa95a476430dde2dffe5f4d717ce9c39f2c598c890767679c9197ca2d2b41ea"
+    },
+    {
+      "file": "farm.js",
+      "bytes": 5219,
+      "sha256": "7e96b2586d1ab8a23727547b852928c64d0ad3d637532d2c4358019cf4a9435a"
+    },
+    {
+      "file": "farm-access-core.js",
+      "bytes": 4460,
+      "sha256": "a423a69ac1f51270adfcf3d6be8a374e1296cc1cbe2be7373429ce570515c242"
+    },
+    {
+      "file": "farm-access.js",
+      "bytes": 16960,
+      "sha256": "cd54000865e8b8d1f4b91594ad3125af24b0f1ece9c012242fbb4049bb9c0943"
+    },
+    {
+      "file": "farm-access.css",
+      "bytes": 2200,
+      "sha256": "ef3b9889ab44bf3cf440e68a577daa277eac60e699629a6ff67892dbbd161e68"
+    },
+    {
+      "file": "parent-tools.js",
+      "bytes": 22009,
+      "sha256": "ae2a8987f03aa85096d1a90d62d2f5980d08c016f8f6315a96066879dce243d1"
+    },
+    {
+      "file": "service-worker.js",
+      "bytes": 6469,
+      "sha256": "3a81913d71c25a00536be9db4bec7c85fe86404e9b4ff8b37b096c13d85799b1"
+    },
+    {
+      "file": "script.js",
+      "bytes": 230865,
+      "sha256": "c8c7a182a35812b78c54a2049871d4ca43ef8a2fd31941347495d30b4f1a4057"
+    },
+    {
+      "file": "child-settings.js",
+      "bytes": 23940,
+      "sha256": "fbe4d5b036185e3a7472c219755c651c4a7cada040b640994cb8b17987fadd72"
+    },
+    {
+      "file": "__living-farm-preview.html",
+      "bytes": 413,
+      "sha256": "c0c190ef0067b4ab0a3ed86538613ec769fffb9f82ba5cbe0be78b33a0b060a4"
+    }
+  ],
+  "limitations": [
+    "Controls, password hashes and play time are per UID/child on this browser only, not cloud synced.",
+    "Chrome and mobile emulation; no physical device/Safari or real Firebase E2E in this run.",
+    "In-app child-safety lock, not OS parental controls or protection against developer tools/storage deletion.",
+    "Play time rounds upward to seconds; hiding a tab requires password entry on return."
+  ]
+}

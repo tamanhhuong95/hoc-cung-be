@@ -1,0 +1,279 @@
+{
+  "suiteCount": 1,
+  "totalChecks": 67,
+  "failedCount": 0,
+  "runtimeErrors": [],
+  "runtimeErrorCount": 0,
+  "missingSuites": [],
+  "checks": [
+    {
+      "name": "Guest cannot bypass farm password setup",
+      "passed": true
+    },
+    {
+      "name": "Existing child without password starts locked",
+      "passed": true
+    },
+    {
+      "name": "Blocked farm never mutates inventory",
+      "passed": true
+    },
+    {
+      "name": "Direct farm action is blocked before unlock",
+      "passed": true
+    },
+    {
+      "name": "Controls are inside the existing parent dashboard",
+      "passed": true
+    },
+    {
+      "name": "Controls identify active child",
+      "passed": true
+    },
+    {
+      "name": "Cannot enable farm without its own password",
+      "passed": true
+    },
+    {
+      "name": "Mismatching new passwords rejected",
+      "passed": true
+    },
+    {
+      "name": "More than 120 minutes rejected by the form",
+      "passed": true
+    },
+    {
+      "name": "Policy stored per parent and child",
+      "passed": true
+    },
+    {
+      "name": "Farm password never stored as plaintext",
+      "passed": true
+    },
+    {
+      "name": "Farm secret differs from parent PIN record",
+      "passed": true
+    },
+    {
+      "name": "Password fields cleared after saving",
+      "passed": true
+    },
+    {
+      "name": "Canceled parent PIN cannot change policy",
+      "passed": true
+    },
+    {
+      "name": "Incorrect parent PIN cannot change policy",
+      "passed": true
+    },
+    {
+      "name": "Blank new password retains existing hash",
+      "passed": true
+    },
+    {
+      "name": "Wrong farm password leaves scene locked",
+      "passed": true
+    },
+    {
+      "name": "Five wrong passwords trigger cooldown",
+      "passed": true
+    },
+    {
+      "name": "Correct password cannot bypass cooldown",
+      "passed": true
+    },
+    {
+      "name": "Cooldown survives reload",
+      "passed": true
+    },
+    {
+      "name": "Correct password opens the real farm",
+      "passed": true
+    },
+    {
+      "name": "Separate play countdown is visible",
+      "passed": true
+    },
+    {
+      "name": "Usage reserved durably before play",
+      "passed": true
+    },
+    {
+      "name": "Play session holds a browser lock",
+      "passed": true
+    },
+    {
+      "name": "Authorized care still persists",
+      "passed": true
+    },
+    {
+      "name": "Farm time does not become lesson study time",
+      "passed": true
+    },
+    {
+      "name": "Every reentry asks for password again",
+      "passed": true
+    },
+    {
+      "name": "Leaving does not reset daily use",
+      "passed": true
+    },
+    {
+      "name": "Reload requires password again",
+      "passed": true
+    },
+    {
+      "name": "Daily usage survives reload",
+      "passed": true
+    },
+    {
+      "name": "Time limit closes an active farm",
+      "passed": true
+    },
+    {
+      "name": "Expiry preserves inventory and wallet",
+      "passed": true
+    },
+    {
+      "name": "Stale action after expiry is denied",
+      "passed": true
+    },
+    {
+      "name": "Reentry cannot reset exhausted quota",
+      "passed": true
+    },
+    {
+      "name": "Reload cannot reset exhausted quota",
+      "passed": true
+    },
+    {
+      "name": "Parent can disable the farm",
+      "passed": true
+    },
+    {
+      "name": "Disabled farm has no password bypass",
+      "passed": true
+    },
+    {
+      "name": "Disabling farm leaves lessons available",
+      "passed": true
+    },
+    {
+      "name": "Parent can replace a forgotten farm password",
+      "passed": true
+    },
+    {
+      "name": "Password reset does not reset used time",
+      "passed": true
+    },
+    {
+      "name": "Switching child revokes the current farm unlock",
+      "passed": true
+    },
+    {
+      "name": "Second child does not inherit farm policy",
+      "passed": true
+    },
+    {
+      "name": "Switching account revokes farm unlock",
+      "passed": true
+    },
+    {
+      "name": "Same child name in other UID cannot inherit password",
+      "passed": true
+    },
+    {
+      "name": "Hidden tab revokes play session",
+      "passed": true
+    },
+    {
+      "name": "Hidden farm is not charged as play",
+      "passed": true
+    },
+    {
+      "name": "Returning to tab asks for password",
+      "passed": true
+    },
+    {
+      "name": "Second window cannot acquire the same play session",
+      "passed": true
+    },
+    {
+      "name": "Parent policy change in another window locks active play",
+      "passed": true
+    },
+    {
+      "name": "Failed settings save never claims success",
+      "passed": true
+    },
+    {
+      "name": "Failed settings save preserves old policy",
+      "passed": true
+    },
+    {
+      "name": "Cannot continue playing if time reservation cannot be saved",
+      "passed": true
+    },
+    {
+      "name": "Usage save failure preserves existing farm data",
+      "passed": true
+    },
+    {
+      "name": "375 parent controls no overflow",
+      "passed": true
+    },
+    {
+      "name": "375 password gate no overflow",
+      "passed": true
+    },
+    {
+      "name": "768 parent controls no overflow",
+      "passed": true
+    },
+    {
+      "name": "768 password gate no overflow",
+      "passed": true
+    },
+    {
+      "name": "1280 parent controls no overflow",
+      "passed": true
+    },
+    {
+      "name": "1280 password gate no overflow",
+      "passed": true
+    },
+    {
+      "name": "V46 caches all three new control assets",
+      "passed": true
+    },
+    {
+      "name": "Old preview no longer hosts an unprotected playable farm",
+      "passed": true
+    },
+    {
+      "name": "No online runtime errors",
+      "passed": true
+    },
+    {
+      "name": "Password still required after offline reload",
+      "passed": true
+    },
+    {
+      "name": "Correct password opens farm offline",
+      "passed": true
+    },
+    {
+      "name": "Daily play limit works offline",
+      "passed": true
+    },
+    {
+      "name": "Unrelated local data preserved",
+      "passed": true
+    },
+    {
+      "name": "No offline runtime errors",
+      "passed": true
+    }
+  ],
+  "realExitCode": 0
+}

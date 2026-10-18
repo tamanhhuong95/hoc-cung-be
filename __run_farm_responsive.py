@@ -10,7 +10,7 @@ import time
 ROOT = pathlib.Path(__file__).resolve().parent
 CHROME = pathlib.Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 RUNNER = ROOT / "__english-responsive-runner.html"
-REPORT = ROOT / "__v45_responsive_report.json"
+REPORT = ROOT / "__v46_responsive_report.json"
 PROFILE = ROOT / "__english-responsive-profile"
 VIEWPORTS = [(375, 812), (768, 1024), (1280, 900)]
 
