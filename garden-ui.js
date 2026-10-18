@@ -21,7 +21,7 @@
  window.addEventListener('hoc-cung-be:course-changed',event=>renderGrade(learning.COURSES[event.detail?.courseId]?.grade?.split('-').at(-1)));
  window.addEventListener('hoc-cung-be:screen-changed',event=>{
   const name=event.detail?.name||'';if(/^grade[1-5]$/.test(name))renderGrade(name.slice(-1));
-  const active=name==='home'?'home':name==='thinking-games'?'games':/parent|account|child/.test(name)?'parent':'learn';
+  const active=name==='home'?'home':(name==='thinking-games'||name==='farm')?'games':/parent|account|child/.test(name)?'parent':'learn';
   document.querySelectorAll('[data-garden-nav]').forEach(button=>{if(button.dataset.gardenNav===active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
  });
  document.querySelector('[data-garden-nav="parent"]')?.addEventListener('click',()=>document.querySelector(document.body.dataset.authenticated==='true'?'#parent-entry-button':'#home-login-button')?.click());

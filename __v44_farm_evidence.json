@@ -1,0 +1,1686 @@
+{
+  "date": "2026-10-18",
+  "version": "V44 local candidate",
+  "baseSha": "aaacf770d42092189eab4eebe0350b19a2d662a9",
+  "branch": "codex/farm-pilot",
+  "committed": false,
+  "pushed": false,
+  "deployed": false,
+  "sourceHashes": {
+    "farm-art.js": "898892f06025cce9df7210eed3888b6ebcc0f9a692eb596049496d14deac7800",
+    "farm-core.js": "6b38107c054136cb2f86022b108e3bc5944e1309bad3a5ae46553f12c1bb1729",
+    "farm-ui.js": "d26819ef1862a8f22b8797d76e87471b8ab4fbf4cc3953093e338a9a7a53b124",
+    "farm.js": "9aa49ef8a8b473fbb43f1d8bd75d0ed878dc5ccc35ac704ef2e79c54939a55c7",
+    "farm.css": "c79ec11ef6b2bda59491cc5285446e4f23f71d5aa1a72e34a94ade146e8bc743",
+    "index.html": "d6a5ffa3858a3a60f888a601576dfa75fc1d753d4c3fd13c2cd218f944a94c55",
+    "script.js": "50b359375d6b7c4e10e8ba0212dc84dddffc41bb01ed63c1c2e593b38f3fb3c1",
+    "garden-ui.js": "417e500a00b23de5130e646b22b109704bfb727972d5d275aa05abe04417c524",
+    "service-worker.js": "8670720aaa6bc753c6fe746c3b812b27dccc1a007162840c136dc9b1bc27d81d",
+    "parent-tools.js": "f5824e7bf4f4ae223001910734f6be45b06a64817b2987bb95452876314170c7",
+    "child-settings.js": "a74c4d3b38c3fb122ebdb669b1cb515d8f9a61c7e17271952fbc9c6d1f5bf995"
+  },
+  "unchangedFromHead": {
+    "firestore.rules": true,
+    "cloud-sync.js": true,
+    "child-profiles.js": true,
+    "assets/backgrounds/van-mieu-quoc-tu-giam.webp": true
+  },
+  "regression": {
+    "suites": 36,
+    "checks": 680,
+    "failed": 0,
+    "runtime": 0,
+    "missing": [],
+    "exitCode": 0
+  },
+  "farmCore": {
+    "suiteCount": 1,
+    "totalChecks": 61,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "missingSuites": [],
+    "checks": [
+      {
+        "name": "new farm valid",
+        "passed": true
+      },
+      {
+        "name": "empty wallet",
+        "passed": true
+      },
+      {
+        "name": "starter flower free",
+        "passed": true
+      },
+      {
+        "name": "eight flowers",
+        "passed": true
+      },
+      {
+        "name": "seven animals",
+        "passed": true
+      },
+      {
+        "name": "four decorations",
+        "passed": true
+      },
+      {
+        "name": "unique product IDs",
+        "passed": true
+      },
+      {
+        "name": "reward score 0",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 0",
+        "passed": true
+      },
+      {
+        "name": "reward score 20",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 20",
+        "passed": true
+      },
+      {
+        "name": "reward score 60",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 60",
+        "passed": true
+      },
+      {
+        "name": "reward score 79",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 79",
+        "passed": true
+      },
+      {
+        "name": "reward score 80",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 80",
+        "passed": true
+      },
+      {
+        "name": "reward score 99",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 99",
+        "passed": true
+      },
+      {
+        "name": "reward score 100",
+        "passed": true
+      },
+      {
+        "name": "repeat cannot duplicate 100",
+        "passed": true
+      },
+      {
+        "name": "improve earns only delta",
+        "passed": true
+      },
+      {
+        "name": "lower score cannot reduce",
+        "passed": true
+      },
+      {
+        "name": "incomplete no reward",
+        "passed": true
+      },
+      {
+        "name": "invalid scores ignored",
+        "passed": true
+      },
+      {
+        "name": "gems every five mastery",
+        "passed": true
+      },
+      {
+        "name": "different course same ID independent",
+        "passed": true
+      },
+      {
+        "name": "input immutable",
+        "passed": true
+      },
+      {
+        "name": "reject unknown product",
+        "passed": true
+      },
+      {
+        "name": "reject insufficient",
+        "passed": true
+      },
+      {
+        "name": "buy exact price sunflower",
+        "passed": true
+      },
+      {
+        "name": "buy exact price cactus",
+        "passed": true
+      },
+      {
+        "name": "buy exact price tulip",
+        "passed": true
+      },
+      {
+        "name": "buy exact price daisy",
+        "passed": true
+      },
+      {
+        "name": "buy exact price lavender",
+        "passed": true
+      },
+      {
+        "name": "buy exact price peony",
+        "passed": true
+      },
+      {
+        "name": "buy exact price rose",
+        "passed": true
+      },
+      {
+        "name": "buy exact price lotus",
+        "passed": true
+      },
+      {
+        "name": "buy exact price chicken",
+        "passed": true
+      },
+      {
+        "name": "buy exact price pig",
+        "passed": true
+      },
+      {
+        "name": "buy exact price cow",
+        "passed": true
+      },
+      {
+        "name": "buy exact price dog",
+        "passed": true
+      },
+      {
+        "name": "buy exact price cat",
+        "passed": true
+      },
+      {
+        "name": "buy exact price dove",
+        "passed": true
+      },
+      {
+        "name": "buy exact price turtle",
+        "passed": true
+      },
+      {
+        "name": "buy exact price fence",
+        "passed": true
+      },
+      {
+        "name": "buy exact price bench",
+        "passed": true
+      },
+      {
+        "name": "buy exact price pond",
+        "passed": true
+      },
+      {
+        "name": "buy exact price windmill",
+        "passed": true
+      },
+      {
+        "name": "care has no currency",
+        "passed": true
+      },
+      {
+        "name": "care saved",
+        "passed": true
+      },
+      {
+        "name": "care caps at three",
+        "passed": true
+      },
+      {
+        "name": "bad plot rejected",
+        "passed": true
+      },
+      {
+        "name": "six plots full",
+        "passed": true
+      },
+      {
+        "name": "expansion cost",
+        "passed": true
+      },
+      {
+        "name": "expand allows purchase",
+        "passed": true
+      },
+      {
+        "name": "expansion maximum",
+        "passed": true
+      },
+      {
+        "name": "corruption rejected",
+        "passed": true
+      },
+      {
+        "name": "unknown version rejected",
+        "passed": true
+      },
+      {
+        "name": "negative care rejected",
+        "passed": true
+      },
+      {
+        "name": "serialize roundtrip",
+        "passed": true
+      }
+    ],
+    "realExitCode": 0
+  },
+  "farmBrowser": {
+    "suiteCount": 1,
+    "totalChecks": 55,
+    "failedCount": 0,
+    "runtimeErrors": [],
+    "runtimeErrorCount": 0,
+    "missingSuites": [],
+    "checks": [
+      {
+        "name": "Home real link opens farm",
+        "passed": true
+      },
+      {
+        "name": "New guest has no invented currency",
+        "passed": true
+      },
+      {
+        "name": "Physical watering persists",
+        "passed": true
+      },
+      {
+        "name": "Insufficient wallet disables confirmation",
+        "passed": true
+      },
+      {
+        "name": "Escape dismisses native dialog",
+        "passed": true
+      },
+      {
+        "name": "Ten distinct mastered lessons earn 200 stars and 2 gems",
+        "passed": true
+      },
+      {
+        "name": "Reopen cannot mint again",
+        "passed": true
+      },
+      {
+        "name": "Farm does not mutate learning storage",
+        "passed": true
+      },
+      {
+        "name": "Confirmed purchase adds tulip",
+        "passed": true
+      },
+      {
+        "name": "Purchase deducts exact price",
+        "passed": true
+      },
+      {
+        "name": "Seven animal products",
+        "passed": true
+      },
+      {
+        "name": "Cancel has no debit",
+        "passed": true
+      },
+      {
+        "name": "Animal bought",
+        "passed": true
+      },
+      {
+        "name": "Animal care persists",
+        "passed": true
+      },
+      {
+        "name": "Expansion adds three plots",
+        "passed": true
+      },
+      {
+        "name": "Expansion deducts both currencies",
+        "passed": true
+      },
+      {
+        "name": "Concurrent purchase cannot overspend",
+        "passed": true
+      },
+      {
+        "name": "Expired identity purchase is rejected",
+        "passed": true
+      },
+      {
+        "name": "Child does not inherit guest wallet",
+        "passed": true
+      },
+      {
+        "name": "UID is part of farm key",
+        "passed": true
+      },
+      {
+        "name": "Child is part of farm key",
+        "passed": true
+      },
+      {
+        "name": "Corrupt farm refuses overwrite",
+        "passed": true
+      },
+      {
+        "name": "Second child independent",
+        "passed": true
+      },
+      {
+        "name": "No selected child blocked",
+        "passed": true
+      },
+      {
+        "name": "Storage failure retains old farm",
+        "passed": true
+      },
+      {
+        "name": "375 garden no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "375 garden touch targets",
+        "passed": true
+      },
+      {
+        "name": "375 shop no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "375 shop touch targets",
+        "passed": true
+      },
+      {
+        "name": "375 rewards no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "375 rewards touch targets",
+        "passed": true
+      },
+      {
+        "name": "768 garden no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "768 garden touch targets",
+        "passed": true
+      },
+      {
+        "name": "768 shop no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "768 shop touch targets",
+        "passed": true
+      },
+      {
+        "name": "768 rewards no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "768 rewards touch targets",
+        "passed": true
+      },
+      {
+        "name": "1280 garden no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "1280 garden touch targets",
+        "passed": true
+      },
+      {
+        "name": "1280 shop no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "1280 shop touch targets",
+        "passed": true
+      },
+      {
+        "name": "1280 rewards no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "1280 rewards touch targets",
+        "passed": true
+      },
+      {
+        "name": "Farm navigation guarded during unfinished quiz",
+        "passed": true
+      },
+      {
+        "name": "Stay preserves active quiz",
+        "passed": true
+      },
+      {
+        "name": "Confirmed leave enters farm",
+        "passed": true
+      },
+      {
+        "name": "Result shows reward explanation",
+        "passed": true
+      },
+      {
+        "name": "Result CTA opens farm",
+        "passed": true
+      },
+      {
+        "name": "PWA V44 cached farm assets",
+        "passed": true
+      },
+      {
+        "name": "No online runtime errors",
+        "passed": true
+      },
+      {
+        "name": "Offline farm restored",
+        "passed": true
+      },
+      {
+        "name": "Offline watering works",
+        "passed": true
+      },
+      {
+        "name": "Offline shop has flower illustrations",
+        "passed": true
+      },
+      {
+        "name": "Unrelated data preserved",
+        "passed": true
+      },
+      {
+        "name": "No offline runtime errors",
+        "passed": true
+      }
+    ],
+    "realExitCode": 0
+  },
+  "upgrade": {
+    "baselineSha": "aaacf770d42092189eab4eebe0350b19a2d662a9",
+    "totalChecks": 277,
+    "failedCount": 0,
+    "runtimeErrorCount": 0,
+    "runtimeErrors": [],
+    "checks": [
+      {
+        "name": "Upgrade fixture starts with actual V43 worker",
+        "passed": true
+      },
+      {
+        "name": "Worker upgrade replaces V43 cache with V44",
+        "passed": true
+      },
+      {
+        "name": "V43 legacy /10 progress and quota survive upgrade",
+        "passed": true
+      },
+      {
+        "name": "Both game files are present in precache",
+        "passed": true
+      },
+      {
+        "name": "375 art catalog contains fourteen lessons and fits",
+        "passed": true
+      },
+      {
+        "name": "375 ART-01 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-01 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-01 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-02 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-02 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-02 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-03 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-03 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-03 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-04 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-04 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-04 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-05 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-05 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-05 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-06 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-06 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-06 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-07 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-07 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-07 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-08 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-08 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-08 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-09 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-09 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-09 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-10 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-10 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-10 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-11 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-11 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-11 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-12 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-12 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-12 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-13 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-13 before after frames",
+        "passed": true
+      },
+      {
+        "name": "375 ART-13 physical zoom opens",
+        "passed": true
+      },
+      {
+        "name": "375 ART-13 Escape closes zoom",
+        "passed": true
+      },
+      {
+        "name": "375 ART-13 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-13 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "375 ART-14 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "375 ART-14 before after frames",
+        "passed": true
+      },
+      {
+        "name": "375 ART-14 physical zoom opens",
+        "passed": true
+      },
+      {
+        "name": "375 ART-14 Escape closes zoom",
+        "passed": true
+      },
+      {
+        "name": "375 ART-14 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 ART-14 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "375 pattern controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 pattern complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 pattern replay resets",
+        "passed": true
+      },
+      {
+        "name": "375 odd controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 odd complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 odd replay resets",
+        "passed": true
+      },
+      {
+        "name": "375 count controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 count complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 count replay resets",
+        "passed": true
+      },
+      {
+        "name": "375 order controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "375 order complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "375 order replay resets",
+        "passed": true
+      },
+      {
+        "name": "375x812 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "375x812 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "Native Enter flips focused card",
+        "passed": true
+      },
+      {
+        "name": "Native repeat Enter does not count a self-pair",
+        "passed": true
+      },
+      {
+        "name": "Physical full game reaches four pairs and result",
+        "passed": true
+      },
+      {
+        "name": "Game leaves existing lesson progress and quota intact",
+        "passed": true
+      },
+      {
+        "name": "375 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "768 art catalog contains fourteen lessons and fits",
+        "passed": true
+      },
+      {
+        "name": "768 ART-01 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-01 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-01 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-02 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-02 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-02 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-03 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-03 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-03 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-04 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-04 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-04 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-05 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-05 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-05 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-06 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-06 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-06 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-07 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-07 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-07 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-08 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-08 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-08 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-09 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-09 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-09 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-10 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-10 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-10 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-11 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-11 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-11 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-12 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-12 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-12 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-13 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-13 before after frames",
+        "passed": true
+      },
+      {
+        "name": "768 ART-13 physical zoom opens",
+        "passed": true
+      },
+      {
+        "name": "768 ART-13 Escape closes zoom",
+        "passed": true
+      },
+      {
+        "name": "768 ART-13 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-13 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "768 ART-14 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "768 ART-14 before after frames",
+        "passed": true
+      },
+      {
+        "name": "768 ART-14 physical zoom opens",
+        "passed": true
+      },
+      {
+        "name": "768 ART-14 Escape closes zoom",
+        "passed": true
+      },
+      {
+        "name": "768 ART-14 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 ART-14 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "768 pattern controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 pattern complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 pattern replay resets",
+        "passed": true
+      },
+      {
+        "name": "768 odd controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 odd complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 odd replay resets",
+        "passed": true
+      },
+      {
+        "name": "768 count controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 count complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 count replay resets",
+        "passed": true
+      },
+      {
+        "name": "768 order controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "768 order complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "768 order replay resets",
+        "passed": true
+      },
+      {
+        "name": "768x1024 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "768x1024 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "768 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "1280 art catalog contains fourteen lessons and fits",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-01 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-01 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-01 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-02 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-02 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-02 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-03 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-03 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-03 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-04 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-04 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-04 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-05 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-05 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-05 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-06 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-06 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-06 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-07 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-07 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-07 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-08 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-08 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-08 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-09 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-09 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-09 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-10 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-10 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-10 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-11 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-11 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-11 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-12 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-12 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-12 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-13 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-13 before after frames",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-13 physical zoom opens",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-13 Escape closes zoom",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-13 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-13 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-14 materials and diagram",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-14 before after frames",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-14 physical zoom opens",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-14 Escape closes zoom",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-14 steps visible, fit and touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 ART-14 reflection without changing learning data",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 pattern replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280 odd controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 odd complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 odd replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280 count controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 count complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 count replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280 order controls fit and are touch sized",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 1 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 2 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 3 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 4 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order stage 5 solved with physical clicks",
+        "passed": true
+      },
+      {
+        "name": "1280 order complete and learning data preserved",
+        "passed": true
+      },
+      {
+        "name": "1280 order replay resets",
+        "passed": true
+      },
+      {
+        "name": "1280x900 eight cards and touch targets",
+        "passed": true
+      },
+      {
+        "name": "1280x900 no horizontal overflow",
+        "passed": true
+      },
+      {
+        "name": "1280 navigation clears game state",
+        "passed": true
+      },
+      {
+        "name": "Physical game entry opens intro",
+        "passed": true
+      },
+      {
+        "name": "Offline cold reload opens game and flips a card",
+        "passed": true
+      },
+      {
+        "name": "Offline pattern renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline odd renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline count renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline order renders and accepts physical answer",
+        "passed": true
+      },
+      {
+        "name": "Offline art loads all eight fan steps and reflection",
+        "passed": true
+      },
+      {
+        "name": "Offline art keeps V43 data",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-13 visual guides and zoom",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-13 last step selected",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-14 visual guides and zoom",
+        "passed": true
+      },
+      {
+        "name": "Offline ART-14 last step selected",
+        "passed": true
+      },
+      {
+        "name": "Offline play retains V43 data",
+        "passed": true
+      },
+      {
+        "name": "No page or resource runtime errors",
+        "passed": true
+      }
+    ],
+    "realExitCode": 0
+  },
+  "responsive": {
+    "realExitCode": 0,
+    "results": [
+      {
+        "requested": "375x812",
+        "width": 375,
+        "height": 812,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "768x1024",
+        "width": 768,
+        "height": 1024,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "requested": "1280x900",
+        "width": 1280,
+        "height": 900,
+        "passed": true,
+        "failures": []
+      }
+    ]
+  },
+  "audit": {
+    "checks": 85,
+    "passed": true
+  },
+  "magicPath": {
+    "projectId": "462124513023377408",
+    "desktopComponentId": "462412552253624320",
+    "desktopRevisionId": "462416693671628800",
+    "mobileComponentId": "462416662868668416",
+    "mobileRevisionId": "462417017916522496",
+    "uploadApproved": true,
+    "lastMobileServerPreviewVerified": false,
+    "lastMobileLocalPreview": {
+      "twoColumns": true,
+      "width": 390,
+      "products": 8,
+      "runtimeErrors": [],
+      "exitCode": 0
+    },
+    "limitation": "External agent API quota exhausted after successful mobile build; desktop server preview inspected, final mobile verified locally."
+  }
+}

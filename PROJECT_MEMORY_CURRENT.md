@@ -1,6 +1,6 @@
 # Project Memory hiện hành — Học Cùng Bé
 
-Tài liệu PM-6.6,17/10/2026 UTC+7. Production xác minh trước: V42 f7c562f302bd967523cbdd97e0d0731ff2faae41. V43 giao diện vườn học đạt gate và được phép phát hành; chờ xác minh production. Lớp2–5 chỉ lưu thiết bị.
+Tài liệu PM-6.9,18/10/2026 UTC+7. V44 nông trại local trên codex/farm-pilot, chưa commit/push/deploy. MagicPath và bản chơi thử đã xây dựng; gate36/680 + core61 + browser55 + upgrade277 + responsive3 + audit85 đạt. Production gần nhất V43 đã xác minh17/10.
 
 ## Quyết định và trạng thái xác minh
 
@@ -206,3 +206,45 @@ Nguồn thiết kế: MagicPath project462124513023377408, desktop component4621
 File source đổi: index.html, script.js (copy/wordmark/navigationguard), manifest.webmanifest (màu), service-worker.js (cache hoc-cung-be-v43/precache2file), garden-theme.css, garden-ui.js; parent-tools/child-settings chỉ literal cache. Runner/audit và README/Project Memory cập nhật; giữ tài liệu hậu phát hànhV42 có sẵn vàuntracked cũ. __v43_validation_evidence.json ghi hash. Không thay data curriculum, cloud-sync.js, Firestore rules hoặc scoring/sync logic.
 
 Branch codex/garden-interface từ V42 f7c562f302bd967523cbdd97e0d0731ff2faae41; origin/main cùngbaseline tạipreflight. Chủ dự án đã cho phép commit/push/deploy V43. Chỉ xác nhậnproduction sau workflow và đối chiếu asset/smoke riêng; các số gate trên là local. Bằng chứng production sẽ ghi __v43_production_evidence.json. Nếu cần quay lại, tạo commit revert có cache phát hành mới và giữ localStorage; chưa thực hiện rollback.
+
+
+## V43 đã push — phát hành bị chặn bởi hosting, 17/10/2026
+
+V43 đã commit/push lên main tại SHA aaacf770d42092189eab4eebe0350b19a2d662a9; HEAD/origin/main cùng SHA. Chưa deploy và chưa xác minhproduction. GitHub API public/connector trả404; API xác thực bằng kết nối Git hiện có xác nhận repo private=true, has_pages=false, không có workflow run cho commit. Website/service-worker public trả404. Thử bật Pages giữ repo private bị GitHub422: “Your current plan does not support GitHub Pages for this repository.” Đây là lỗi điều kiện hosting, không có bằng chứng lỗi source hoặc thời điểm/nguyên nhân repo đổiprivate.
+
+Không chuyển public, không đổi gói/chi tiền/nhà cung cấp, không sửa rules hoặc dữ liệu. Đã hỏi chủ dự án có cho phép chuyển repository sang public hay giữ private; câu hỏi đang chờ trả lời, không coi im lặng là đồng ý. Public sẽ công khai toàn bộ mã nguồn và lịch sử Git, không chỉwebsite. Nếu giữ private, cần chủ dự án chọn gói GitHub hỗ trợ hoặc duyệt phương án hosting khác trước khi làm tiếp.
+
+Bằng chứng __v43_release_blocker.json, __v43_github_release_diagnostic.json, __v43_pages_enable_result.json. Gate36 suites/680 checks, physical207, upgrade277, responsive3, audit85 là local; chưa có smokeproductionV43 và không gọi chúng là productionPASS. Source đã kiểm chứng giữ nguyên. Tài liệu này/README/Memory cập nhậtlocal, chưa commit tài liệu mới; untracked cũ giữ nguyên. Sau khi có quyết định hợp lệ, bật hosting, đối chiếu asset/SHA/cache và chạy __run_v43_production_smoke.py trước xác nhận phát hành.
+
+
+## V43 đã phát hành và xác minh production — 17/10/2026
+
+Chủ dự án trả lời rõ “Cho phép chuyển repo sang public” sau khi được thông báo toàn bộ source/lịch sử Git sẽ công khai. Đã chuyển tamanhhuong95/hoc-cung-be sang public (API200), bật Pages main/root (API201). Pages run39026217751 completed/success, đúng SHA aaacf770d42092189eab4eebe0350b19a2d662a9; Pages status built. Trạng thái chặn private/404 ở mục trước là lịch sử và đã được giải quyết.
+
+Production https://tamanhhuong95.github.io/hoc-cung-be/: 18/18 tài nguyên HTTP200, bytes khớp commit, giữ nguyên ảnh Văn Miếu. Kiểm tra trình duyệt production207/207, failure0/runtime0/exit0, gồm điều hướng Home/quiz/parent/Mỹ thuật, ba kích thước màn hình, lớp3–5 và offline với cache hoc-cung-be-v43. Hồ sơ test riêng, không reset dữ liệu thật. Bằng chứng __v43_production_evidence.json, __v43_production_assets.json, __v43_production_smoke_report.json, __v43_public_publish_result.json. Gate local36 suites/680 checks, missing=[]/failure0/runtime0/exit0 là kiểm tra trước phát hành, không thay cho production smoke.
+
+Đã commit/push/deploy source V43. Tài liệu hậu phát hành cập nhật local, chưa commit thêm; giữ untracked cũ. Không đổi source sau validation/deploy. Giữ progressVersion2/schema/rules/scoring/sync; lớp2–5 vẫn lưu thiết bị. Chưa kiểm tra Safari/thiết bị vật lý, đánh giá với trẻ/giáo viên hoặc Firebase E2E. Theo dõi phản hồi sử dụng; rollback nếu cần bằng commit revert và cache mới, bảo toàn localStorage.
+
+
+## V44 nông trại — bản chơi thử local, 18/10/2026
+
+Chủ dự án yêu cầu nhánh nông trại dùng phần thưởng học tập và thiết kế MagicPath, chọn “Tích hợp bản chơi thử local”. Đã thực hiện trên nhánh codex/farm-pilot từ aaacf770d42092189eab4eebe0350b19a2d662a9. Chưa commit/push/deploy V44. Production V43 là trạng thái đã xác minh ngày17/10; không kiểm chứng lại production trong lần phát triển local này.
+
+Nông trại có8 hoa/cây (hướng dương, xương rồng, tulip, cúc trắng, oải hương, mẫu đơn, hoa hồng, hoa sen),7 vật nuôi (gà, heo, bò, chó, mèo, bồ câu, rùa),4 trang trí (hàng rào, ghế, hồ, cối xay gió). Mỗi vườn bắt đầu với6 ô và1 hướng dương miễn phí; mở thêm3 ô mỗi lần, tối đa18 ô. Mua phải xác nhận và đủ cả hai tiền thưởng; hết chỗ yêu cầu mở đất. Tưới cây có mầm/nụ/hoa, chăm vật nuôi có phản hồi. Chăm sóc tối đa3 bước, không sinh tiền; không có héo/đói/phạt vắng mặt hoặc tiền thật.
+
+Quy tắc bản thử: hoàn thành mỗi bài khác nhau nhận10 Sao; bestScore đạt80 thêm5, đạt100 thêm5; mỗi5 bài khác nhau đạt80 nhận1 Kim cương. Mỗi mốc chỉ tính một lần theo courseId/levelId; cải thiện nhận phần chênh. Bài cũ hợp lệ được ghi nhận khi mở vườn hoặc hoàn thành bài mới. Không suy ra phát âm; Mỹ thuật/tham gia nói theo chưa có phần thưởng riêng. Sao nông trại là tiền thưởng riêng, không trừ hoặc đổi bestStars/điểm đánh giá.
+
+Năm module farm-core.js/farm-art.js/farm-ui.js/farm.js/farm.css. SVG tự vẽ, không tải ảnh/font/network mới. Website giữ HTML/CSS/JS thuần; React chỉ trong nguyên mẫu MagicPath. Tích hợp Home và kết quả bài học; điều hướng nông trại vẫn qua leave-quiz guard và giới hạn phụ huynh hiện có. Tách ví theo UID+childId; guest có vườn riêng, không chuyển ví guest sang tài khoản. Farm local key mới hoc-cung-be:farm:v1:<uid>:<childId>, farmVersion1 độc lập progressVersion2. Dữ liệu học chỉ đọc đúng khóa bé/môn và danh mục bài hiện có; không fallback từ guest sang bé. Ghi nhận phần thưởng tích lũy riêng để không mất ví khi dữ liệu bài học thiếu tạm thời.
+
+Giao dịch dùng Web Locks, đọc lại ví trong khóa và xác minh danh tính trước khi ghi localStorage một lần. Dữ liệu không đọc được hoặc hết dung lượng không bị ghi đè; mua thất bại không trừ tiền. Khóa lưu tiến độ cũ, Firestore schema/rules/merge, child-profiles, nền Văn Miếu và nội dung học giữ nguyên. Vườn chưa đồng bộ thiết bị; bản thử cần trình duyệt hỗ trợ Web Locks (đã thử Chrome), không có backend chống sửa tiền trên máy. Mua không dùng tiền thật. Chưa Firebase E2E, thiết bị vật lý hoặc Safari. Quản lý thời gian chơi theo guard hiện có, chưa có bộ đếm thời gian nông trại riêng.
+
+Validation trên profile test riêng: regression36 suites/680 checks, fail0/runtime0/missing=[]/exit0; core1suite/61checks/exit0; farm browser1suite/55checks/fail0/runtime0/missing=[]/exit0; nâng cấp V43→V44 277checks/fail0/runtime0/exit0; responsive375×812,768×1024,1280×900 đạt; audit85/85/exit0; syntax/diffcheck đạt. Farm browser gồm fixture danh tính/giao dịch, click thật mua/chăm/mở đất, cửa hàng, xác nhận/Escape, guard quiz, resultCTA, storagefailure/concurrency và offline subpath. Không coi fixture là kiểm thử Firebase thật. Lần đầu runner sai escape selector đã sửa; sau đó phát hiện CTA mới ở result chưa có handler (app gắn data-go tĩnh), sửa cầu nối qua entry hiện có rồi chạy lại đạt. Giữ gate cũ.
+
+MagicPath project462124513023377408: desktop462412552253624320 revision462416693671628800; mobile462416662868668416 revision462417017916522496. Chỉ upload mã mới và ví minh họa sau khi chủ dự án trả lời “Cho phép tải bản thiết kế lên MagicPath”; không upload farm.js chứa cầu nối dữ liệu hoặc hồ sơ/tiến độ thật. Backend build completed cho cả hai bản. Đã xem ảnh server của desktop; sau lần sửa cuối mobile, MagicPath hết quota API nên chưa lấy lại ảnh server. Đã dựng lại CSS/JS của revision mobile tại local:2cột,8sản phẩm,nằm trong390px,không lỗi runtime; ảnh farm-mobile-preview.png trong workspace bàn giao. Đây là kiểm chứng local, không thay cho ảnh server của revision cuối. Bản desktop và mobile dùng ví mẫu có nhãn rõ, không lấy số này làm số dư của bé trên web local.
+
+Bằng chứng __v44_farm_evidence.json và __v44_farm_validation_2026-10-18.md. Cache candidate hoc-cung-be-v44 precache5module. Giữ mọi untracked cũ và tài liệu hậu phát hành V43 có sẵn. Bước tiếp theo: chủ dự án trải nghiệm bản local và duyệt quy tắc/giá; chỉ phát hành khi được yêu cầu. Nếu cần sync nông trại phải thiết kế và xin duyệt thay đổi schema/rules riêng.
+
+
+## Quyền phát hành V44 — 18/10/2026
+
+Chủ dự án yêu cầu “phát hành” sau khi nhận báo cáo bản thử. Đã đối chiếu toàn bộ source hash khớp bản đạt gate; origin/main vẫn là V43 aaacf770d42092189eab4eebe0350b19a2d662a9. Cho phép commit/push/deploy bản nông trại đã duyệt. Chỉ xác nhận production sau Pages success, so khớp tài nguyên và kiểm tra trình duyệt production bằng hồ sơ test riêng. Giữ giới hạn nông trại lưu thiết bị; không đổi Firestore schema/rules.
