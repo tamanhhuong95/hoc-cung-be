@@ -6,7 +6,9 @@ Website giáo dục tĩnh bằng HTML, CSS và JavaScript thuần cho học sinh
 
 ## Trạng thái mới nhất
 
-**V44 nông trại đang ở local, chưa phát hành.** Xem [báo cáo nông trại](__v44_farm_validation_2026-10-18.md). Production gần nhất là V43, đã xác minh ngày17/10/2026; các mục V40/V39 bên dưới là lịch sử.
+**V45 đang ở local, chưa phát hành:** nông trại mô hình chân thực, 8 cây/hoa, 7 vật nuôi chuyển động, tưới/cho ăn và cây lớn theo thời gian. Xem [báo cáo V45](__v45_living_farm_validation_2026-10-18.md). Vườn mẫu: `http://127.0.0.1:8789/__living-farm-preview.html`; dữ liệu mẫu chỉ ở RAM.
+
+**V44 nông trại đã phát hành**, SHA `7b45bd0`, production23/23 tài nguyên và55/55 kiểm tra đạt. Xem [báo cáo nông trại](__v44_farm_validation_2026-10-18.md). Production V44 được xác minh ngày18/10/2026; các mục V43/V40/V39 bên dưới là lịch sử.
 
 **Production V40 đã phát hành**, SHA `f189ffa`:14 bài Mỹ thuật/94 bước, thêm hạc và sao, hình trước-sau/zoom/chọn bước. Smoke production63/63 đạt; xem `__v40_production_evidence.json`. Xem [báo cáo V40](__v40_validation_2026-10-17.md).
 
@@ -534,3 +536,12 @@ Bằng chứng __v44_farm_evidence.json và __v44_farm_validation_2026-10-18.md.
 ## Quyền phát hành V44 — 18/10/2026
 
 Chủ dự án yêu cầu “phát hành” sau khi nhận báo cáo bản thử. Đã đối chiếu toàn bộ source hash khớp bản đạt gate; origin/main vẫn là V43 aaacf770d42092189eab4eebe0350b19a2d662a9. Cho phép commit/push/deploy bản nông trại đã duyệt. Chỉ xác nhận production sau Pages success, so khớp tài nguyên và kiểm tra trình duyệt production bằng hồ sơ test riêng. Giữ giới hạn nông trại lưu thiết bị; không đổi Firestore schema/rules.
+
+
+## V44 đã phát hành — 18/10/2026
+
+Chủ dự án yêu cầu “phát hành”. Đã commit/push V44 lên main, SHA 7b45bd0bd984e92ba09a7b7017ec72c5033e8c2e. Pages run39098720495 completed/success đúng SHA. Production https://tamanhhuong95.github.io/hoc-cung-be/ trả23/23 tài nguyên HTTP200, bytes khớp commit, cache hoc-cung-be-v44; nền Văn Miếu giữ nguyên. Production farm smoke55/55, fail0/runtime0/missing=[]/exit0, hồ sơ Chrome riêng, gồm click mua/chăm/mở đất, resultCTA, guard rời quiz, ví/fixture danh tính, responsive375/768/1280 và offline. Không dùng dữ liệu bé thật. Bằng chứng __v44_production_evidence.json.
+
+Bản phát hành vẫn là nông trại thử nghiệm lưu thiết bị theo UID+bé, chưa đồng bộ giữa máy; giữ progressVersion2 và Firestore schema/rules. Không có Firebase E2E hoặc kiểm tra Safari/thiết bị vật lý. Không lấy điểm nói theo/Mỹ thuật làm điểm đánh giá. Các gate680/core61/upgrade277/responsive3/audit85 ở phần trước là local;55 kiểm tra này chạy riêng trên HTTPS production. Chưa thay đổi dữ liệu thật hoặc reset trình duyệt người dùng.
+
+Tài liệu hậu phát hành cập nhật local chưa commit thêm, giữ thay đổi tài liệu V43 và untracked cũ. Theo dõi phản hồi; rollback nếu cần bằng commit revert và cache mới, giữ localStorage.

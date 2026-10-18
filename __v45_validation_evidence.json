@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-18",
+  "status": "Local candidate only; no commit, push or deploy",
+  "branch": "codex/farm-pilot",
+  "head": "7b45bd0bd984e92ba09a7b7017ec72c5033e8c2e",
+  "originMain": "7b45bd0bd984e92ba09a7b7017ec72c5033e8c2e",
+  "cache": "hoc-cung-be-v45",
+  "runs": [
+    {
+      "name": "Full browser regression",
+      "suiteCount": 36,
+      "totalChecks": 680,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Farm core and timed growth",
+      "suiteCount": 1,
+      "totalChecks": 70,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Farm physical browser, motion, offline",
+      "suiteCount": 1,
+      "totalChecks": 74,
+      "failedCount": 0,
+      "runtimeErrors": [],
+      "runtimeErrorCount": 0,
+      "missingSuites": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "V44 upgrade, art and games",
+      "baselineSha": "7b45bd0bd984e92ba09a7b7017ec72c5033e8c2e",
+      "totalChecks": 278,
+      "failedCount": 0,
+      "runtimeErrorCount": 0,
+      "runtimeErrors": [],
+      "realExitCode": 0
+    },
+    {
+      "name": "Media/PWA/security audit",
+      "totalChecks": 85,
+      "failedCount": 0,
+      "realExitCode": 0
+    },
+    {
+      "name": "English responsive",
+      "totalChecks": 3,
+      "failedCount": 0,
+      "realExitCode": 0
+    }
+  ],
+  "limitations": [
+    "Chrome desktop and emulated mobile; no physical device/Safari or real Firebase login/sync E2E in this run.",
+    "Farm remains device-local.",
+    "Three original generated PNGs total 7,558,668 bytes before HTTP compression.",
+    "Visual model uses a background and four-frame animal sprites; it is not a full 3D engine."
+  ],
+  "assets": [
+    {
+      "file": "index.html",
+      "bytes": 42258,
+      "sha256": "e5a2605ddda3bf05f9775473cf3a3e5af76a5d325936848c486e36932da6b63f"
+    },
+    {
+      "file": "farm-core.js",
+      "bytes": 5255,
+      "sha256": "6a4e58f172f6851aa804037831f0cddf96e05e35b002bc8f15cd6dcb8b8de85e"
+    },
+    {
+      "file": "farm-ui.js",
+      "bytes": 10330,
+      "sha256": "466764ace51797dd618a9d81bd3ed9e8bd2f80f5e77691ad7dbd9d92dad2f342"
+    },
+    {
+      "file": "living-farm.js",
+      "bytes": 7026,
+      "sha256": "a93424fff37afac1290ba5fb10518f87d42a0f016aeea5927ee2fecd2fbe7fa3"
+    },
+    {
+      "file": "living-farm.css",
+      "bytes": 13347,
+      "sha256": "e70b6c99236016a007b6ef102a5e296d46825432de906d43bc6a593fc4c8825c"
+    },
+    {
+      "file": "service-worker.js",
+      "bytes": 6397,
+      "sha256": "65ba85907226c52a9075f6c57e89643bf8b3485bb29dc169a590290366dcd1e9"
+    },
+    {
+      "file": "script.js",
+      "bytes": 230865,
+      "sha256": "d36d91279991579d4ea811206fb87191e5ba69492a5374036ff621fdbd60fabc"
+    },
+    {
+      "file": "child-settings.js",
+      "bytes": 23940,
+      "sha256": "ea4698b6d43a5d65f1f6d1a47b5130ade73b1af163f287363d15d38d1030b323"
+    },
+    {
+      "file": "parent-tools.js",
+      "bytes": 22090,
+      "sha256": "425cc592dfb8f9d17f80db7cef69803aa346b4e301e54507806631494e2e96ce"
+    },
+    {
+      "file": "assets/farm/living-farm-background.png",
+      "bytes": 4007396,
+      "sha256": "b7652154c4682dc3b770bdadad84fd1e8e55c65458df9abf20b027ff9ad33da3"
+    },
+    {
+      "file": "assets/farm/animal-walk-atlas.png",
+      "bytes": 1614335,
+      "sha256": "265df68cf82a740e3b0a4b232a7bd524ee9701b663d6f4376e40f696c8c89cf1"
+    },
+    {
+      "file": "assets/farm/plant-atlas.png",
+      "bytes": 1936937,
+      "sha256": "6e03d9c7e83f951aa3c36fbc95c5b9bbff53816dbe46d3f31052e95170b75142"
+    }
+  ]
+}

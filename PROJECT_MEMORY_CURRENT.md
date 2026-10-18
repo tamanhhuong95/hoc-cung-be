@@ -1,6 +1,6 @@
 # Project Memory hiện hành — Học Cùng Bé
 
-Tài liệu PM-6.9,18/10/2026 UTC+7. V44 nông trại local trên codex/farm-pilot, chưa commit/push/deploy. MagicPath và bản chơi thử đã xây dựng; gate36/680 + core61 + browser55 + upgrade277 + responsive3 + audit85 đạt. Production gần nhất V43 đã xác minh17/10.
+Tài liệu PM-7.1, 18/10/2026 UTC+7. V45 là candidate local theo yêu cầu đổi sang nông trại mô hình chân thực. Chưa commit/push/deploy; production và HEAD vẫn V44 7b45bd0. Kết quả hiện tại và giới hạn trong __v45_living_farm_validation_2026-10-18.md; các trạng thái phía dưới là lịch sử.
 
 ## Quyết định và trạng thái xác minh
 
@@ -248,3 +248,26 @@ Bằng chứng __v44_farm_evidence.json và __v44_farm_validation_2026-10-18.md.
 ## Quyền phát hành V44 — 18/10/2026
 
 Chủ dự án yêu cầu “phát hành” sau khi nhận báo cáo bản thử. Đã đối chiếu toàn bộ source hash khớp bản đạt gate; origin/main vẫn là V43 aaacf770d42092189eab4eebe0350b19a2d662a9. Cho phép commit/push/deploy bản nông trại đã duyệt. Chỉ xác nhận production sau Pages success, so khớp tài nguyên và kiểm tra trình duyệt production bằng hồ sơ test riêng. Giữ giới hạn nông trại lưu thiết bị; không đổi Firestore schema/rules.
+
+
+## V44 đã phát hành — 18/10/2026
+
+Chủ dự án yêu cầu “phát hành”. Đã commit/push V44 lên main, SHA 7b45bd0bd984e92ba09a7b7017ec72c5033e8c2e. Pages run39098720495 completed/success đúng SHA. Production https://tamanhhuong95.github.io/hoc-cung-be/ trả23/23 tài nguyên HTTP200, bytes khớp commit, cache hoc-cung-be-v44; nền Văn Miếu giữ nguyên. Production farm smoke55/55, fail0/runtime0/missing=[]/exit0, hồ sơ Chrome riêng, gồm click mua/chăm/mở đất, resultCTA, guard rời quiz, ví/fixture danh tính, responsive375/768/1280 và offline. Không dùng dữ liệu bé thật. Bằng chứng __v44_production_evidence.json.
+
+Bản phát hành vẫn là nông trại thử nghiệm lưu thiết bị theo UID+bé, chưa đồng bộ giữa máy; giữ progressVersion2 và Firestore schema/rules. Không có Firebase E2E hoặc kiểm tra Safari/thiết bị vật lý. Không lấy điểm nói theo/Mỹ thuật làm điểm đánh giá. Các gate680/core61/upgrade277/responsive3/audit85 ở phần trước là local;55 kiểm tra này chạy riêng trên HTTPS production. Chưa thay đổi dữ liệu thật hoặc reset trình duyệt người dùng.
+
+Tài liệu hậu phát hành cập nhật local chưa commit thêm, giữ thay đổi tài liệu V43 và untracked cũ. Theo dõi phản hồi; rollback nếu cần bằng commit revert và cache mới, giữ localStorage.
+
+
+## V45 local — nông trại mô hình, 18/10/2026
+
+Chủ dự án chọn hình chân thực hơn, giống mô hình nông trại. Cảnh liên tục có 8 cây/hoa và 7 vật nuôi, đi lại theo khung hình, tưới/cho ăn và cây mới chờ 6/12/18 giây. Không mất cây/vật nuôi khi nghỉ. Nút Play có thể chủ động bật khi máy mặc định giảm chuyển động.
+
+Giữ progressVersion=2, scoring/unlock, khóa dữ liệu, Auth/Firestore schema/rules/merge và thưởng học tập. Farm v1 thêm trường tăng trưởng tùy chọn, đọc được dữ liệu cũ; nông trại chưa sync. Vườn minh hoạ chỉ ở RAM. Chưa được phép phát hành V45; duyệt local rồi chờ yêu cầu phát hành.
+
+Kết quả: Full browser regression: 680 checks, fail 0, exit 0; Farm core and timed growth: 70 checks, fail 0, exit 0; Farm physical browser, motion, offline: 74 checks, fail 0, exit 0; V44 upgrade, art and games: 278 checks, fail 0, exit 0; Media/PWA/security audit: 85 checks, fail 0, exit 0; English responsive: 3 checks, fail 0, exit 0. Chi tiết runtime/missing và SHA trong __v45_validation_evidence.json. Chưa Firebase E2E hay thiết bị thật.
+
+
+## Phê duyệt phát hành V45 — 18/10/2026
+
+Chủ dự án yêu cầu “phát hành đi” sau khi duyệt nông trại mô hình local. Cho phép commit/push/deploy V45. Đã đối chiếu SHA-256 12 tài nguyên với bằng chứng kiểm thử; không đổi source sau gate. Production vẫn V44 tại thời điểm chuẩn bị commit; phải xác minh Pages, tài nguyên, browser và offline sau deploy. Không thay đổi visibility/schema/rules hoặc dữ liệu trẻ.

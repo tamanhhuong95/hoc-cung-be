@@ -1,0 +1,290 @@
+{
+  "suiteCount": 1,
+  "totalChecks": 70,
+  "failedCount": 0,
+  "runtimeErrorCount": 0,
+  "missingSuites": [],
+  "checks": [
+    {
+      "name": "new farm valid",
+      "passed": true
+    },
+    {
+      "name": "empty wallet",
+      "passed": true
+    },
+    {
+      "name": "starter flower free",
+      "passed": true
+    },
+    {
+      "name": "eight flowers",
+      "passed": true
+    },
+    {
+      "name": "seven animals",
+      "passed": true
+    },
+    {
+      "name": "four decorations",
+      "passed": true
+    },
+    {
+      "name": "unique product IDs",
+      "passed": true
+    },
+    {
+      "name": "reward score 0",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 0",
+      "passed": true
+    },
+    {
+      "name": "reward score 20",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 20",
+      "passed": true
+    },
+    {
+      "name": "reward score 60",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 60",
+      "passed": true
+    },
+    {
+      "name": "reward score 79",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 79",
+      "passed": true
+    },
+    {
+      "name": "reward score 80",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 80",
+      "passed": true
+    },
+    {
+      "name": "reward score 99",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 99",
+      "passed": true
+    },
+    {
+      "name": "reward score 100",
+      "passed": true
+    },
+    {
+      "name": "repeat cannot duplicate 100",
+      "passed": true
+    },
+    {
+      "name": "improve earns only delta",
+      "passed": true
+    },
+    {
+      "name": "lower score cannot reduce",
+      "passed": true
+    },
+    {
+      "name": "incomplete no reward",
+      "passed": true
+    },
+    {
+      "name": "invalid scores ignored",
+      "passed": true
+    },
+    {
+      "name": "gems every five mastery",
+      "passed": true
+    },
+    {
+      "name": "different course same ID independent",
+      "passed": true
+    },
+    {
+      "name": "input immutable",
+      "passed": true
+    },
+    {
+      "name": "reject unknown product",
+      "passed": true
+    },
+    {
+      "name": "reject insufficient",
+      "passed": true
+    },
+    {
+      "name": "buy exact price sunflower",
+      "passed": true
+    },
+    {
+      "name": "buy exact price cactus",
+      "passed": true
+    },
+    {
+      "name": "buy exact price tulip",
+      "passed": true
+    },
+    {
+      "name": "buy exact price daisy",
+      "passed": true
+    },
+    {
+      "name": "buy exact price lavender",
+      "passed": true
+    },
+    {
+      "name": "buy exact price peony",
+      "passed": true
+    },
+    {
+      "name": "buy exact price rose",
+      "passed": true
+    },
+    {
+      "name": "buy exact price lotus",
+      "passed": true
+    },
+    {
+      "name": "buy exact price chicken",
+      "passed": true
+    },
+    {
+      "name": "buy exact price pig",
+      "passed": true
+    },
+    {
+      "name": "buy exact price cow",
+      "passed": true
+    },
+    {
+      "name": "buy exact price dog",
+      "passed": true
+    },
+    {
+      "name": "buy exact price cat",
+      "passed": true
+    },
+    {
+      "name": "buy exact price dove",
+      "passed": true
+    },
+    {
+      "name": "buy exact price turtle",
+      "passed": true
+    },
+    {
+      "name": "buy exact price fence",
+      "passed": true
+    },
+    {
+      "name": "buy exact price bench",
+      "passed": true
+    },
+    {
+      "name": "buy exact price pond",
+      "passed": true
+    },
+    {
+      "name": "buy exact price windmill",
+      "passed": true
+    },
+    {
+      "name": "care has no currency",
+      "passed": true
+    },
+    {
+      "name": "care saved",
+      "passed": true
+    },
+    {
+      "name": "care caps at three",
+      "passed": true
+    },
+    {
+      "name": "bad plot rejected",
+      "passed": true
+    },
+    {
+      "name": "six plots full",
+      "passed": true
+    },
+    {
+      "name": "expansion cost",
+      "passed": true
+    },
+    {
+      "name": "expand allows purchase",
+      "passed": true
+    },
+    {
+      "name": "expansion maximum",
+      "passed": true
+    },
+    {
+      "name": "corruption rejected",
+      "passed": true
+    },
+    {
+      "name": "unknown version rejected",
+      "passed": true
+    },
+    {
+      "name": "negative care rejected",
+      "passed": true
+    },
+    {
+      "name": "serialize roundtrip",
+      "passed": true
+    },
+    {
+      "name": "seed remains while growing",
+      "passed": true
+    },
+    {
+      "name": "sprout appears after six seconds",
+      "passed": true
+    },
+    {
+      "name": "early watering rejected",
+      "passed": true
+    },
+    {
+      "name": "bud waits twelve seconds",
+      "passed": true
+    },
+    {
+      "name": "flower waits eighteen seconds",
+      "passed": true
+    },
+    {
+      "name": "mature legacy plant retained",
+      "passed": true
+    },
+    {
+      "name": "timed data survives roundtrip",
+      "passed": true
+    },
+    {
+      "name": "corrupt growth metadata rejected",
+      "passed": true
+    },
+    {
+      "name": "growth never changes wallet",
+      "passed": true
+    }
+  ],
+  "realExitCode": 0
+}

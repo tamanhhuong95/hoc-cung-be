@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-18",
+  "method": "Built-in image_gen. Original PNG files copied unchanged; CSS selects sprite cells. No image editing or conversion.",
+  "assets": [
+    {
+      "file": "assets/farm/living-farm-background.png",
+      "source": "exec-b6188e7f-bd0a-421e-af88-567d4c40ebbd.png",
+      "promptSummary": "Realistic miniature farm viewed from elevated orthographic angle, warm morning light, empty soil plots left, green pasture right, wooden barn, pond, fencing and distant hills. No animals, UI or text.",
+      "sourceDirectory": "C:/Users/Admin/.codex/generated_images/01a144e2-d05e-75d1-a5a9-7a8066ef62c0",
+      "bytes": 4007396
+    },
+    {
+      "file": "assets/farm/animal-walk-atlas.png",
+      "source": "exec-dc18e178-70e3-4d66-bfab-6e0b8a264a85.png",
+      "promptSummary": "Transparent 4-column by 7-row sprite atlas. Four walking poses per row. Row species: hen, pig, cow, dog, cat, pigeon, tortoise. Realistic miniature animals, consistent lighting and right-facing view.",
+      "sourceDirectory": "C:/Users/Admin/.codex/generated_images/01a144e2-d05e-75d1-a5a9-7a8066ef62c0",
+      "bytes": 1614335
+    },
+    {
+      "file": "assets/farm/plant-atlas.png",
+      "source": "exec-afdf8238-37cb-429a-846b-c0f3b0218112.png",
+      "promptSummary": "Transparent 4-column by 2-row botanical atlas. Sunflower, cactus, tulip, daisy; lavender, peony, rose, lotus. Realistic miniature full plants, no faces, pots, UI or labels.",
+      "sourceDirectory": "C:/Users/Admin/.codex/generated_images/01a144e2-d05e-75d1-a5a9-7a8066ef62c0",
+      "bytes": 1936937
+    }
+  ]
+}

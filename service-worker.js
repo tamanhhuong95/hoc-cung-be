@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "hoc-cung-be-v44";
+const CACHE_NAME = "hoc-cung-be-v45";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,6 +12,11 @@ const APP_SHELL = [
   "./farm-ui.js",
   "./farm.js",
   "./farm.css",
+  "./living-farm.js",
+  "./living-farm.css",
+  "./assets/farm/living-farm-background.png",
+  "./assets/farm/animal-walk-atlas.png",
+  "./assets/farm/plant-atlas.png",
   "./script.js",
   "./thinking-games.js",
   "./thinking-games.css",
